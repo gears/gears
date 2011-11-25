@@ -44,7 +44,8 @@ class Engines(dict):
 class Processors(dict):
 
     def register(self, mimetype, processor_class):
-        self.setdefault(mimetype, []).append(processor_class)
+        if mimetype not in self or processor_class not in self[mimetype]:
+            self.setdefault(mimetype, []).append(processor_class)
 
     def unregister(self, mimetype, processor_class):
         if mimetype in self and processor_class in self[mimetype]:
