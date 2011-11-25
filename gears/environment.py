@@ -97,8 +97,8 @@ class Suffixes(list):
         self.extend(new)
 
     def unregister(self, extension):
-        for suffix in self:
-            if extension in self['extensions']:
+        for suffix in list(self):
+            if extension in suffix['extensions']:
                 self.remove(suffix)
 
     def find(self, *extensions):
