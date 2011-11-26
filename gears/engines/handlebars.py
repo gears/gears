@@ -2,8 +2,6 @@ import os
 from .base import ExecEngine
 
 
-EXECUTABLE = os.path.join(os.path.dirname(__file__), 'handlebars.js')
-
 SOURCE = '\n'.join((
     "function() {",
     "  var template  = Handlebars.template,",
@@ -15,9 +13,7 @@ SOURCE = '\n'.join((
 class HandlebarsEngine(ExecEngine):
 
     result_mimetype = 'application/javascript'
-
-    def __init__(self):
-        super(HandlebarsEngine, self).__init__(EXECUTABLE)
+    executable = os.path.join(os.path.dirname(__file__), 'handlebars.js')
 
     def process(self, source, context, calls):
         source = super(HandlebarsEngine, self).process(source, context, calls)

@@ -15,10 +15,12 @@ class BaseEngine(object):
 
 class ExecEngine(BaseEngine):
 
+    executable = None
     params = []
 
-    def __init__(self, executable):
-        self.executable = executable
+    def __init__(self, executable=None):
+        if executable is not None:
+            self.executable = executable
 
     def process(self, source, context, calls):
         args = [self.executable] + self.params
