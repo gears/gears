@@ -1,4 +1,6 @@
-from gears.environment import Processors
+from gears.environment import Processors, Preprocessors
+from gears.processors import DirectivesProcessor
+
 from mock import Mock
 from unittest2 import TestCase
 
@@ -42,3 +44,17 @@ class ProcessorsTests(TestCase):
 
     def test_get_if_does_not_exist(self):
         self.assertEqual(self.processors.get('text/css'), [])
+
+
+class PreprocessorsTests(TestCase):
+
+    def setUp(self):
+        self.preprocessors = Preprocessors()
+
+    def test_register_defaults(self):
+        self.preprocessors.register_defaults()
+        self.assertItemsEqual(self.preprocessors.keys(),
+                              ['text/css', 'application/javascript'])
+        self.assertEqual(self.preprocessors['text/css'], [DirectivesProcessor])
+        self.assertEqual(self.preprocessors['application/javascript'],
+                         [DirectivesProcessor])
