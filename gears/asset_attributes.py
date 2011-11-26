@@ -29,7 +29,7 @@ class AssetAttributes(object):
 
     @cached_property
     def format_extension(self):
-        for extension in self.extensions:
+        for extension in reversed(self.extensions):
             engine = self.environment.engines.get(extension)
             if not engine and self.environment.mimetypes.get(extension):
                 return extension
