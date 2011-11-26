@@ -32,6 +32,7 @@ class ProcessorsTests(TestCase):
         self.processors.register('text/css', self.first_processor)
         self.processors.register('text/css', self.second_processor)
         self.processors.unregister('text/css', self.first_processor)
+        self.assertEqual(self.processors['text/css'], [self.second_processor])
 
     def test_unregister_if_does_not_exist(self):
         self.processors.unregister('text/css', self.first_processor)
