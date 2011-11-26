@@ -1,4 +1,4 @@
-from subprocess import Popen, PIPE
+import subprocess
 
 
 class EngineProcessFailed(Exception):
@@ -23,8 +23,11 @@ class ExecEngine(BaseEngine):
             self.executable = executable
 
     def process(self, source, context, calls):
-        args = [self.executable] + self.params
-        p = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        p = subprocess.Popen(
+            args=[self.executable] + self.params,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
         output, errors = p.communicate(input=source)
         if p.returncode == 0:
             return output
