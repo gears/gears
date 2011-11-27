@@ -102,4 +102,5 @@ class DirectivesProcessor(BaseProcessor):
 
     def get_relative_path(self, require_path):
         require_path = os.path.join(os.path.dirname(self.path), require_path)
+        require_path = os.path.normpath(require_path)
         return require_path + ''.join(self.asset_attributes.extensions)
