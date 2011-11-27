@@ -85,7 +85,7 @@ class DirectivesProcessor(BaseProcessor):
         if not absolute_path:
             raise InvalidDirective(
                 "%s (%s): required file does not exist." % (self.path, lineno))
-        asset = Asset(asset_attributes, absolute_path, context, calls)
+        asset = self.get_asset(asset_attributes, absolute_path, context, calls)
         body.append(str(asset).strip())
 
     def process_require_self_directive(self, args, lineno, body, self_body):
@@ -104,3 +104,6 @@ class DirectivesProcessor(BaseProcessor):
         require_path = os.path.join(os.path.dirname(self.path), require_path)
         require_path = os.path.normpath(require_path)
         return require_path + ''.join(self.asset_attributes.extensions)
+
+    def get_asset(self, asset_attributes, absolute_path, context, calls):
+        return Asset(asset_attributes, absolute_path, context, calls)
