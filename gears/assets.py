@@ -12,7 +12,7 @@ class BaseAsset(object):
         self.attributes = attributes
         self.absolute_path = absolute_path
         self.context = context or {}
-        self.calls = calls or set()
+        self.calls = calls if calls is not None else set()
         if self.absolute_path in self.calls:
             raise AssetAlreadyUsed(
                 'Asset %r already used earlier.' % absolute_path)
