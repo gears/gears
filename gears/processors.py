@@ -92,7 +92,7 @@ class DirectivesProcessor(BaseProcessor):
         if args:
             raise InvalidDirective(
                 "%s (%s): 'require_self' directive requires no arguments."
-                % self.path, lineno)
+                % (self.path, lineno))
         body.append(self_body.strip())
 
     def find(self, require_path):
