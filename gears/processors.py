@@ -30,12 +30,10 @@ class DirectivesProcessor(BaseProcessor):
 
     def process(self, source, context, calls):
         match = self.header_re.match(source)
-        if match:
-            header = match.group(0)
-            body = self.header_re.sub('', source)
-        else:
-            header = ''
-            body = source
+        if not match:
+            return source.strip() + '\n'
+        header = match.group(0)
+        body = self.header_re.sub('', source)
         source = self.process_directives(header, body, context, calls)
         return '\n\n'.join(source).strip() + '\n'
 
