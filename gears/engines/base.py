@@ -24,7 +24,7 @@ class ExecEngine(BaseEngine):
 
     def process(self, source, context, calls):
         p = subprocess.Popen(
-            args=[self.executable] + self.params,
+            args=self.get_args(context),
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
@@ -32,3 +32,6 @@ class ExecEngine(BaseEngine):
         if p.returncode == 0:
             return output
         raise EngineProcessFailed(errors)
+
+    def get_args(self, context):
+        return [self.executable] + self.params
