@@ -36,6 +36,9 @@ class AssetAttributesTests(TestCase):
         check('js/readme', 'js/readme')
         check('js/app.min.js.coffee', 'js/app')
 
+        self.environment.mimetypes.register('.js', 'application/javascript')
+        check('js/app.min.js.coffee', 'js/app.min')
+
     def test_search_paths(self):
 
         def check(path, expected_result):

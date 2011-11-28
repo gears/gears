@@ -19,8 +19,8 @@ class AssetAttributes(object):
 
     @cached_property
     def path_without_extensions(self):
-        if self.extensions:
-            return self.path[:-len(''.join(self.extensions))]
+        if self.suffix:
+            return self.path[:-len(''.join(self.suffix))]
         return self.path
 
     @cached_property
