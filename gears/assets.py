@@ -37,6 +37,7 @@ class Asset(BaseAsset):
     def get_context(self):
         context = self.context.copy()
         context['name'] = self.attributes.path_without_suffix
+        context['absolute_path'] = self.absolute_path
         return context
 
 
