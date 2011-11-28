@@ -11,10 +11,10 @@ process.stdin.on('data', function (chunk) {
 });
 
 process.stdin.on('end', function () {
-  var style = stylus(source);
+  var style = stylus(source, {filename: process.argv[2]});
   style.render(function (err, css) {
     if (err) {
-      process.exit(1);
+      throw err;
     }
     process.stdout.write(css);
   })
