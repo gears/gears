@@ -25,12 +25,12 @@ class AssetAttributesTests(TestCase):
         check('js/app.min.js.coffee', ['.min', '.js', '.coffee'])
         check('js/.htaccess', ['.htaccess'])
 
-    def test_path_without_extensions(self):
+    def test_path_without_suffix(self):
 
         def check(path, expected_result):
             attributes = self.create_attributes(path)
-            path_without_extensions = attributes.path_without_extensions
-            self.assertEqual(path_without_extensions, expected_result)
+            path_without_suffix = attributes.path_without_suffix
+            self.assertEqual(path_without_suffix, expected_result)
 
         check('js/.htaccess', 'js/')
         check('js/readme', 'js/readme')

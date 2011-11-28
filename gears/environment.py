@@ -145,7 +145,7 @@ class Environment(object):
                 return None, None
         if logical:
             asset_attribute = AssetAttributes(self, item)
-            path = asset_attribute.path_without_extensions
+            path = asset_attribute.path_without_suffix
             suffixes = self.suffixes.find(*asset_attribute.suffix)
             try:
                 return first(all, (self.find(path + s) for s in suffixes))

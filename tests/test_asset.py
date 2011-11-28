@@ -44,10 +44,10 @@ class AssetTests(TestCase):
         absolute_path = os.path.join(ASSETS_DIR, path)
         return Asset(attributes, absolute_path, context, calls)
 
-    @patch.object(AssetAttributes, 'path_without_extensions')
-    def test_get_context(self, path_without_extensions):
+    @patch.object(AssetAttributes, 'path_without_suffix')
+    def test_get_context(self, path_without_suffix):
         context = self.create_asset('js/script.js').get_context()
-        self.assertEqual(context, {'name': path_without_extensions})
+        self.assertEqual(context, {'name': path_without_suffix})
 
     def test_get_source(self):
         asset = self.create_asset('js/script.js')

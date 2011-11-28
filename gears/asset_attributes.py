@@ -12,13 +12,13 @@ class AssetAttributes(object):
     @cached_property
     def search_paths(self):
         paths = [self.path]
-        if os.path.basename(self.path_without_extensions) != 'index':
-            path = os.path.join(self.path_without_extensions, 'index')
+        if os.path.basename(self.path_without_suffix) != 'index':
+            path = os.path.join(self.path_without_suffix, 'index')
             paths.append(path + ''.join(self.suffix))
         return paths
 
     @cached_property
-    def path_without_extensions(self):
+    def path_without_suffix(self):
         if self.suffix:
             return self.path[:-len(''.join(self.suffix))]
         return self.path
