@@ -14,7 +14,7 @@ class AssetAttributes(object):
         paths = [self.path]
         if os.path.basename(self.path_without_extensions) != 'index':
             path = os.path.join(self.path_without_extensions, 'index')
-            paths.append(path + ''.join(self.extensions))
+            paths.append(path + ''.join(self.suffix))
         return paths
 
     @cached_property

@@ -40,12 +40,14 @@ class AssetAttributesTests(TestCase):
         check('js/app.min.js.coffee', 'js/app.min')
 
     def test_search_paths(self):
+        self.environment.mimetypes.register('.js', 'application/javascript')
 
         def check(path, expected_result):
             search_paths = self.create_attributes(path).search_paths
             self.assertEqual(search_paths, expected_result)
 
         check('js/script.js', ['js/script.js', 'js/script/index.js'])
+        check('js/app.min.js', ['js/app.min.js', 'js/app.min/index.js'])
         check('js/.htaccess', ['js/.htaccess', 'js/index.htaccess'])
         check('js/index.js', ['js/index.js'])
 
