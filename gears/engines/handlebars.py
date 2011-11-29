@@ -3,7 +3,7 @@ from .base import ExecEngine
 
 
 SOURCE = '\n'.join((
-    "function() {",
+    "(function() {",
     "  var template  = Handlebars.template,",
     "      templates = Handlebars.templates = Handlebars.templates || {};",
     "  templates['%(name)s'] = template(%(source)s);",
