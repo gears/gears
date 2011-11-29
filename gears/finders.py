@@ -29,7 +29,7 @@ class FileSystemFinder(BaseFinder):
                 if not all:
                     return matched_path
                 matches.append(matched_path)
-        return matches
+        return matches if all else None
 
     def find_location(self, root, path):
         path = safe_join(root, path)
