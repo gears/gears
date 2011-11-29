@@ -1,4 +1,9 @@
+from __future__ import with_statement
+
+import os
+
 from .asset_attributes import AssetAttributes
+from .assets import build_asset
 from .engines import (
     CoffeeScriptEngine, HandlebarsEngine, LessEngine, StylusEngine)
 from .exceptions import FileNotFound
@@ -175,3 +180,20 @@ class Environment(object):
                     continue
                 return AssetAttributes(self, item), absolute_path
         raise FileNotFound(item)
+
+    def save(self):
+        for path in self.public_assets:
+            try:
+                self.save_file(path, str(build_asset(self, path)))
+            except FileNotFound:
+                pass
+
+    def save_file(self, path, source):
+        filename = os.path.join(self.root, path)
+        path = os.path.dirname(filename)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        elif not os.path.isdir(path):
+            raise ISError("%s exists and is not a directory." % path)
+        with open(filename, 'w') as f:
+            f.write(source)
