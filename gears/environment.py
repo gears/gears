@@ -1,4 +1,6 @@
 from .asset_attributes import AssetAttributes
+from .engines import (
+    CoffeeScriptEngine, HandlebarsEngine, LessEngine, StylusEngine)
 from .processors import DirectivesProcessor
 from .utils import first, first_or_none
 
@@ -32,6 +34,12 @@ class Engines(dict):
 
     def __init__(self):
         super(Engines, self).__init__()
+
+    def register_defaults(self):
+        self.register('.coffee', CoffeeScriptEngine)
+        self.register('.handlebars', HandlebarsEngine)
+        self.register('.less', LessEngine)
+        self.register('.styl', StylusEngine)
 
     def register(self, extension, engine):
         self[extension] = engine
@@ -131,6 +139,7 @@ class Environment(object):
         return self._suffixes
 
     def register_defaults(self):
+        self.engines.register_defaults()
         self.mimetypes.register_defaults()
         self.public_assets.register_defaults()
         self.preprocessors.register_defaults()
