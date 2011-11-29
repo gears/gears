@@ -1,6 +1,7 @@
 from .asset_attributes import AssetAttributes
 from .engines import (
     CoffeeScriptEngine, HandlebarsEngine, LessEngine, StylusEngine)
+from .exceptions import FileNotFound
 from .processors import DirectivesProcessor
 from .utils import first, first_or_none
 
@@ -146,21 +147,31 @@ class Environment(object):
 
     def find(self, item, logical=False):
         if isinstance(item, AssetAttributes):
-            return self.find(item.search_paths, logical)
+            for path in item.search_paths:
+                try:
+                    return self.find(path, logical)
+                except FileNotFound:
+                    continue
+            raise FileNotFound(item.path)
         if isinstance(item, (list, tuple)):
-            try:
-                return first(all, (self.find(p, logical) for p in item))
-            except ValueError:
-                return None, None
-        if logical:
+            for path in item:
+                try:
+                    return self.find(path, logical)
+                except FileNotFound:
+                    continue
+        elif logical:
             asset_attribute = AssetAttributes(self, item)
             path = asset_attribute.path_without_suffix
-            suffixes = self.suffixes.find(*asset_attribute.suffix)
-            try:
-                return first(all, (self.find(path + s) for s in suffixes))
-            except ValueError:
-                return None, None
-        path = first_or_none(bool, (f.find(item) for f in self.finders))
-        if path:
-            return AssetAttributes(self, item), path
-        return None, None
+            for suffix in self.suffixes.find(*asset_attribute.suffix):
+                try:
+                    return self.find(path + suffix)
+                except FileNotFound:
+                    continue
+        else:
+            for finder in self.finders:
+                try:
+                    absolute_path = finder.find(item)
+                except FileNotFound:
+                    continue
+                return AssetAttributes(self, item), absolute_path
+        raise FileNotFound(item)

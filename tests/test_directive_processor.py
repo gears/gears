@@ -3,6 +3,7 @@ from __future__ import with_statement
 from gears.asset_attributes import AssetAttributes
 from gears.assets import Asset
 from gears.environment import Environment
+from gears.exceptions import FileNotFound
 from gears.processors import DirectivesProcessor, InvalidDirective
 
 from mock import Mock, patch, sentinel
@@ -120,8 +121,12 @@ class DirectiveProcessorTests(TestCase):
         self.assertEqual(body, ['asset_body'])
 
     def test_process_require_directive_if_not_found(self):
+
+        def find(require_path):
+            raise FileNotFound(require_path)
+
         processor = self.create_processor('js/script.js')
-        processor.find = Mock(return_value=(None, None))
+        processor.find = Mock(side_effect=find)
         with self.assertRaises(InvalidDirective):
             processor.process_require_directive(['app'], 1, [], {}, set())
 

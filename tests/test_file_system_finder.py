@@ -2,7 +2,7 @@ from __future__ import with_statement
 
 import os
 
-from gears.exceptions import ImproperlyConfigured
+from gears.exceptions import ImproperlyConfigured, FileNotFound
 from gears.finders import FileSystemFinder
 
 from mock import patch, Mock
@@ -35,28 +35,18 @@ class FileSystemFinderTests(TestCase):
         exists.assert_called_once_with('/assets/js/script.js')
 
     def test_find_if_exists(self):
-
-        def find_location(root, path):
-            if root != '/first':
-                return os.path.join(root, path)
-
         finder = FileSystemFinder(('/first', '/second', '/third'))
-        finder.find_location = Mock(side_effect=find_location)
-
+        finder.find_all = Mock(return_value=(
+            '/second/js/script.js', '/third/js/script.js'))
         self.assertEqual(finder.find('js/script.js'), '/second/js/script.js')
-        self.assertEqual(finder.find_location.call_args_list, [
-            (('/first', 'js/script.js'), {}),
-            (('/second', 'js/script.js'), {})])
+        finder.find_all.assert_called_once_with('js/script.js')
 
     def test_find_if_does_not_exist(self):
         finder = FileSystemFinder(('/first', '/second', '/third'))
-        finder.find_location = Mock(return_value=False)
-
-        self.assertIsNone(finder.find('js/script.js'))
-        self.assertEqual(finder.find_location.call_args_list, [
-            (('/first', 'js/script.js'), {}),
-            (('/second', 'js/script.js'), {}),
-            (('/third', 'js/script.js'), {})])
+        finder.find_all = Mock(return_value=())
+        with self.assertRaises(FileNotFound):
+            finder.find('js/script.js')
+        finder.find_all.assert_called_once_with('js/script.js')
 
     def test_find_all_if_exists(self):
 
@@ -67,7 +57,7 @@ class FileSystemFinderTests(TestCase):
         finder = FileSystemFinder(('/first', '/second', '/third'))
         finder.find_location = Mock(side_effect=find_location)
 
-        paths = finder.find('js/script.js', all=True)
+        paths = list(finder.find_all('js/script.js'))
         self.assertEqual(paths, ['/second/js/script.js', '/third/js/script.js'])
         self.assertEqual(finder.find_location.call_args_list, [
             (('/first', 'js/script.js'), {}),
@@ -78,7 +68,7 @@ class FileSystemFinderTests(TestCase):
         finder = FileSystemFinder(('/first', '/second', '/third'))
         finder.find_location = Mock(return_value=False)
 
-        self.assertEqual(finder.find('js/script.js', all=True), [])
+        self.assertEqual(list(finder.find_all('js/script.js')), [])
         self.assertEqual(finder.find_location.call_args_list, [
             (('/first', 'js/script.js'), {}),
             (('/second', 'js/script.js'), {}),

@@ -6,6 +6,7 @@ import shlex
 
 from .asset_attributes import AssetAttributes
 from .assets import Asset
+from .exceptions import FileNotFound
 
 
 class InvalidDirective(Exception):
@@ -81,8 +82,9 @@ class DirectivesProcessor(BaseProcessor):
                 "%s (%s): 'require' directive has wrong number "
                 "of arguments (only one argument required): %s."
                 % (self.path, lineno, args))
-        asset_attributes, absolute_path = self.find(args[0])
-        if not absolute_path:
+        try:
+            asset_attributes, absolute_path = self.find(args[0])
+        except FileNotFound:
             raise InvalidDirective(
                 "%s (%s): required file does not exist." % (self.path, lineno))
         asset = self.get_asset(asset_attributes, absolute_path, context, calls)

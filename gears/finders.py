@@ -1,5 +1,5 @@
 import os
-from .exceptions import ImproperlyConfigured
+from .exceptions import ImproperlyConfigured, FileNotFound
 from .utils import safe_join
 
 
@@ -21,15 +21,16 @@ class FileSystemFinder(BaseFinder):
             if directory not in self.locations:
                 self.locations.append(directory)
 
-    def find(self, path, all=False):
-        matches = []
+    def find(self, path):
+        for matched_path in self.find_all(path):
+            return matched_path
+        raise FileNotFound(path)
+
+    def find_all(self, path):
         for root in self.locations:
             matched_path = self.find_location(root, path)
             if matched_path:
-                if not all:
-                    return matched_path
-                matches.append(matched_path)
-        return matches if all else None
+                yield matched_path
 
     def find_location(self, root, path):
         path = safe_join(root, path)

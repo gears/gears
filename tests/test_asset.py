@@ -6,6 +6,7 @@ from gears.asset_attributes import AssetAttributes
 from gears.assets import (
     BaseAsset, Asset, StaticAsset, AssetAlreadyUsed, build_asset)
 from gears.environment import Environment
+from gears.exceptions import FileNotFound
 
 from mock import Mock, patch
 from unittest2 import TestCase
@@ -112,8 +113,14 @@ class BuildAssetTests(TestCase):
         self.assertEqual(asset.absolute_path, absolute_path)
 
     def test_if_asset_does_not_exist(self):
-        self.environment.find = Mock(return_value=(None, None))
-        self.assertIsNone(build_asset(self.environment, 'js/script.js'))
+
+        def find(item, logical=False):
+            raise FileNotFound(item)
+
+        self.environment.find = Mock(side_effect=find)
+        with self.assertRaises(FileNotFound):
+            build_asset(self.environment, 'js/script.js')
 
     def test_if_asset_is_not_public(self):
-        self.assertIsNone(build_asset(self.environment, 'js/app.js'))
+        with self.assertRaises(FileNotFound):
+            build_asset(self.environment, 'js/app.js')

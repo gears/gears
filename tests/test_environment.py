@@ -1,5 +1,8 @@
+from __future__ import with_statement
+
 from gears.asset_attributes import AssetAttributes
 from gears.environment import Environment
+from gears.exceptions import FileNotFound
 
 from mock import Mock
 from unittest2 import TestCase
@@ -18,6 +21,7 @@ class FakeFinder(object):
     def find(self, path):
         if path in self.paths:
             return '/assets/' + path
+        raise FileNotFound(path)
 
 
 class EnvironmentTests(TestCase):
@@ -64,7 +68,8 @@ class EnvironmentFindTests(TestCase):
         self.assertEqual(path, '/assets/js/models.js.coffee')
 
     def test_find_nothing_by_path(self):
-        self.assertEqual(self.environment.find('js/models.js'), (None, None))
+        with self.assertRaises(FileNotFound):
+            self.environment.find('js/models.js')
 
     def test_find_by_path_list(self):
         attrs, path = self.environment.find(['js/app.js', 'js/app/index.js'])
@@ -72,9 +77,8 @@ class EnvironmentFindTests(TestCase):
         self.assertEqual(path, '/assets/js/app/index.js')
 
     def test_find_nothing_by_path_list(self):
-        attrs, path = self.environment.find(['style.css', 'style/index.css'])
-        self.assertIsNone(attrs)
-        self.assertIsNone(path)
+        with self.assertRaises(FileNotFound):
+            self.environment.find(['style.css', 'style/index.css'])
 
     def test_find_by_asset_attributes(self):
         attrs = AssetAttributes(self.environment, 'js/app.js')
@@ -84,7 +88,8 @@ class EnvironmentFindTests(TestCase):
 
     def test_find_nothing_by_asset_attributes(self):
         attrs = AssetAttributes(self.environment, 'js/models.js')
-        self.assertEqual(self.environment.find(attrs), (None, None))
+        with self.assertRaises(FileNotFound):
+            self.environment.find(attrs)
 
     def test_find_by_logical_path(self):
         attrs, path = self.environment.find('js/models.js', logical=True)
@@ -92,6 +97,5 @@ class EnvironmentFindTests(TestCase):
         self.assertEqual(path, '/assets/js/models.js.coffee')
 
     def test_find_nothing_by_logical_path(self):
-        attrs, path = self.environment.find('js/views.js', logical=True)
-        self.assertIsNone(attrs)
-        self.assertIsNone(path)
+        with self.assertRaises(FileNotFound):
+            self.environment.find('js/views.js', logical=True)
