@@ -181,6 +181,18 @@ class Environment(object):
                 return AssetAttributes(self, item), absolute_path
         raise FileNotFound(item)
 
+    def list(self, path, suffix=None):
+        found = set()
+        suffixes = self.suffixes.find(*suffix)
+        for finder in self.finders:
+            for logical_path, absolute_path in finder.list(path):
+                asset_attributes = AssetAttributes(self, logical_path)
+                if ''.join(asset_attributes.suffix) not in suffixes:
+                    continue
+                if logical_path not in found:
+                    yield asset_attributes, absolute_path
+                    found.add(logical_path)
+
     def save(self):
         for path in self.public_assets:
             try:

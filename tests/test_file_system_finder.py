@@ -9,6 +9,9 @@ from mock import patch, Mock
 from unittest2 import TestCase
 
 
+ASSETS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets'))
+
+
 class FileSystemFinderTests(TestCase):
 
     def test_initialization(self):
@@ -73,3 +76,12 @@ class FileSystemFinderTests(TestCase):
             (('/first', 'js/script.js'), {}),
             (('/second', 'js/script.js'), {}),
             (('/third', 'js/script.js'), {})])
+
+    def test_find(self):
+        finder = FileSystemFinder([ASSETS_DIR])
+        self.assertItemsEqual(finder.list('js/templates'), (
+            ('js/templates/readme.txt', os.path.join(ASSETS_DIR, 'js/templates/readme.txt')),
+            ('js/templates/a.js.handlebars', os.path.join(ASSETS_DIR, 'js/templates/a.js.handlebars')),
+            ('js/templates/b.js.handlebars', os.path.join(ASSETS_DIR, 'js/templates/b.js.handlebars')),
+            ('js/templates/c.js.handlebars', os.path.join(ASSETS_DIR, 'js/templates/c.js.handlebars')),
+        ))

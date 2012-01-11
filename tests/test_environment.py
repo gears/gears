@@ -7,11 +7,13 @@ from contextlib import contextmanager
 from gears.asset_attributes import AssetAttributes
 from gears.environment import Environment
 from gears.exceptions import FileNotFound
+from gears.finders import FileSystemFinder
 
 from mock import Mock
 from unittest2 import TestCase
 
 
+ASSETS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets'))
 STATIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static'))
 
 
@@ -121,3 +123,21 @@ class EnvironmentFindTests(TestCase):
             self.environment.save_file('js/script.js', 'hello world')
             with open(os.path.join(STATIC_DIR, 'js', 'script.js')) as f:
                 self.assertEqual(f.read(), 'hello world')
+
+
+class EnvironmentListTests(TestCase):
+
+    def setUp(self):
+        self.environment = Environment(STATIC_DIR)
+        self.environment.register_defaults()
+        self.environment.finders.register(FileSystemFinder([ASSETS_DIR]))
+
+    def test_list(self):
+        items = list(self.environment.list('js/templates', ['.js', '.handlebars']))
+        self.assertEqual(len(items), 3)
+        for i, item in enumerate(sorted(items, key=lambda x: x[1])):
+            path = 'js/templates/%s.js.handlebars' % 'abc'[i]
+            asset_attributes, absolute_path = item
+            self.assertIsInstance(asset_attributes, AssetAttributes)
+            self.assertEqual(asset_attributes.path, path)
+            self.assertEqual(absolute_path, os.path.join(ASSETS_DIR, path))

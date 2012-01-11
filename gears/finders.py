@@ -36,3 +36,13 @@ class FileSystemFinder(BaseFinder):
         path = safe_join(root, path)
         if os.path.exists(path):
             return path
+
+    def list(self, path):
+        for root in self.locations:
+            matched_path = self.find_location(root, path)
+            if not matched_path or not os.path.isdir(matched_path):
+                continue
+            for filename in os.listdir(matched_path):
+                filepath = os.path.join(matched_path, filename)
+                if os.path.isfile(filepath):
+                    yield os.path.join(path, filename), filepath

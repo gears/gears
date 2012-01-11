@@ -97,14 +97,28 @@ class DirectivesProcessor(BaseProcessor):
                 % (self.path, lineno))
         body.append(self_body.strip())
 
+    def process_require_directory_directive(self, args, lineno, body, context, calls):
+        if len(args) != 1:
+            raise InvalidDirective(
+                "%s (%s): 'require_directory' directive has wrong number "
+                "of arguments (only one argument required): %s."
+                % (self.path, lineno, args))
+        path = self.get_relative_path(args[0], is_directory=True)
+        list = self.environment.list(path, self.asset_attributes.suffix)
+        for asset_attributes, absolute_path in sorted(list, key=lambda x: x[0].path):
+            asset = self.get_asset(asset_attributes, absolute_path, context, calls)
+            body.append(str(asset).strip())
+
     def find(self, require_path):
         require_path = self.get_relative_path(require_path)
         asset_attributes = AssetAttributes(self.environment, require_path)
         return self.environment.find(asset_attributes, True)
 
-    def get_relative_path(self, require_path):
+    def get_relative_path(self, require_path, is_directory=False):
         require_path = os.path.join(os.path.dirname(self.path), require_path)
         require_path = os.path.normpath(require_path)
+        if is_directory:
+            return require_path
         return require_path + ''.join(self.asset_attributes.extensions)
 
     def get_asset(self, asset_attributes, absolute_path, context, calls):

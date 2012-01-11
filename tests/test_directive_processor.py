@@ -1,5 +1,7 @@
 from __future__ import with_statement
 
+import os
+
 from gears.asset_attributes import AssetAttributes
 from gears.assets import Asset
 from gears.environment import Environment
@@ -8,6 +10,9 @@ from gears.processors import DirectivesProcessor, InvalidDirective
 
 from mock import Mock, patch, sentinel
 from unittest2 import TestCase
+
+
+ASSETS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets'))
 
 
 class DirectiveProcessorTests(TestCase):
@@ -137,6 +142,28 @@ class DirectiveProcessorTests(TestCase):
         with self.assertRaises(InvalidDirective):
             processor.process_require_directive(
                 ['app', 'models'], 1, [], {}, set())
+
+    def test_process_require_directory_directive(self):
+
+        def item(path):
+            return AssetAttributes(self.environment, path), os.path.join(ASSETS_DIR, path)
+
+        def list(path, suffix):
+            return (item('js/templates/%s.js.handlebars' % name) for name in 'bca')
+
+        def get_asset(asset_attributes, *args):
+            return asset_attributes.path
+
+        processor = self.create_processor('js/script.js')
+        processor.get_asset = Mock(side_effect=get_asset)
+        self.environment.list = Mock(side_effect=list)
+
+        body = []
+        processor.process_require_directory_directive(['templates'], 1, body, {}, set())
+        self.environment.list.assert_called_once_with('js/templates', ['.js'])
+        self.assertEqual(body, ['js/templates/a.js.handlebars',
+                                'js/templates/b.js.handlebars',
+                                'js/templates/c.js.handlebars'])
 
     def test_process_directives(self):
 
