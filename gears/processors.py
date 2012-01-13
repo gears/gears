@@ -47,6 +47,9 @@ class DirectivesProcessor(BaseProcessor):
                 if args[0] == 'require':
                     self.process_require_directive(
                         args[1:], lineno, body, context, calls)
+                elif args[0] == 'require_directory':
+                    self.process_require_directory_directive(
+                        args[1:], lineno, body, context, calls)
                 elif args[0] == 'require_self':
                     self.process_require_self_directive(
                         args[1:], lineno, body, self_body)
