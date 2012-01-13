@@ -59,14 +59,13 @@ class AssetAttributes(object):
         return self._get_processors(self.environment.postprocessors)
 
     @cached_property
-    def processors(self):
-        engines = list(reversed(self.engines))
-        return self.preprocessors + engines + self.postprocessors
-
-    @cached_property
     def mimetype(self):
         return (self.environment.mimetypes.get(self.format_extension) or
                 'application/octet-stream')
+
+    @property
+    def is_static(self):
+        return not (self.preprocessors or self.engines or self.postprocessors)
 
     def _get_processors(self, storage):
         return [cls(self) for cls in storage.get(self.mimetype)]

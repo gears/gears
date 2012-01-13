@@ -52,23 +52,6 @@ class AssetTests(TestCase):
             'name': path_without_suffix,
             'absolute_path': os.path.join(ASSETS_DIR, 'js/script.js')})
 
-    def test_get_source(self):
-        asset = self.create_asset('js/script.js')
-        asset.get_context = Mock()
-        processors = [Mock(), Mock(), Mock()]
-        with patch.object(AssetAttributes, 'processors', processors):
-            source = asset.get_source()
-            processors[0].process.assert_called_once_with(
-                "console.log('hello world');\n",
-                asset.get_context.return_value, asset.calls)
-            processors[1].process.assert_called_once_with(
-                processors[0].process.return_value,
-                asset.get_context.return_value, asset.calls)
-            processors[2].process.assert_called_once_with(
-                processors[1].process.return_value,
-                asset.get_context.return_value, asset.calls)
-            self.assertEqual(source, processors[2].process.return_value)
-
 
 class StaticAssetTests(TestCase):
 
@@ -88,27 +71,27 @@ class BuildAssetTests(TestCase):
         self.environment = Environment('static')
         self.environment.public_assets.register('js/script.js')
 
-    def test_if_asset_has_processors(self):
+    def test_if_asset_is_static(self):
         asset_attributes = Mock()
-        asset_attributes.processors = True
-        absolute_path = '/assets/js/script.js'
-        self.environment.find = Mock(
-            return_value=(asset_attributes, absolute_path))
-
-        asset = build_asset(self.environment, 'js/script.js')
-        self.assertIsInstance(asset, Asset)
-        self.assertIs(asset.attributes, asset_attributes)
-        self.assertEqual(asset.absolute_path, absolute_path)
-
-    def test_if_asset_has_no_processors(self):
-        asset_attributes = Mock()
-        asset_attributes.processors = False
+        asset_attributes.is_static = True
         absolute_path = '/assets/js/script.js'
         self.environment.find = Mock(
             return_value=(asset_attributes, absolute_path))
 
         asset = build_asset(self.environment, 'js/script.js')
         self.assertIsInstance(asset, StaticAsset)
+        self.assertIs(asset.attributes, asset_attributes)
+        self.assertEqual(asset.absolute_path, absolute_path)
+
+    def test_if_asset_is_not_static(self):
+        asset_attributes = Mock()
+        asset_attributes.is_static = False
+        absolute_path = '/assets/js/script.js'
+        self.environment.find = Mock(
+            return_value=(asset_attributes, absolute_path))
+
+        asset = build_asset(self.environment, 'js/script.js')
+        self.assertIsInstance(asset, Asset)
         self.assertIs(asset.attributes, asset_attributes)
         self.assertEqual(asset.absolute_path, absolute_path)
 

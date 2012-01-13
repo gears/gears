@@ -32,7 +32,11 @@ class Asset(BaseAsset):
     def get_source(self):
         with open(self.absolute_path, 'rb') as f:
             source = f.read()
-        for processor in self.attributes.processors:
+        for processor in self.attributes.preprocessors:
+            source = processor.process(source, self.get_context(), self.calls)
+        for engine in reversed(self.attributes.engines):
+            source = engine.process(source, self.get_context(), self.calls)
+        for processor in self.attributes.postprocessors:
             source = processor.process(source, self.get_context(), self.calls)
         return source
 
@@ -55,6 +59,6 @@ def build_asset(environment, path):
         raise FileNotFound(path)
     asset_attributes = AssetAttributes(environment, path)
     asset_attributes, absolute_path = environment.find(asset_attributes, True)
-    if asset_attributes.processors:
-        return Asset(asset_attributes, absolute_path, calls=set())
-    return StaticAsset(asset_attributes, absolute_path)
+    if asset_attributes.is_static:
+        return StaticAsset(asset_attributes, absolute_path)
+    return Asset(asset_attributes, absolute_path, calls=set())

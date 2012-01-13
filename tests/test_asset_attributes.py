@@ -162,20 +162,3 @@ class AssetAttributesTests(TestCase):
         check('readme.txt', [])
         check('js/script.js', [])
         check('css/style.css', [first_processor, second_processor])
-
-    def test_processors(self):
-        preprocessor = Mock()
-        postprocessor = Mock()
-        coffee_engine = Mock()
-        template_engine = Mock()
-        self.environment.mimetypes.register('.js', 'application/javascript')
-        self.environment.preprocessors.register(
-            'application/javascript', Mock(return_value=preprocessor))
-        self.environment.postprocessors.register(
-            'application/javascript', Mock(return_value=postprocessor))
-        self.environment.engines.register('.coffee', coffee_engine)
-        self.environment.engines.register('.tmpl', template_engine)
-
-        self.assertEqual(
-            self.create_attributes('js/script.js.coffee.tmpl').processors,
-            [preprocessor, template_engine, coffee_engine, postprocessor])
