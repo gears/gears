@@ -50,13 +50,13 @@ class AssetAttributes(object):
     def engines(self):
         return [self.environment.engines.get(e) for e in self.engine_extensions]
 
-    @cached_property
+    @property
     def preprocessors(self):
-        return self._get_processors(self.environment.preprocessors)
+        return self.environment.preprocessors.get(self.mimetype)
 
-    @cached_property
+    @property
     def postprocessors(self):
-        return self._get_processors(self.environment.postprocessors)
+        return self.environment.postprocessors.get(self.mimetype)
 
     @cached_property
     def mimetype(self):
@@ -66,6 +66,3 @@ class AssetAttributes(object):
     @property
     def is_static(self):
         return not (self.preprocessors or self.engines or self.postprocessors)
-
-    def _get_processors(self, storage):
-        return [cls(self) for cls in storage.get(self.mimetype)]

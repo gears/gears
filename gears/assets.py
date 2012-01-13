@@ -32,12 +32,16 @@ class Asset(BaseAsset):
     def get_source(self):
         with open(self.absolute_path, 'rb') as f:
             source = f.read()
-        for processor in self.attributes.preprocessors:
-            source = processor.process(source, self.get_context(), self.calls)
+        for processor_class in self.attributes.preprocessors:
+            processor = processor_class(
+                self.attributes, source, self.context, self.calls)
+            source = processor.process()
         for engine in reversed(self.attributes.engines):
             source = engine.process(source, self.get_context())
-        for processor in self.attributes.postprocessors:
-            source = processor.process(source, self.get_context(), self.calls)
+        for processor_class in self.attributes.postprocessors:
+            processor = processor_class(
+                self.attributes, source, self.context, self.calls)
+            source = processor.process()
         return source
 
     def get_context(self):

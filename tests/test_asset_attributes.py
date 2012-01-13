@@ -135,8 +135,8 @@ class AssetAttributesTests(TestCase):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
         preprocessors = self.environment.preprocessors
-        preprocessors.register('text/css', Mock(return_value=first_processor))
-        preprocessors.register('text/css', Mock(return_value=second_processor))
+        preprocessors.register('text/css', first_processor)
+        preprocessors.register('text/css', second_processor)
 
         def check(path, expected_result):
             preprocessors = self.create_attributes(path).preprocessors
@@ -152,8 +152,8 @@ class AssetAttributesTests(TestCase):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
         postprocessors = self.environment.postprocessors
-        postprocessors.register('text/css', Mock(return_value=first_processor))
-        postprocessors.register('text/css', Mock(return_value=second_processor))
+        postprocessors.register('text/css', first_processor)
+        postprocessors.register('text/css', second_processor)
 
         def check(path, expected_result):
             postprocessors = self.create_attributes(path).postprocessors

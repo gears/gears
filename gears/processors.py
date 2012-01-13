@@ -15,12 +15,15 @@ class InvalidDirective(Exception):
 
 class BaseProcessor(object):
 
-    def __init__(self, asset_attributes):
+    def __init__(self, asset_attributes, source, context, calls):
         self.asset_attributes = asset_attributes
         self.environment = asset_attributes.environment
         self.path = asset_attributes.path
+        self.source = source
+        self.context = context
+        self.calls = calls
 
-    def process(self, source, context, calls):
+    def process(self):
         raise NotImplementedError()
 
 
@@ -29,27 +32,26 @@ class DirectivesProcessor(BaseProcessor):
     header_re = re.compile(r'^(\s*((/\*.*?\*/)|(//[^\n]*\n?)+))+', re.DOTALL)
     directive_re = re.compile(r"""^\s*(?:\*|//|#)\s*=\s*(\w+[./'"\s\w-]*)$""")
 
-    def process(self, source, context, calls):
-        match = self.header_re.match(source)
+    def process(self):
+        match = self.header_re.match(self.source)
         if not match:
-            return source.strip() + '\n'
+            return self.source.strip() + '\n'
         header = match.group(0)
-        body = self.header_re.sub('', source)
-        source = self.process_directives(header, body, context, calls)
+        body = self.header_re.sub('', self.source)
+        source = self.process_directives(header, body)
         return '\n\n'.join(source).strip() + '\n'
 
-    def process_directives(self, header, self_body, context, calls):
+    def process_directives(self, header, self_body):
         body = []
         directive_linenos = []
         has_require_self = False
         for lineno, args in self.parse_directives(header):
             try:
                 if args[0] == 'require':
-                    self.process_require_directive(
-                        args[1:], lineno, body, context, calls)
+                    self.process_require_directive(args[1:], lineno, body)
                 elif args[0] == 'require_directory':
                     self.process_require_directory_directive(
-                        args[1:], lineno, body, context, calls)
+                        args[1:], lineno, body)
                 elif args[0] == 'require_self':
                     self.process_require_self_directive(
                         args[1:], lineno, body, self_body)
@@ -79,7 +81,7 @@ class DirectivesProcessor(BaseProcessor):
             if match:
                 yield lineno, shlex.split(match.group(1))
 
-    def process_require_directive(self, args, lineno, body, context, calls):
+    def process_require_directive(self, args, lineno, body):
         if len(args) != 1:
             raise InvalidDirective(
                 "%s (%s): 'require' directive has wrong number "
@@ -90,7 +92,7 @@ class DirectivesProcessor(BaseProcessor):
         except FileNotFound:
             raise InvalidDirective(
                 "%s (%s): required file does not exist." % (self.path, lineno))
-        asset = self.get_asset(asset_attributes, absolute_path, context, calls)
+        asset = self.get_asset(asset_attributes, absolute_path)
         body.append(str(asset).strip())
 
     def process_require_self_directive(self, args, lineno, body, self_body):
@@ -100,7 +102,7 @@ class DirectivesProcessor(BaseProcessor):
                 % (self.path, lineno))
         body.append(self_body.strip())
 
-    def process_require_directory_directive(self, args, lineno, body, context, calls):
+    def process_require_directory_directive(self, args, lineno, body):
         if len(args) != 1:
             raise InvalidDirective(
                 "%s (%s): 'require_directory' directive has wrong number "
@@ -109,7 +111,7 @@ class DirectivesProcessor(BaseProcessor):
         path = self.get_relative_path(args[0], is_directory=True)
         list = self.environment.list(path, self.asset_attributes.suffix)
         for asset_attributes, absolute_path in sorted(list, key=lambda x: x[0].path):
-            asset = self.get_asset(asset_attributes, absolute_path, context, calls)
+            asset = self.get_asset(asset_attributes, absolute_path)
             body.append(str(asset).strip())
 
     def find(self, require_path):
@@ -124,5 +126,5 @@ class DirectivesProcessor(BaseProcessor):
             return require_path
         return require_path + ''.join(self.asset_attributes.extensions)
 
-    def get_asset(self, asset_attributes, absolute_path, context, calls):
-        return Asset(asset_attributes, absolute_path, context, calls)
+    def get_asset(self, asset_attributes, absolute_path):
+        return Asset(asset_attributes, absolute_path, self.context, self.calls)
