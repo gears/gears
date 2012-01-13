@@ -32,8 +32,7 @@ class ExecEnginesTests(TestCase):
         p.returncode = 0
         p.communicate.return_value = ('output', 'errors')
         Popen.return_value = p
-        self.assertEqual(
-            engine.process('source', sentinel.context, set()), 'output')
+        self.assertEqual(engine.process('source', sentinel.context), 'output')
         engine.get_args.assert_called_once_with(sentinel.context)
         Popen.assert_called_once_with(
             args=engine.get_args.return_value, stdin=PIPE, stdout=PIPE,
@@ -53,4 +52,4 @@ class ExecEnginesTests(TestCase):
             params = ['--compile']
 
         with self.assertRaisesRegexp(EngineProcessFailed, r'^errors$'):
-            Engine().process('source', {}, set())
+            Engine().process('source', {})

@@ -9,7 +9,7 @@ class BaseEngine(object):
 
     result_mimetype = None
 
-    def process(self, source, context, calls):
+    def process(self, source, context):
         raise NotImplementedError()
 
 
@@ -22,7 +22,7 @@ class ExecEngine(BaseEngine):
         if executable is not None:
             self.executable = executable
 
-    def process(self, source, context, calls):
+    def process(self, source, context):
         p = subprocess.Popen(
             args=self.get_args(context),
             stdin=subprocess.PIPE,

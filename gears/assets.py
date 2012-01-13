@@ -35,7 +35,7 @@ class Asset(BaseAsset):
         for processor in self.attributes.preprocessors:
             source = processor.process(source, self.get_context(), self.calls)
         for engine in reversed(self.attributes.engines):
-            source = engine.process(source, self.get_context(), self.calls)
+            source = engine.process(source, self.get_context())
         for processor in self.attributes.postprocessors:
             source = processor.process(source, self.get_context(), self.calls)
         return source
