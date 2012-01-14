@@ -46,11 +46,10 @@ class DirectivesProcessor(BaseProcessor):
         if not self.source_header:
             return self.source_body.strip() + '\n'
         source = self.process_directives()
-        return '\n\n'.join(source).strip() + '\n'
+        return source + '\n'
 
     def process_directives(self):
         body = []
-        directive_linenos = []
         has_require_self = False
         for lineno, args in self.parse_directives(self.source_header):
             try:
@@ -68,18 +67,9 @@ class DirectivesProcessor(BaseProcessor):
                         % (self.path, lineno, args[0]))
             except InvalidDirective:
                 pass
-            else:
-                directive_linenos.append(lineno)
         if not has_require_self:
             body.append(self.source_body.strip())
-        header = self.strip_header(directive_linenos)
-        return header, '\n\n'.join(body).strip()
-
-    def strip_header(self, linenos):
-        header = self.source_header.splitlines()
-        for lineno in reversed(linenos):
-            del header[lineno]
-        return '\n'.join(header).strip()
+        return '\n\n'.join(body).strip()
 
     def parse_directives(self, header):
         for lineno, line in enumerate(header.splitlines()):
