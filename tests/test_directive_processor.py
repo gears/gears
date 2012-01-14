@@ -90,7 +90,7 @@ class DirectiveProcessorTests(TestCase):
 
     def test_strip_header(self):
         processor = self.create_processor('js/script.js')
-        header = processor.strip_header('\n'.join((
+        processor.source_header = '\n'.join((
             '/*',
             ' * =require_self',
             ' *',
@@ -98,19 +98,20 @@ class DirectiveProcessorTests(TestCase):
             ' * =require views',
             ' * =require templates',
             ' */',
-        )), [1, 3, 4, 5])
+        ))
+        header = processor.strip_header([1, 3, 4, 5])
         self.assertEqual(header, '/*\n *\n */')
 
     def test_process_require_self_directive(self):
         body = []
-        processor = self.create_processor('js/script.js')
-        processor.process_require_self_directive([], 1, body, 'self_body\n')
+        processor = self.create_processor('js/script.js', 'self_body\n')
+        processor.process_require_self_directive([], 1, body)
         self.assertEqual(body, ['self_body'])
 
     def test_process_require_self_directive_with_args(self):
         processor = self.create_processor('js/script.js')
         with self.assertRaises(InvalidDirective):
-            processor.process_require_self_directive(['app'], 1, [], '')
+            processor.process_require_self_directive(['app'], 1, [])
 
     def test_process_require_directive(self):
         processor = self.create_processor('js/script.js')
@@ -171,8 +172,8 @@ class DirectiveProcessorTests(TestCase):
         def process_require_directive(args, lineno, body):
             body.append('%s.js' % args[0])
 
-        def process_require_self_directive(args, lineno, body, self_body):
-            body.append(self_body)
+        def process_require_self_directive(args, lineno, body):
+            body.append('self body')
 
         processor = self.create_processor('js/script.js')
         processor.parse_directives = Mock(return_value=[
@@ -184,9 +185,11 @@ class DirectiveProcessorTests(TestCase):
         processor.process_require_self_directive = Mock(
             side_effect=process_require_self_directive)
         processor.strip_header = Mock(return_value='// stripped header')
+        processor.source_header = sentinel.header
+        processor.source_body = 'self body'
 
-        header, body = processor.process_directives(sentinel.header, 'self body')
-        processor.strip_header.assert_called_once_with(sentinel.header, [0, 1, 2])
+        header, body = processor.process_directives()
+        processor.strip_header.assert_called_once_with([0, 1, 2])
         self.assertEqual(header, '// stripped header')
         self.assertEqual(body, 'self body\n\nmodels.js\n\nviews.js')
 
@@ -207,17 +210,21 @@ class DirectiveProcessorTests(TestCase):
         processor.process_require_self_directive = Mock(
             side_effect=process_require_self_directive)
         processor.strip_header = Mock()
+        processor.source_header = sentinel.header
+        processor.source_body = 'self body'
 
-        header, body = processor.process_directives(sentinel.header, 'self body')
+        header, body = processor.process_directives()
         self.assertEqual(body, 'models.js\n\nviews.js\n\nself body')
 
     def test_process_directives_if_unknown_directive(self):
         processor = self.create_processor('js/script.js')
         processor.parse_directives = Mock(return_value=[(0, ['unknown'])])
         processor.strip_header = Mock()
+        processor.source_header = sentinel.header
+        processor.source_body = 'self body'
 
-        header, body = processor.process_directives(sentinel.header, 'self body')
-        processor.strip_header.assert_called_once_with(sentinel.header, [])
+        header, body = processor.process_directives()
+        processor.strip_header.assert_called_once_with([])
         self.assertEqual(body, 'self body')
 
     def test_process(self):
@@ -227,8 +234,7 @@ class DirectiveProcessorTests(TestCase):
         processor.process_directives = Mock(return_value=['header', 'body'])
 
         source = processor.process()
-        processor.process_directives.assert_called_once_with(
-            '/*\n * =require jquery\n */', '\nconsole.log("hello world");')
+        processor.process_directives.assert_called_once_with()
         self.assertEqual(source, 'header\n\nbody\n')
 
     def test_process_if_no_match(self):

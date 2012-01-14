@@ -32,20 +32,27 @@ class DirectivesProcessor(BaseProcessor):
     header_re = re.compile(r'^(\s*((/\*.*?\*/)|(//[^\n]*\n?)+))+', re.DOTALL)
     directive_re = re.compile(r"""^\s*(?:\*|//|#)\s*=\s*(\w+[./'"\s\w-]*)$""")
 
-    def process(self):
+    def __init__(self, *args, **kwargs):
+        super(DirectivesProcessor, self).__init__(*args, **kwargs)
         match = self.header_re.match(self.source)
-        if not match:
-            return self.source.strip() + '\n'
-        header = match.group(0)
-        body = self.header_re.sub('', self.source)
-        source = self.process_directives(header, body)
+        if match:
+            self.source_header = match.group(0)
+            self.source_body = self.header_re.sub('', self.source)
+        else:
+            self.source_header = ''
+            self.source_body = self.source
+
+    def process(self):
+        if not self.source_header:
+            return self.source_body.strip() + '\n'
+        source = self.process_directives()
         return '\n\n'.join(source).strip() + '\n'
 
-    def process_directives(self, header, self_body):
+    def process_directives(self):
         body = []
         directive_linenos = []
         has_require_self = False
-        for lineno, args in self.parse_directives(header):
+        for lineno, args in self.parse_directives(self.source_header):
             try:
                 if args[0] == 'require':
                     self.process_require_directive(args[1:], lineno, body)
@@ -53,8 +60,7 @@ class DirectivesProcessor(BaseProcessor):
                     self.process_require_directory_directive(
                         args[1:], lineno, body)
                 elif args[0] == 'require_self':
-                    self.process_require_self_directive(
-                        args[1:], lineno, body, self_body)
+                    self.process_require_self_directive(args[1:], lineno, body)
                     has_require_self = True
                 else:
                     raise InvalidDirective(
@@ -65,12 +71,12 @@ class DirectivesProcessor(BaseProcessor):
             else:
                 directive_linenos.append(lineno)
         if not has_require_self:
-            body.append(self_body.strip())
-        header = self.strip_header(header, directive_linenos)
+            body.append(self.source_body.strip())
+        header = self.strip_header(directive_linenos)
         return header, '\n\n'.join(body).strip()
 
-    def strip_header(self, header, linenos):
-        header = header.splitlines()
+    def strip_header(self, linenos):
+        header = self.source_header.splitlines()
         for lineno in reversed(linenos):
             del header[lineno]
         return '\n'.join(header).strip()
@@ -95,12 +101,12 @@ class DirectivesProcessor(BaseProcessor):
         asset = self.get_asset(asset_attributes, absolute_path)
         body.append(str(asset).strip())
 
-    def process_require_self_directive(self, args, lineno, body, self_body):
+    def process_require_self_directive(self, args, lineno, body):
         if args:
             raise InvalidDirective(
                 "%s (%s): 'require_self' directive requires no arguments."
                 % (self.path, lineno))
-        body.append(self_body.strip())
+        body.append(self.source_body.strip())
 
     def process_require_directory_directive(self, args, lineno, body):
         if len(args) != 1:
