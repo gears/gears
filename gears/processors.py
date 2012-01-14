@@ -33,32 +33,29 @@ class DirectivesProcessor(BaseProcessor):
         match = self.header_re.match(self.source)
         if match:
             self.source_header = match.group(0)
-            self.source_body = self.header_re.sub('', self.source)
+            self.source_body = self.header_re.sub('', self.source).strip()
         else:
             self.source_header = ''
-            self.source_body = self.source
+            self.source_body = self.source.strip()
+        self.preassets = []
+        self.postassets = []
+        self.process_directives()
 
     def process(self):
-        if not self.source_header:
-            return self.source_body.strip() + '\n'
-        source = self.process_directives()
-        return source + '\n'
+        source = [str(asset).strip() for asset in self.preassets]
+        source.append(self.source_body)
+        source.extend(str(asset).strip() for asset in self.postassets)
+        return '\n\n'.join(source) + '\n'
 
     def process_directives(self):
-        preassets = []
-        postassets = []
-        assets = preassets
+        assets = self.preassets
         for args in self.parse_directives(self.source_header):
             if args[0] == 'require' and len(args) == 2:
                 self.process_require_directive(args[1], assets)
             elif args[0] == 'require_directory' and len(args) == 2:
                 self.process_require_directory_directive(args[1], assets)
             elif args[0] == 'require_self' and len(args) == 1:
-                assets = postassets
-        source = [str(asset).strip() for asset in preassets]
-        source.append(self.source_body.strip())
-        source.extend(str(asset).strip() for asset in postassets)
-        return '\n\n'.join(source).strip()
+                assets = self.postassets
 
     def parse_directives(self, header):
         for line in header.splitlines():
