@@ -6,7 +6,7 @@ from gears.asset_attributes import AssetAttributes
 from gears.assets import Asset
 from gears.environment import Environment
 from gears.exceptions import FileNotFound
-from gears.processors import DirectivesProcessor, InvalidDirective
+from gears.processors import DirectivesProcessor
 
 from mock import Mock, patch, sentinel
 from unittest2 import TestCase
@@ -65,10 +65,10 @@ class DirectiveProcessorTests(TestCase):
             ' * =require "footer"',
             ' */')))
         self.assertEqual(list(directives), [
-            (1, ['require_self']),
-            (2, ['require', 'header']),
-            (3, ['require', 'body']),
-            (4, ['require', 'footer'])])
+            ['require_self'],
+            ['require', 'header'],
+            ['require', 'body'],
+            ['require', 'footer']])
 
     def test_parse_slash_commend(self):
         processor = self.create_processor('js/script.js')
@@ -76,8 +76,8 @@ class DirectiveProcessorTests(TestCase):
             '//= require "file with whitespaces"',
             '// =require another_file')))
         self.assertEqual(list(directives), [
-            (0, ['require', 'file with whitespaces']),
-            (1, ['require', 'another_file'])])
+            ['require', 'file with whitespaces'],
+            ['require', 'another_file']])
 
     def test_parse_dash_comment(self):
         processor = self.create_processor('js/script.js.coffee')
@@ -85,19 +85,14 @@ class DirectiveProcessorTests(TestCase):
             '#= require models',
             '# =require views')))
         self.assertEqual(list(directives), [
-            (0, ['require', 'models']),
-            (1, ['require', 'views'])])
+            ['require', 'models'],
+            ['require', 'views']])
 
     def test_process_require_self_directive(self):
         body = []
         processor = self.create_processor('js/script.js', 'self_body\n')
-        processor.process_require_self_directive([], 1, body)
+        processor.process_require_self_directive([], body)
         self.assertEqual(body, ['self_body'])
-
-    def test_process_require_self_directive_with_args(self):
-        processor = self.create_processor('js/script.js')
-        with self.assertRaises(InvalidDirective):
-            processor.process_require_self_directive(['app'], 1, [])
 
     def test_process_require_directive(self):
         processor = self.create_processor('js/script.js')
@@ -108,28 +103,11 @@ class DirectiveProcessorTests(TestCase):
             return_value='asset_body\n')
 
         body = []
-        processor.process_require_directive(['app'], 1, body)
+        processor.process_require_directive(['app'], body)
         processor.find.assert_called_once_with('app')
         processor.get_asset.assert_called_once_with(
             sentinel.asset_attributes, sentinel.absolute_path)
         self.assertEqual(body, ['asset_body'])
-
-    def test_process_require_directive_if_not_found(self):
-
-        def find(require_path):
-            raise FileNotFound(require_path)
-
-        processor = self.create_processor('js/script.js')
-        processor.find = Mock(side_effect=find)
-        with self.assertRaises(InvalidDirective):
-            processor.process_require_directive(['app'], 1, [])
-
-    def test_process_require_directive_if_invalid_args(self):
-        processor = self.create_processor('js/script.js')
-        with self.assertRaises(InvalidDirective):
-            processor.process_require_directive([], 1, [])
-        with self.assertRaises(InvalidDirective):
-            processor.process_require_directive(['app', 'models'], 1, [])
 
     def test_process_require_directory_directive(self):
 
@@ -147,7 +125,7 @@ class DirectiveProcessorTests(TestCase):
         self.environment.list = Mock(side_effect=list)
 
         body = []
-        processor.process_require_directory_directive(['templates'], 1, body)
+        processor.process_require_directory_directive(['templates'], body)
         self.environment.list.assert_called_once_with('js/templates', ['.js'])
         self.assertEqual(body, ['js/templates/a.js.handlebars',
                                 'js/templates/b.js.handlebars',
@@ -155,17 +133,17 @@ class DirectiveProcessorTests(TestCase):
 
     def test_process_directives(self):
 
-        def process_require_directive(args, lineno, body):
+        def process_require_directive(args, body):
             body.append('%s.js' % args[0])
 
-        def process_require_self_directive(args, lineno, body):
+        def process_require_self_directive(args, body):
             body.append('self body')
 
         processor = self.create_processor('js/script.js')
         processor.parse_directives = Mock(return_value=[
-            (0, ['require_self']),
-            (1, ['require', 'models']),
-            (2, ['require', 'views'])])
+            ['require_self'],
+            ['require', 'models'],
+            ['require', 'views']])
         processor.process_require_directive = Mock(
             side_effect=process_require_directive)
         processor.process_require_self_directive = Mock(
@@ -178,16 +156,16 @@ class DirectiveProcessorTests(TestCase):
 
     def test_process_directives_if_has_no_require_self(self):
 
-        def process_require_directive(args, lineno, body):
+        def process_require_directive(args, body):
             body.append('%s.js' % args[0])
 
-        def process_require_self_directive(args, lineno, body, self_body):
-            body.append(self_body)
+        def process_require_self_directive(args, body):
+            body.append('self body')
 
         processor = self.create_processor('js/script.js')
         processor.parse_directives = Mock(return_value=[
-            (1, ['require', 'models']),
-            (2, ['require', 'views'])])
+            ['require', 'models'],
+            ['require', 'views']])
         processor.process_require_directive = Mock(
             side_effect=process_require_directive)
         processor.process_require_self_directive = Mock(
