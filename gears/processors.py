@@ -52,8 +52,8 @@ class DirectivesProcessor(BaseProcessor):
                 self.process_require_directive(args[1:], body)
             elif args[0] == 'require_directory':
                 self.process_require_directory_directive(args[1:], body)
-            elif args[0] == 'require_self':
-                self.process_require_self_directive(args[1:], body)
+            elif args[0] == 'require_self' and len(args) == 1:
+                body.append(self.source_body.strip())
                 has_require_self = True
         if not has_require_self:
             body.append(self.source_body.strip())
@@ -74,11 +74,6 @@ class DirectivesProcessor(BaseProcessor):
             return
         asset = self.get_asset(asset_attributes, absolute_path)
         body.append(str(asset).strip())
-
-    def process_require_self_directive(self, args, body):
-        if args:
-            return
-        body.append(self.source_body.strip())
 
     def process_require_directory_directive(self, args, body):
         if len(args) != 1:

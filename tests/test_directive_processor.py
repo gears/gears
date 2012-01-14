@@ -88,12 +88,6 @@ class DirectiveProcessorTests(TestCase):
             ['require', 'models'],
             ['require', 'views']])
 
-    def test_process_require_self_directive(self):
-        body = []
-        processor = self.create_processor('js/script.js', 'self_body\n')
-        processor.process_require_self_directive([], body)
-        self.assertEqual(body, ['self_body'])
-
     def test_process_require_directive(self):
         processor = self.create_processor('js/script.js')
         processor.find = Mock(
@@ -136,9 +130,6 @@ class DirectiveProcessorTests(TestCase):
         def process_require_directive(args, body):
             body.append('%s.js' % args[0])
 
-        def process_require_self_directive(args, body):
-            body.append('self body')
-
         processor = self.create_processor('js/script.js')
         processor.parse_directives = Mock(return_value=[
             ['require_self'],
@@ -146,8 +137,6 @@ class DirectiveProcessorTests(TestCase):
             ['require', 'views']])
         processor.process_require_directive = Mock(
             side_effect=process_require_directive)
-        processor.process_require_self_directive = Mock(
-            side_effect=process_require_self_directive)
         processor.source_header = sentinel.header
         processor.source_body = 'self body'
 
@@ -159,17 +148,12 @@ class DirectiveProcessorTests(TestCase):
         def process_require_directive(args, body):
             body.append('%s.js' % args[0])
 
-        def process_require_self_directive(args, body):
-            body.append('self body')
-
         processor = self.create_processor('js/script.js')
         processor.parse_directives = Mock(return_value=[
             ['require', 'models'],
             ['require', 'views']])
         processor.process_require_directive = Mock(
             side_effect=process_require_directive)
-        processor.process_require_self_directive = Mock(
-            side_effect=process_require_self_directive)
         processor.source_header = sentinel.header
         processor.source_body = 'self body'
 
