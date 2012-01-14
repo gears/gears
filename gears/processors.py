@@ -45,19 +45,20 @@ class DirectivesProcessor(BaseProcessor):
         return source + '\n'
 
     def process_directives(self):
-        body = []
-        has_require_self = False
+        preassets = []
+        postassets = []
+        assets = preassets
         for args in self.parse_directives(self.source_header):
             if args[0] == 'require' and len(args) == 2:
-                self.process_require_directive(args[1], body)
+                self.process_require_directive(args[1], assets)
             elif args[0] == 'require_directory' and len(args) == 2:
-                self.process_require_directory_directive(args[1], body)
+                self.process_require_directory_directive(args[1], assets)
             elif args[0] == 'require_self' and len(args) == 1:
-                body.append(self.source_body.strip())
-                has_require_self = True
-        if not has_require_self:
-            body.append(self.source_body.strip())
-        return '\n\n'.join(body).strip()
+                assets = postassets
+        source = [str(asset).strip() for asset in preassets]
+        source.append(self.source_body.strip())
+        source.extend(str(asset).strip() for asset in postassets)
+        return '\n\n'.join(source).strip()
 
     def parse_directives(self, header):
         for line in header.splitlines():
@@ -65,20 +66,18 @@ class DirectivesProcessor(BaseProcessor):
             if match:
                 yield shlex.split(match.group(1))
 
-    def process_require_directive(self, path, body):
+    def process_require_directive(self, path, assets):
         try:
             asset_attributes, absolute_path = self.find(path)
         except FileNotFound:
             return
-        asset = self.get_asset(asset_attributes, absolute_path)
-        body.append(str(asset).strip())
+        assets.append(self.get_asset(asset_attributes, absolute_path))
 
-    def process_require_directory_directive(self, path, body):
+    def process_require_directory_directive(self, path, assets):
         path = self.get_relative_path(path, is_directory=True)
         list = self.environment.list(path, self.asset_attributes.suffix)
         for asset_attributes, absolute_path in sorted(list, key=lambda x: x[0].path):
-            asset = self.get_asset(asset_attributes, absolute_path)
-            body.append(str(asset).strip())
+            assets.append(self.get_asset(asset_attributes, absolute_path))
 
     def find(self, require_path):
         require_path = self.get_relative_path(require_path)

@@ -93,15 +93,13 @@ class DirectiveProcessorTests(TestCase):
         processor.find = Mock(
             return_value=(sentinel.asset_attributes, sentinel.absolute_path))
         processor.get_asset = Mock()
-        processor.get_asset.return_value.__str__ = Mock(
-            return_value='asset_body\n')
 
         body = []
         processor.process_require_directive('app', body)
         processor.find.assert_called_once_with('app')
         processor.get_asset.assert_called_once_with(
             sentinel.asset_attributes, sentinel.absolute_path)
-        self.assertEqual(body, ['asset_body'])
+        self.assertEqual(body, [processor.get_asset.return_value])
 
     def test_process_require_directory_directive(self):
 
