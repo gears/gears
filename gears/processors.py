@@ -48,10 +48,10 @@ class DirectivesProcessor(BaseProcessor):
         body = []
         has_require_self = False
         for args in self.parse_directives(self.source_header):
-            if args[0] == 'require':
-                self.process_require_directive(args[1:], body)
-            elif args[0] == 'require_directory':
-                self.process_require_directory_directive(args[1:], body)
+            if args[0] == 'require' and len(args) == 2:
+                self.process_require_directive(args[1], body)
+            elif args[0] == 'require_directory' and len(args) == 2:
+                self.process_require_directory_directive(args[1], body)
             elif args[0] == 'require_self' and len(args) == 1:
                 body.append(self.source_body.strip())
                 has_require_self = True
@@ -65,20 +65,16 @@ class DirectivesProcessor(BaseProcessor):
             if match:
                 yield shlex.split(match.group(1))
 
-    def process_require_directive(self, args, body):
-        if len(args) != 1:
-            return
+    def process_require_directive(self, path, body):
         try:
-            asset_attributes, absolute_path = self.find(args[0])
+            asset_attributes, absolute_path = self.find(path)
         except FileNotFound:
             return
         asset = self.get_asset(asset_attributes, absolute_path)
         body.append(str(asset).strip())
 
-    def process_require_directory_directive(self, args, body):
-        if len(args) != 1:
-            return
-        path = self.get_relative_path(args[0], is_directory=True)
+    def process_require_directory_directive(self, path, body):
+        path = self.get_relative_path(path, is_directory=True)
         list = self.environment.list(path, self.asset_attributes.suffix)
         for asset_attributes, absolute_path in sorted(list, key=lambda x: x[0].path):
             asset = self.get_asset(asset_attributes, absolute_path)

@@ -97,7 +97,7 @@ class DirectiveProcessorTests(TestCase):
             return_value='asset_body\n')
 
         body = []
-        processor.process_require_directive(['app'], body)
+        processor.process_require_directive('app', body)
         processor.find.assert_called_once_with('app')
         processor.get_asset.assert_called_once_with(
             sentinel.asset_attributes, sentinel.absolute_path)
@@ -119,7 +119,7 @@ class DirectiveProcessorTests(TestCase):
         self.environment.list = Mock(side_effect=list)
 
         body = []
-        processor.process_require_directory_directive(['templates'], body)
+        processor.process_require_directory_directive('templates', body)
         self.environment.list.assert_called_once_with('js/templates', ['.js'])
         self.assertEqual(body, ['js/templates/a.js.handlebars',
                                 'js/templates/b.js.handlebars',
@@ -127,8 +127,8 @@ class DirectiveProcessorTests(TestCase):
 
     def test_process_directives(self):
 
-        def process_require_directive(args, body):
-            body.append('%s.js' % args[0])
+        def process_require_directive(path, body):
+            body.append('%s.js' % path)
 
         processor = self.create_processor('js/script.js')
         processor.parse_directives = Mock(return_value=[
@@ -145,8 +145,8 @@ class DirectiveProcessorTests(TestCase):
 
     def test_process_directives_if_has_no_require_self(self):
 
-        def process_require_directive(args, body):
-            body.append('%s.js' % args[0])
+        def process_require_directive(path, body):
+            body.append('%s.js' % path)
 
         processor = self.create_processor('js/script.js')
         processor.parse_directives = Mock(return_value=[
