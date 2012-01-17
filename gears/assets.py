@@ -1,6 +1,7 @@
 from __future__ import with_statement
 
 from .asset_attributes import AssetAttributes
+from .call_stack import CallStack
 from .exceptions import FileNotFound
 
 
@@ -14,7 +15,7 @@ class BaseAsset(object):
         self.attributes = attributes
         self.absolute_path = absolute_path
         self.context = context or {}
-        self.calls = calls if calls is not None else set()
+        self.calls = calls if calls is not None else CallStack()
         if self.absolute_path in self.calls:
             raise AssetAlreadyUsed(
                 'Asset %r already used earlier.' % absolute_path)
@@ -23,8 +24,18 @@ class BaseAsset(object):
     def get_source(self):
         raise NotImplementedError()
 
+    def get_cached_source(self):
+        cache = self.attributes.environment.cache
+        if not cache.is_modified(self.absolute_path):
+            return cache.get_source(self.absolute_path)
+        self.calls.push()
+        source = self.get_source()
+        dependencies = self.calls.pop()
+        cache(self.absolute_path, source, dependencies)
+        return source
+
     def __str__(self):
-        return self.get_source()
+        return self.get_cached_source()
 
 
 class Asset(BaseAsset):
@@ -65,4 +76,4 @@ def build_asset(environment, path):
     asset_attributes, absolute_path = environment.find(asset_attributes, True)
     if asset_attributes.is_static:
         return StaticAsset(asset_attributes, absolute_path)
-    return Asset(asset_attributes, absolute_path, calls=set())
+    return Asset(asset_attributes, absolute_path, calls=CallStack())

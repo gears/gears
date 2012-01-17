@@ -4,6 +4,7 @@ import os
 
 from .asset_attributes import AssetAttributes
 from .assets import build_asset
+from .cache import Cache
 from .engines import (
     CoffeeScriptEngine, HandlebarsEngine, LessEngine, StylusEngine)
 from .exceptions import FileNotFound
@@ -126,6 +127,7 @@ class Environment(object):
 
     def __init__(self, root):
         self.root = root
+        self.cache = Cache()
         self.finders = Finders()
         self.engines = Engines()
         self.mimetypes = MIMETypes()
