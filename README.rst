@@ -53,6 +53,8 @@ Features
   * SASS - ``.css.sass``;
   * SCSS - ``.css.scss``.
 
+* Caching
+
 Installation
 ------------
 
