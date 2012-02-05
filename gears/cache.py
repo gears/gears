@@ -24,10 +24,14 @@ def path_mtime(path):
 class Cache(dict):
 
     def __call__(self, absolute_path, source, dependencies=None):
-        self[absolute_path] = {'dependencies': tuple(dependencies or ()),
-                               'hexdigest': path_hexdigest(absolute_path),
-                               'mtime': path_mtime(absolute_path),
-                               'source': source}
+        try:
+            self[absolute_path] = {
+                'dependencies': tuple(dependencies or ()),
+                'hexdigest': path_hexdigest(absolute_path),
+                'mtime': path_mtime(absolute_path),
+                'source': source}
+        except IOError:
+            pass
 
     def is_cached(self, absolute_path):
         return absolute_path in self
