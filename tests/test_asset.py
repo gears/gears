@@ -69,7 +69,6 @@ class BuildAssetTests(TestCase):
 
     def setUp(self):
         self.environment = Environment('static')
-        self.environment.public_assets.register('js/script.js')
 
     def test_if_asset_is_static(self):
         asset_attributes = Mock()
@@ -103,7 +102,3 @@ class BuildAssetTests(TestCase):
         self.environment.find = Mock(side_effect=find)
         with self.assertRaises(FileNotFound):
             build_asset(self.environment, 'js/script.js')
-
-    def test_if_asset_is_not_public(self):
-        with self.assertRaises(FileNotFound):
-            build_asset(self.environment, 'js/app.js')

@@ -70,8 +70,6 @@ class StaticAsset(BaseAsset):
 
 
 def build_asset(environment, path):
-    if path not in environment.public_assets:
-        raise FileNotFound(path)
     asset_attributes = AssetAttributes(environment, path)
     asset_attributes, absolute_path = environment.find(asset_attributes, True)
     if asset_attributes.is_static:
