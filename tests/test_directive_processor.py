@@ -55,39 +55,6 @@ class DirectiveProcessorTests(TestCase):
             self.assertEqual(asset_attributes.path, 'js/app.js.coffee')
             self.assertIs(asset_attributes.environment, self.environment)
 
-    def test_parse_multiline_comment(self):
-        processor = self.create_processor('js/script.js')
-        directives = processor.parse_directives('\n'.join((
-            '/*',
-            ' * =require_self',
-            ' *= require header',
-            ' * =require body',
-            ' * =require "footer"',
-            ' */')))
-        self.assertEqual(list(directives), [
-            ['require_self'],
-            ['require', 'header'],
-            ['require', 'body'],
-            ['require', 'footer']])
-
-    def test_parse_slash_commend(self):
-        processor = self.create_processor('js/script.js')
-        directives = processor.parse_directives('\n'.join((
-            '//= require "file with whitespaces"',
-            '// =require another_file')))
-        self.assertEqual(list(directives), [
-            ['require', 'file with whitespaces'],
-            ['require', 'another_file']])
-
-    def test_parse_dash_comment(self):
-        processor = self.create_processor('js/script.js.coffee')
-        directives = processor.parse_directives('\n'.join((
-            '#= require models',
-            '# =require views')))
-        self.assertEqual(list(directives), [
-            ['require', 'models'],
-            ['require', 'views']])
-
     def test_process_require_directive(self):
         processor = self.create_processor('js/script.js')
         processor.find = Mock(

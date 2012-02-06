@@ -6,6 +6,7 @@ import shlex
 
 from .asset_attributes import AssetAttributes
 from .assets import Asset
+from .directives_parser import DirectivesParser
 from .exceptions import FileNotFound
 
 
@@ -30,38 +31,27 @@ class DirectivesProcessor(BaseProcessor):
 
     def __init__(self, *args, **kwargs):
         super(DirectivesProcessor, self).__init__(*args, **kwargs)
-        match = self.header_re.match(self.source)
-        if match:
-            self.source_header = match.group(0)
-            self.source_body = self.header_re.sub('', self.source).strip()
-        else:
-            self.source_header = ''
-            self.source_body = self.source.strip()
-        self.preassets = []
-        self.postassets = []
+        self.directives, self.source = DirectivesParser().parse(self.source)
         self.process_directives()
 
     def process(self):
         source = [str(asset).strip() for asset in self.preassets]
-        source.append(self.source_body)
+        source.append(self.source.strip())
         source.extend(str(asset).strip() for asset in self.postassets)
         return '\n\n'.join(source) + '\n'
 
     def process_directives(self):
+        self.preassets = []
+        self.postassets = []
         assets = self.preassets
-        for args in self.parse_directives(self.source_header):
+        for directive in self.directives:
+            args = shlex.split(directive)
             if args[0] == 'require' and len(args) == 2:
                 self.process_require_directive(args[1], assets)
             elif args[0] == 'require_directory' and len(args) == 2:
                 self.process_require_directory_directive(args[1], assets)
             elif args[0] == 'require_self' and len(args) == 1:
                 assets = self.postassets
-
-    def parse_directives(self, header):
-        for line in header.splitlines():
-            match = self.directive_re.match(line)
-            if match:
-                yield shlex.split(match.group(1))
 
     def process_require_directive(self, path, assets):
         try:
