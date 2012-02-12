@@ -182,10 +182,6 @@ class Environment(object):
                 return AssetAttributes(self, item), absolute_path
         raise FileNotFound(item)
 
-    def read(self, path, mode='rb'):
-        with open(path, mode) as f:
-            return f.read()
-
     def list(self, path, suffix=None):
         found = set()
         suffixes = self.suffixes.find(*suffix)

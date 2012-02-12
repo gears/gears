@@ -64,10 +64,6 @@ class BaseAsset(object):
     def __repr__(self):
         return '<%s absolute_path=%s>' % (self.__class__.__name__, self.absolute_path)
 
-    @cached_property
-    def source(self):
-        return self.attributes.environment.read(self.absolute_path)
-
 
 class Asset(BaseAsset):
 
@@ -89,7 +85,8 @@ class Asset(BaseAsset):
 
 class StaticAsset(BaseAsset):
 
-    def get_source(self):
+    @cached_property
+    def source(self):
         with open(self.absolute_path, 'rb') as f:
             return f.read()
 
