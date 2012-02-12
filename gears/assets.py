@@ -42,10 +42,9 @@ class Requirements(object):
 
 class BaseAsset(object):
 
-    def __init__(self, attributes, absolute_path, context=None, calls=None):
+    def __init__(self, attributes, absolute_path, calls=None):
         self.attributes = attributes
         self.absolute_path = absolute_path
-        self.context = context or {}
         self.calls = calls if calls is not None else CallStack()
         self.calls.add(self.absolute_path)
         self.requirements = Requirements(self)
@@ -70,12 +69,6 @@ class Asset(BaseAsset):
         self.processed_source = self.source
         for process in self.attributes.processors:
             process(self)
-
-    def get_context(self):
-        context = self.context.copy()
-        context['name'] = self.attributes.path_without_suffix
-        context['absolute_path'] = self.absolute_path
-        return context
 
 
 class StaticAsset(BaseAsset):

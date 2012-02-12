@@ -34,8 +34,9 @@ class ExecEngine(BaseEngine):
             self.executable = executable
 
     def process(self, asset):
+        self.asset = asset
         p = subprocess.Popen(
-            args=self.get_args(asset.get_context()),
+            args=self.get_args(),
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
@@ -44,5 +45,5 @@ class ExecEngine(BaseEngine):
             asset.processed_source = output
         raise EngineProcessFailed(errors)
 
-    def get_args(self, context):
+    def get_args(self):
         return [self.executable] + self.params

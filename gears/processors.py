@@ -72,4 +72,4 @@ class DirectivesProcessor(BaseProcessor):
         return require_path + ''.join(self.asset.attributes.extensions)
 
     def get_asset(self, asset_attributes, absolute_path):
-        return Asset(asset_attributes, absolute_path, self.asset.context, self.asset.calls)
+        return Asset(asset_attributes, absolute_path, self.asset.calls)
