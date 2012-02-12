@@ -1,6 +1,8 @@
 from __future__ import with_statement
 
 import codecs
+import hashlib
+import os
 
 from .asset_attributes import AssetAttributes
 from .utils import cached_property
@@ -69,18 +71,35 @@ class Asset(BaseAsset):
 
     def __init__(self, *args, **kwargs):
         super(Asset, self).__init__(*args, **kwargs)
-        self.requirements = Requirements(self)
-        self.processed_source = self.source
-        for process in self.attributes.processors:
-            process(self)
+        cache = self.attributes.environment.cache
+        if cache.expired(self):
+            self.requirements = Requirements(self)
+            self.processed_source = self.source
+            for process in self.attributes.processors:
+                process(self)
+            cache.set(self)
+        else:
+            self.requirements = cache.get_requirements(self)
+            self.processed_source = cache.get_processed_source(self)
+
+    def __unicode__(self):
+        return u'\n'.join(r.processed_source for r in self.requirements)
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
 
     @cached_property
     def source(self):
         with codecs.open(self.absolute_path, encoding='utf-8') as f:
             return f.read()
 
-    def __unicode__(self):
-        return u'\n'.join(r.processed_source for r in self.requirements)
+    @cached_property
+    def mtime(self):
+        return os.stat(self.absolute_path).st_mtime
+
+    @cached_property
+    def hexdigest(self):
+        return hashlib.sha1(self.source.encode('utf-8')).hexdigest()
 
 
 class StaticAsset(BaseAsset):

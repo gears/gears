@@ -1,61 +1,52 @@
 from __future__ import with_statement
-import hashlib
-import os
+
+from .asset_attributes import AssetAttributes
+from .assets import Requirements, Asset
 
 
-def path_content(path):
-    if os.path.isdir(path):
-        return ', '.join(os.listdir(path))
-    with open(path) as f:
-        return f.read()
+class CachedAsset(object):
+
+    def __init__(self, asset):
+        self.logical_path = asset.attributes.path
+        self.absolute_path = asset.absolute_path
+
+    def get_asset(self, environment):
+        attributes = AssetAttributes(environment, self.logical_path)
+        return Asset(attributes, self.absolute_path)
 
 
-def path_hexdigest(path):
-    return hashlib.sha1(path_content(path)).hexdigest()
+class CachedRequirements(object):
 
+    def __init__(self, asset):
+        self.before = [CachedAsset(r) for r in asset.requirements.before]
+        self.after = [CachedAsset(r) for r in asset.requirements.after]
 
-def path_mtime(path):
-    try:
-        return os.stat(path).st_mtime
-    except OSError:
-        pass
+    def get_requirements(self, asset):
+        environment = asset.attributes.environment
+        requirements = Requirements(asset)
+        requirements.before = [a.get_asset(environment) for a in self.before]
+        requirements.after = [a.get_asset(environment) for a in self.after]
+        return requirements
 
 
 class Cache(dict):
 
-    def __call__(self, absolute_path, source, dependencies=None):
-        try:
-            self[absolute_path] = {
-                'dependencies': tuple(dependencies or ()),
-                'hexdigest': path_hexdigest(absolute_path),
-                'mtime': path_mtime(absolute_path),
-                'source': source}
-        except IOError:
-            pass
+    def expired(self, asset):
+        return (asset.absolute_path not in self or
+                asset.mtime > self[asset.absolute_path]['mtime'] or
+                asset.hexdigest != self[asset.absolute_path]['hexdigest'])
 
-    def is_cached(self, absolute_path):
-        return absolute_path in self
+    def set(self, asset):
+        self[asset.absolute_path] = {
+            'processed_source': asset.processed_source,
+            'requirements': CachedRequirements(asset),
+            'hexdigest': asset.hexdigest,
+            'mtime': asset.mtime,
+        }
 
-    def is_mtime_changed(self, absolute_path):
-        mtime = path_mtime(absolute_path)
-        return not mtime or mtime > self[absolute_path]['mtime']
+    def get_processed_source(self, asset):
+        return self[asset.absolute_path]['processed_source']
 
-    def is_hexdigest_changed(self, absolute_path):
-        hexdigest = path_hexdigest(absolute_path)
-        return hexdigest != self[absolute_path]['hexdigest']
-
-    def is_content_changed(self, absolute_path):
-        return (self.is_mtime_changed(absolute_path) and
-                self.is_hexdigest_changed(absolute_path))
-
-    def are_dependencies_modified(self, absolute_path):
-        dependencies = self[absolute_path]['dependencies']
-        return any(self.is_modified(path) for path in dependencies)
-
-    def is_modified(self, absolute_path):
-        return (not self.is_cached(absolute_path) or
-                self.is_content_changed(absolute_path) or
-                self.are_dependencies_modified(absolute_path))
-
-    def get_source(self, absolute_path):
-        return self[absolute_path]['source']
+    def get_requirements(self, asset):
+        cached_requirements = self[asset.absolute_path]['requirements']
+        return cached_requirements.get_requirements(asset)
