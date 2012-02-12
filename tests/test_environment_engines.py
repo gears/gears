@@ -15,12 +15,11 @@ class EnginesTests(TestCase):
 
     def test_register_defaults(self):
         self.engines.register_defaults()
-        self.assertItemsEqual(
-            self.engines, ['.coffee', '.handlebars', '.less', '.styl'])
-        self.assertIsInstance(self.engines['.coffee'], CoffeeScriptEngine)
-        self.assertIsInstance(self.engines['.handlebars'], HandlebarsEngine)
-        self.assertIsInstance(self.engines['.less'], LessEngine)
-        self.assertIsInstance(self.engines['.styl'], StylusEngine)
+        self.assertItemsEqual(self.engines, ['.coffee', '.handlebars', '.less', '.styl'])
+        self.assertIs(self.engines['.coffee'].engine_class, CoffeeScriptEngine)
+        self.assertIs(self.engines['.handlebars'].engine_class, HandlebarsEngine)
+        self.assertIs(self.engines['.less'].engine_class, LessEngine)
+        self.assertIs(self.engines['.styl'].engine_class, StylusEngine)
 
     def test_register(self):
         self.engines.register('.css', self.first_engine)

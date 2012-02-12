@@ -8,6 +8,7 @@ class AssetAttributes(object):
     def __init__(self, environment, path):
         self.environment = environment
         self.path = path
+        self.dirname = os.path.dirname(path)
 
     @cached_property
     def search_paths(self):
@@ -58,11 +59,11 @@ class AssetAttributes(object):
     def postprocessors(self):
         return self.environment.postprocessors.get(self.mimetype)
 
+    @property
+    def processors(self):
+        return self.preprocessors + list(reversed(self.engines)) + self.postprocessors
+
     @cached_property
     def mimetype(self):
         return (self.environment.mimetypes.get(self.format_extension) or
                 'application/octet-stream')
-
-    @property
-    def is_static(self):
-        return not (self.preprocessors or self.engines or self.postprocessors)

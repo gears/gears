@@ -15,6 +15,8 @@ class HandlebarsEngine(ExecEngine):
     result_mimetype = 'application/javascript'
     executable = os.path.join(os.path.dirname(__file__), 'handlebars.js')
 
-    def process(self, source, context):
-        source = super(HandlebarsEngine, self).process(source, context)
-        return SOURCE % {'name': context['name'], 'source': source}
+    def process(self, asset):
+        super(HandlebarsEngine, self).process(asset)
+        asset.processed_source = SOURCE % {
+            'name': asset.attributes.path_without_suffix,
+            'source': asset.processed_source}

@@ -1,92 +1,76 @@
 from __future__ import with_statement
 
 import os
-import re
 import shlex
+from functools import wraps
 
 from .asset_attributes import AssetAttributes
 from .assets import Asset
-from .exceptions import FileNotFound
+from .directives_parser import DirectivesParser
 
 
 class BaseProcessor(object):
 
-    def __init__(self, asset_attributes, source, context, calls):
-        self.asset_attributes = asset_attributes
-        self.environment = asset_attributes.environment
-        self.path = asset_attributes.path
-        self.source = source
-        self.context = context
-        self.calls = calls
+    @classmethod
+    def as_processor(cls, **initkwargs):
+        @wraps(cls, updated=())
+        def processor(asset):
+            instance = processor.processor_class(**initkwargs)
+            return instance.process(asset)
+        processor.processor_class = cls
+        return processor
 
-    def process(self):
+    def process(self, asset):
         raise NotImplementedError()
 
 
 class DirectivesProcessor(BaseProcessor):
 
-    header_re = re.compile(r'^(\s*((/\*.*?\*/)|(//[^\n]*\n?)+))+', re.DOTALL)
-    directive_re = re.compile(r"""^\s*(?:\*|//|#)\s*=\s*(\w+[./'"\s\w-]*)$""")
+    def __init__(self):
+        self.types = {
+            'require': self.process_require_directive,
+            'require_directory': self.process_require_directory_directive,
+            'require_self': self.process_require_self_directive,
+        }
 
-    def __init__(self, *args, **kwargs):
-        super(DirectivesProcessor, self).__init__(*args, **kwargs)
-        match = self.header_re.match(self.source)
-        if match:
-            self.source_header = match.group(0)
-            self.source_body = self.header_re.sub('', self.source).strip()
-        else:
-            self.source_header = ''
-            self.source_body = self.source.strip()
-        self.preassets = []
-        self.postassets = []
+    def process(self, asset):
+        self.asset = asset
+        self.parse()
         self.process_directives()
 
-    def process(self):
-        source = [str(asset).strip() for asset in self.preassets]
-        source.append(self.source_body)
-        source.extend(str(asset).strip() for asset in self.postassets)
-        return '\n\n'.join(source) + '\n'
+    def parse(self):
+        directives, source = DirectivesParser().parse(self.asset.processed_source)
+        self.directives = directives
+        self.asset.processed_source = source
 
     def process_directives(self):
-        assets = self.preassets
-        for args in self.parse_directives(self.source_header):
-            if args[0] == 'require' and len(args) == 2:
-                self.process_require_directive(args[1], assets)
-            elif args[0] == 'require_directory' and len(args) == 2:
-                self.process_require_directory_directive(args[1], assets)
-            elif args[0] == 'require_self' and len(args) == 1:
-                assets = self.postassets
+        for directive in self.directives:
+            args = shlex.split(directive.encode('utf-8'))
+            self.types[args[0]](*args[1:])
 
-    def parse_directives(self, header):
-        for line in header.splitlines():
-            match = self.directive_re.match(line)
-            if match:
-                yield shlex.split(match.group(1))
+    def process_require_directive(self, path):
+        self.asset.requirements.add(self.get_asset(*self.find(path)))
 
-    def process_require_directive(self, path, assets):
-        try:
-            asset_attributes, absolute_path = self.find(path)
-        except FileNotFound:
-            return
-        assets.append(self.get_asset(asset_attributes, absolute_path))
-
-    def process_require_directory_directive(self, path, assets):
+    def process_require_directory_directive(self, path):
         path = self.get_relative_path(path, is_directory=True)
-        list = self.environment.list(path, self.asset_attributes.suffix)
+        list = self.asset.environment.list(path, self.asset.attributes.suffix)
         for asset_attributes, absolute_path in sorted(list, key=lambda x: x[0].path):
-            assets.append(self.get_asset(asset_attributes, absolute_path))
+            self.asset.requirements.add(self.get_asset(asset_attributes, absolute_path))
+
+    def process_require_self_directive(self):
+        self.asset.requirements.add(self.asset)
 
     def find(self, require_path):
         require_path = self.get_relative_path(require_path)
-        asset_attributes = AssetAttributes(self.environment, require_path)
-        return self.environment.find(asset_attributes, True)
+        asset_attributes = AssetAttributes(self.asset.attributes.environment, require_path)
+        return self.asset.attributes.environment.find(asset_attributes, True)
 
     def get_relative_path(self, require_path, is_directory=False):
-        require_path = os.path.join(os.path.dirname(self.path), require_path)
+        require_path = os.path.join(self.asset.attributes.dirname, require_path)
         require_path = os.path.normpath(require_path)
         if is_directory:
             return require_path
-        return require_path + ''.join(self.asset_attributes.extensions)
+        return require_path + ''.join(self.asset.attributes.extensions)
 
     def get_asset(self, asset_attributes, absolute_path):
-        return Asset(asset_attributes, absolute_path, self.context, self.calls)
+        return Asset(asset_attributes, absolute_path, self.asset.calls)
