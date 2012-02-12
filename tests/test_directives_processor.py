@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 import os
 
 from gears.assets import Requirements, Asset
