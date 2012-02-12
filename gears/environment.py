@@ -42,10 +42,10 @@ class Engines(dict):
         super(Engines, self).__init__()
 
     def register_defaults(self):
-        self.register('.coffee', CoffeeScriptEngine())
-        self.register('.handlebars', HandlebarsEngine())
-        self.register('.less', LessEngine())
-        self.register('.styl', StylusEngine())
+        self.register('.coffee', CoffeeScriptEngine.as_engine())
+        self.register('.handlebars', HandlebarsEngine.as_engine())
+        self.register('.less', LessEngine.as_engine())
+        self.register('.styl', StylusEngine.as_engine())
 
     def register(self, extension, engine):
         self[extension] = engine

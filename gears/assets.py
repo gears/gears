@@ -70,8 +70,8 @@ class Asset(BaseAsset):
         self.processed_source = self.source
         for process in self.attributes.preprocessors:
             process(self)
-        for engine in reversed(self.attributes.engines):
-            self.processed_source = engine.process(self.processed_source, self.get_context())
+        for process in reversed(self.attributes.engines):
+            process(self)
         for process in self.attributes.postprocessors:
             process(self)
 
