@@ -1,5 +1,7 @@
 from __future__ import with_statement
 
+import codecs
+
 from .asset_attributes import AssetAttributes
 from .utils import cached_property
 
@@ -75,6 +77,14 @@ class Asset(BaseAsset):
         self.processed_source = self.source
         for process in self.attributes.processors:
             process(self)
+
+    @cached_property
+    def source(self):
+        with codecs.open(self.absolute_path, encoding='utf-8') as f:
+            return f.read()
+
+    def __unicode__(self):
+        return u'\n'.join(r.processed_source for r in self.requirements)
 
 
 class StaticAsset(BaseAsset):

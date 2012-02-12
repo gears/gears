@@ -44,7 +44,8 @@ class DirectivesProcessor(BaseProcessor):
         self.asset.processed_source = source
 
     def process_directives(self):
-        for args in (shlex.split(directive) for directive in self.directives):
+        for directive in self.directives:
+            args = shlex.split(directive.encode('utf-8'))
             self.types[args[0]](*args[1:])
 
     def process_require_directive(self, path):
