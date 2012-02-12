@@ -2,6 +2,7 @@ from __future__ import with_statement
 
 from .asset_attributes import AssetAttributes
 from .call_stack import CallStack
+from .utils import cached_property
 
 
 class AssetAlreadyUsed(Exception):
@@ -47,8 +48,6 @@ class BaseAsset(object):
         self.absolute_path = absolute_path
         self.calls = calls if calls is not None else CallStack()
         self.calls.add(self.absolute_path)
-        self.requirements = Requirements(self)
-        self.source = attributes.environment.read(absolute_path)
 
     def __str__(self):
         return self.source
@@ -56,16 +55,35 @@ class BaseAsset(object):
     def __repr__(self):
         return '<%s absolute_path=%s>' % (self.__class__.__name__, self.absolute_path)
 
+    @cached_property
+    def source(self):
+        return self.attributes.environment.read(self.absolute_path)
+
 
 class Asset(BaseAsset):
 
-    def __init__(self, *args, **kwargs):
-        super(Asset, self).__init__(*args, **kwargs)
-        self.process_source()
+    @property
+    def requirements(self):
+        if not hasattr(self, '_requirements'):
+            self.process()
+        return self._requirements
 
-    def process_source(self):
-        if hasattr(self, 'processed_source'):
-            return self.processed_source
+    @requirements.setter
+    def requirements(self, value):
+        self._requirements = value
+
+    @property
+    def processed_source(self):
+        if not hasattr(self, '_processed_source'):
+            self.process()
+        return self._processed_source
+
+    @processed_source.setter
+    def processed_source(self, value):
+        self._processed_source = value
+
+    def process(self):
+        self.requirements = Requirements(self)
         self.processed_source = self.source
         for process in self.attributes.processors:
             process(self)
