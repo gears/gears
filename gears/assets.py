@@ -69,27 +69,8 @@ class BaseAsset(object):
 
 class Asset(BaseAsset):
 
-    @property
-    def requirements(self):
-        if not hasattr(self, '_requirements'):
-            self.process()
-        return self._requirements
-
-    @requirements.setter
-    def requirements(self, value):
-        self._requirements = value
-
-    @property
-    def processed_source(self):
-        if not hasattr(self, '_processed_source'):
-            self.process()
-        return self._processed_source
-
-    @processed_source.setter
-    def processed_source(self, value):
-        self._processed_source = value
-
-    def process(self):
+    def __init__(self, *args, **kwargs):
+        super(Asset, self).__init__(*args, **kwargs)
         self.requirements = Requirements(self)
         self.processed_source = self.source
         for process in self.attributes.processors:
