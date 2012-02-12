@@ -68,11 +68,7 @@ class Asset(BaseAsset):
         if hasattr(self, 'processed_source'):
             return self.processed_source
         self.processed_source = self.source
-        for process in self.attributes.preprocessors:
-            process(self)
-        for process in reversed(self.attributes.engines):
-            process(self)
-        for process in self.attributes.postprocessors:
+        for process in self.attributes.processors:
             process(self)
 
     def get_context(self):
@@ -92,6 +88,6 @@ class StaticAsset(BaseAsset):
 def build_asset(environment, path):
     asset_attributes = AssetAttributes(environment, path)
     asset_attributes, absolute_path = environment.find(asset_attributes, True)
-    if asset_attributes.is_static:
+    if not asset_attributes.processors:
         return StaticAsset(asset_attributes, absolute_path)
     return Asset(asset_attributes, absolute_path, calls=CallStack())
