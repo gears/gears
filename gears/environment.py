@@ -9,7 +9,6 @@ from .engines import (
     CoffeeScriptEngine, HandlebarsEngine, LessEngine, StylusEngine)
 from .exceptions import FileNotFound
 from .processors import DirectivesProcessor
-from .utils import first, first_or_none
 
 
 class Finders(list):
@@ -73,8 +72,8 @@ class Processors(dict):
 class Preprocessors(Processors):
 
     def register_defaults(self):
-        self.register('text/css', DirectivesProcessor)
-        self.register('application/javascript', DirectivesProcessor)
+        self.register('text/css', DirectivesProcessor.as_processor())
+        self.register('application/javascript', DirectivesProcessor.as_processor())
 
 
 class Postprocessors(Processors):
@@ -183,6 +182,10 @@ class Environment(object):
                 return AssetAttributes(self, item), absolute_path
         raise FileNotFound(item)
 
+    def read(self, path, mode='rb'):
+        with open(path, mode) as f:
+            return f.read()
+
     def list(self, path, suffix=None):
         found = set()
         suffixes = self.suffixes.find(*suffix)
@@ -208,6 +211,6 @@ class Environment(object):
         if not os.path.exists(path):
             os.makedirs(path)
         elif not os.path.isdir(path):
-            raise ISError("%s exists and is not a directory." % path)
+            raise OSError("%s exists and is not a directory." % path)
         with open(filename, 'w') as f:
             f.write(source)

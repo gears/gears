@@ -1,0 +1,2 @@
+//= require models
+//= require views

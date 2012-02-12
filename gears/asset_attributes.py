@@ -8,6 +8,7 @@ class AssetAttributes(object):
     def __init__(self, environment, path):
         self.environment = environment
         self.path = path
+        self.dirname = os.path.dirname(path)
 
     @cached_property
     def search_paths(self):

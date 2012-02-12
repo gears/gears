@@ -2,11 +2,42 @@ from __future__ import with_statement
 
 from .asset_attributes import AssetAttributes
 from .call_stack import CallStack
-from .exceptions import FileNotFound
 
 
 class AssetAlreadyUsed(Exception):
     pass
+
+
+class Requirements(object):
+
+    def __init__(self, asset):
+        self.current = self.before = []
+        self.after = []
+        self.asset = asset
+
+    def __iter__(self):
+        yielded = set()
+        for asset in self.before:
+            for requirement in asset.requirements:
+                if requirement.absolute_path not in yielded:
+                    yield requirement
+                    yielded.add(requirement.absolute_path)
+        yield self.asset
+        yielded.add(self.asset.absolute_path)
+        for asset in self.after:
+            for requirement in asset.requirements:
+                if requirement.absolute_path not in yielded:
+                    yield requirement
+                    yielded.add(requirement.absolute_path)
+
+    def __repr__(self):
+        return '<Requirements before=%r after=%r>' % (self.before, self.after)
+
+    def add(self, asset):
+        if asset is self.asset:
+            self.current = self.after
+        else:
+            self.current.append(asset)
 
 
 class BaseAsset(object):
@@ -16,44 +47,33 @@ class BaseAsset(object):
         self.absolute_path = absolute_path
         self.context = context or {}
         self.calls = calls if calls is not None else CallStack()
-        if self.absolute_path in self.calls:
-            raise AssetAlreadyUsed(
-                'Asset %r already used earlier.' % absolute_path)
         self.calls.add(self.absolute_path)
-
-    def get_source(self):
-        raise NotImplementedError()
-
-    def get_cached_source(self):
-        cache = self.attributes.environment.cache
-        if not cache.is_modified(self.absolute_path):
-            return cache.get_source(self.absolute_path)
-        self.calls.push()
-        source = self.get_source()
-        dependencies = self.calls.pop()
-        cache(self.absolute_path, source, dependencies)
-        return source
+        self.requirements = Requirements(self)
+        self.source = attributes.environment.read(absolute_path)
 
     def __str__(self):
-        return self.get_cached_source()
+        return self.source
+
+    def __repr__(self):
+        return '<%s absolute_path=%s>' % (self.__class__.__name__, self.absolute_path)
 
 
 class Asset(BaseAsset):
 
-    def get_source(self):
-        with open(self.absolute_path, 'rb') as f:
-            source = f.read()
-        for processor_class in self.attributes.preprocessors:
-            processor = processor_class(
-                self.attributes, source, self.context, self.calls)
-            source = processor.process()
+    def __init__(self, *args, **kwargs):
+        super(Asset, self).__init__(*args, **kwargs)
+        self.process_source()
+
+    def process_source(self):
+        if hasattr(self, 'processed_source'):
+            return self.processed_source
+        self.processed_source = self.source
+        for process in self.attributes.preprocessors:
+            process(self)
         for engine in reversed(self.attributes.engines):
-            source = engine.process(source, self.get_context())
-        for processor_class in self.attributes.postprocessors:
-            processor = processor_class(
-                self.attributes, source, self.context, self.calls)
-            source = processor.process()
-        return source
+            self.processed_source = engine.process(self.processed_source, self.get_context())
+        for process in self.attributes.postprocessors:
+            process(self)
 
     def get_context(self):
         context = self.context.copy()
