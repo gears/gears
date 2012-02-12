@@ -15,8 +15,9 @@ class BaseProcessor(object):
     def as_processor(cls, **initkwargs):
         @wraps(cls, updated=())
         def processor(asset):
-            instance = cls(**initkwargs)
+            instance = processor.processor_class(**initkwargs)
             return instance.process(asset)
+        processor.processor_class = cls
         return processor
 
     def process(self, asset):
