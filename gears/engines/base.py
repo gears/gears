@@ -40,10 +40,10 @@ class ExecEngine(BaseEngine):
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
-        output, errors = p.communicate(input=asset.processed_source)
+        output, errors = p.communicate(input=asset.processed_source.encode('utf-8'))
         if p.returncode != 0:
             raise EngineProcessFailed(errors)
-        asset.processed_source = output
+        asset.processed_source = output.decode('utf-8')
 
     def get_args(self):
         return [self.executable] + self.params
