@@ -26,9 +26,7 @@ class BaseProcessor(object):
 
 class DirectivesProcessor(BaseProcessor):
 
-    def __init__(self, parser=None, asset_class=None):
-        self.parser = parser or DirectivesParser()
-        self.asset_class = asset_class or Asset
+    def __init__(self):
         self.types = {
             'require': self.process_require_directive,
             'require_directory': self.process_require_directory_directive,
@@ -41,7 +39,7 @@ class DirectivesProcessor(BaseProcessor):
         self.process_directives()
 
     def parse(self):
-        directives, source = self.parser.parse(self.asset.processed_source)
+        directives, source = DirectivesParser().parse(self.asset.processed_source)
         self.directives = directives
         self.asset.processed_source = source
 
@@ -74,5 +72,4 @@ class DirectivesProcessor(BaseProcessor):
         return require_path + ''.join(self.asset.attributes.extensions)
 
     def get_asset(self, asset_attributes, absolute_path):
-        return self.asset_class(asset_attributes, absolute_path,
-                                self.asset.context, self.asset.calls)
+        return Asset(asset_attributes, absolute_path, self.asset.context, self.asset.calls)
