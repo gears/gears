@@ -66,6 +66,9 @@ class DirectivesParserTests(TestCase):
             'require views',
         ])
 
+    def test_skips_non_header_comments(self):
+        self.check_asset('non_header_comments', ['require jquery'])
+
 
 class DirectivesParserHeaderPatternTests(TestCase):
 
