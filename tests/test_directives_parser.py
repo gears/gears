@@ -56,6 +56,19 @@ class DirectivesParserTests(TestCase):
             'require_tree .',
         ])
 
+    def test_handle_multiple_comments(self):
+        self.check_asset('multiple_comments', [
+            'require jquery',
+            'require underscore',
+            'require backbone',
+            'require models',
+            'require collections',
+            'require views',
+        ])
+
+    def test_skips_non_header_comments(self):
+        self.check_asset('non_header_comments', ['require jquery'])
+
 
 class DirectivesParserHeaderPatternTests(TestCase):
 
