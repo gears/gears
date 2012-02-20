@@ -24,6 +24,10 @@ class AssetAttributes(object):
             return self.path[:-len(''.join(self.suffix))]
         return self.path
 
+    @property
+    def logical_path(self):
+        return self.path_without_suffix + self.format_extension
+
     @cached_property
     def extensions(self):
         return re.findall(r'\.[^.]+', os.path.basename(self.path))

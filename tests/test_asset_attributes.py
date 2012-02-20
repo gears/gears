@@ -39,6 +39,18 @@ class AssetAttributesTests(TestCase):
         self.environment.mimetypes.register('.js', 'application/javascript')
         check('js/app.min.js.coffee', 'js/app.min')
 
+    def test_logical_path(self):
+        self.environment.mimetypes.register('.js', 'application/javascript')
+
+        def check(path, expected_result):
+            logical_path = self.create_attributes(path).logical_path
+            self.assertEqual(logical_path, expected_result)
+
+        check('js/script.js', 'js/script.js')
+        check('js/script.js.coffee', 'js/script.js')
+        check('js/script.min.js', 'js/script.min.js')
+        check('js/script.min.js.coffee', 'js/script.min.js')
+
     def test_search_paths(self):
         self.environment.mimetypes.register('.js', 'application/javascript')
 
