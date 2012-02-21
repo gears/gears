@@ -83,7 +83,7 @@ class Asset(BaseAsset):
             self.processed_source = cache.get_processed_source(self)
 
     def __unicode__(self):
-        return u'\n'.join(r.processed_source for r in self.requirements)
+        return self.bundled_source
 
     def __str__(self):
         return unicode(self).encode('utf-8')
@@ -92,6 +92,10 @@ class Asset(BaseAsset):
     def source(self):
         with codecs.open(self.absolute_path, encoding='utf-8') as f:
             return f.read()
+
+    @cached_property
+    def bundled_source(self):
+        return u'\n'.join(r.processed_source for r in self.requirements)
 
     @cached_property
     def mtime(self):
