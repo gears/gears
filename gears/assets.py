@@ -30,6 +30,26 @@ class Requirements(object):
     def __repr__(self):
         return '<Requirements before=%r after=%r>' % (self.before, self.after)
 
+    @classmethod
+    def from_dict(cls, asset, data):
+        self = cls(asset)
+        for absolute_path, logical_path in data['before']:
+            self.add(self._asset_from_paths(absolute_path, logical_path))
+        self.add(asset)
+        for absolute_path, logical_path in data['after']:
+            self.add(self._asset_from_paths(absolute_path, logical_path))
+        return self
+
+    def add(self, asset):
+        if asset is self.asset:
+            self.current = self.after
+        else:
+            self.current.append(asset)
+
+    def to_dict(self):
+        return {'before': [self._paths_from_asset(asset) for asset in self.before],
+                'after': [self._paths_from_asset(asset) for asset in self.after]}
+
     def _iter_requirements(self, assets):
         for asset in assets:
             for requirement in asset.requirements:
@@ -45,11 +65,12 @@ class Requirements(object):
     def _iter_unique(self):
         return unique(self._iter_all(), key=lambda asset: asset.absolute_path)
 
-    def add(self, asset):
-        if asset is self.asset:
-            self.current = self.after
-        else:
-            self.current.append(asset)
+    def _asset_from_paths(self, absolute_path, logical_path):
+        attributes = AssetAttributes(self.asset.attributes.environment, logical_path)
+        return Asset(attributes, absolute_path)
+
+    def _paths_from_asset(self, asset):
+        return (asset.absolute_path, asset.attributes.path)
 
 
 class BaseAsset(object):
@@ -74,16 +95,14 @@ class Asset(BaseAsset):
 
     def __init__(self, *args, **kwargs):
         super(Asset, self).__init__(*args, **kwargs)
-        cache = self.attributes.environment.cache
-        if cache.expired(self):
+        if self.expired:
             self.requirements = Requirements(self)
             self.processed_source = self.source
             for process in self.attributes.processors:
                 process(self)
-            cache.set(self)
+            self.attributes.environment.cache.set(self)
         else:
-            self.requirements = cache.get_requirements(self)
-            self.processed_source = cache.get_processed_source(self)
+            self._init_from_cache()
 
     def __unicode__(self):
         return self.bundled_source
@@ -107,6 +126,25 @@ class Asset(BaseAsset):
     @cached_property
     def hexdigest(self):
         return hashlib.sha1(self.source.encode('utf-8')).hexdigest()
+
+    @cached_property
+    def expired(self):
+        data = self.attributes.environment.cache.get(self)
+        return (data is None or
+                self.mtime > data['mtime'] or
+                self.hexdigest > data['hexdigest'])
+
+    def to_dict(self):
+        return {'processed_source': self.processed_source,
+                'requirements': self.requirements.to_dict(),
+                'hexdigest': self.hexdigest,
+                'mtime': self.mtime}
+
+    def _init_from_cache(self):
+        data = self.attributes.environment.cache.get(self)
+        self.requirements = Requirements.from_dict(self, data['requirements'])
+        self.processed_source = data['processed_source']
+
 
 
 class StaticAsset(BaseAsset):
