@@ -5,7 +5,7 @@ import hashlib
 import os
 
 from .asset_attributes import AssetAttributes
-from .utils import cached_property
+from .utils import cached_property, unique
 
 
 class CircularDependencyError(Exception):
@@ -25,22 +25,25 @@ class Requirements(object):
         self.asset = asset
 
     def __iter__(self):
-        yielded = set()
-        for asset in self.before:
-            for requirement in asset.requirements:
-                if requirement.absolute_path not in yielded:
-                    yield requirement
-                    yielded.add(requirement.absolute_path)
-        yield self.asset
-        yielded.add(self.asset.absolute_path)
-        for asset in self.after:
-            for requirement in asset.requirements:
-                if requirement.absolute_path not in yielded:
-                    yield requirement
-                    yielded.add(requirement.absolute_path)
+        return self._iter_unique()
 
     def __repr__(self):
         return '<Requirements before=%r after=%r>' % (self.before, self.after)
+
+    def _iter_requirements(self, assets):
+        for asset in assets:
+            for requirement in asset.requirements:
+                yield requirement
+
+    def _iter_all(self):
+        for requirement in self._iter_requirements(self.before):
+            yield requirement
+        yield self.asset
+        for requirement in self._iter_requirements(self.after):
+            yield requirement
+
+    def _iter_unique(self):
+        return unique(self._iter_all(), key=lambda asset: asset.absolute_path)
 
     def add(self, asset):
         if asset is self.asset:

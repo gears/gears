@@ -30,3 +30,12 @@ def safe_join(base, *paths):
     if not path.startswith(base):
         raise ValueError("Path %r is outside of %r" % (path, base))
     return path
+
+
+def unique(iterable, key=lambda x: x):
+    yielded = set()
+    for item in iterable:
+        keyitem = key(item)
+        if keyitem not in yielded:
+            yielded.add(keyitem)
+            yield item
