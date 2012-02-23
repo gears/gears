@@ -40,6 +40,11 @@ class Requirements(object):
             self.add(self._asset_from_paths(absolute_path, logical_path))
         return self
 
+    @cached_property
+    def expired(self):
+        return (any(asset.bundle_expired for asset in self.before) or 
+                any(asset.bundle_expired for asset in self.after))
+
     def add(self, asset):
         if asset is self.asset:
             self.current = self.after
@@ -133,6 +138,10 @@ class Asset(BaseAsset):
         return (data is None or
                 self.mtime > data['mtime'] or
                 self.hexdigest > data['hexdigest'])
+
+    @cached_property
+    def bundle_expired(self):
+        return self.expired or self.requirements.expired
 
     def to_dict(self):
         return {'processed_source': self.processed_source,
