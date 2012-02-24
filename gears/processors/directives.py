@@ -1,27 +1,11 @@
-from __future__ import with_statement
-
 import os
 import shlex
 from functools import wraps
 
-from .asset_attributes import AssetAttributes
-from .assets import Asset
-from .directives_parser import DirectivesParser
-
-
-class BaseProcessor(object):
-
-    @classmethod
-    def as_processor(cls, **initkwargs):
-        @wraps(cls, updated=())
-        def processor(asset):
-            instance = processor.processor_class(**initkwargs)
-            return instance.process(asset)
-        processor.processor_class = cls
-        return processor
-
-    def process(self, asset):
-        raise NotImplementedError()
+from .base import BaseProcessor
+from ..asset_attributes import AssetAttributes
+from ..assets import Asset
+from ..directives_parser import DirectivesParser
 
 
 class DirectivesProcessor(BaseProcessor):
