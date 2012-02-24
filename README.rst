@@ -4,7 +4,7 @@ Gears
 Gears is a library to compile and concatenate JavaScript and CSS assets, highly
 inspired by Ruby's Sprockets_. It includes support for writing scripts, styles
 and client templates using CoffeeScript_, Handlebars_, Stylus_, Less_, SASS_
-and SCSS_. New compiler engines can be also easily added.
+and SCSS_. New compilers can be also easily added.
 
 There is also an app for Django called django-gears_ that integrates Gears
 into Django project. You can read more on the project page.
@@ -41,7 +41,7 @@ Features
 
 * Writing client templates using Handlebars.
 
-* The list of compiler engines for the asset is specified with asset
+* The list of compilers for the asset is specified with asset
   extensions appended to the original extension. E.g., for the asset
   named ``js/app.js.coffee`` CoffeeScript compiler will be used. Here are
   extensions for the supported compilers:
@@ -63,7 +63,7 @@ repository using pip::
 
     pip install -e https://github.com/trilan/gears#egg=Gears
 
-If you want to use compiler engines you need to install other dependencies:
+If you want to use compilers you need to install other dependencies:
 
 * ``coffee-script``, ``handlebars``, ``stylus``, ``less`` node.js modules for
   CoffeeScript, Handlebars, Stylus, Less support respectively;

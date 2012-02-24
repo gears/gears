@@ -35,8 +35,8 @@ class AssetAttributes(object):
     @cached_property
     def format_extension(self):
         for extension in reversed(self.extensions):
-            engine = self.environment.engines.get(extension)
-            if not engine and self.environment.mimetypes.get(extension):
+            compiler = self.environment.compilers.get(extension)
+            if not compiler and self.environment.mimetypes.get(extension):
                 return extension
 
     @cached_property
@@ -48,12 +48,12 @@ class AssetAttributes(object):
         return self.extensions[index:]
 
     @cached_property
-    def engine_extensions(self):
-        return [e for e in self.suffix[1:] if self.environment.engines.get(e)]
+    def compiler_extensions(self):
+        return [e for e in self.suffix[1:] if self.environment.compilers.get(e)]
 
     @cached_property
-    def engines(self):
-        return [self.environment.engines.get(e) for e in self.engine_extensions]
+    def compilers(self):
+        return [self.environment.compilers.get(e) for e in self.compiler_extensions]
 
     @property
     def preprocessors(self):
@@ -65,7 +65,7 @@ class AssetAttributes(object):
 
     @property
     def processors(self):
-        return self.preprocessors + list(reversed(self.engines)) + self.postprocessors
+        return self.preprocessors + list(reversed(self.compilers)) + self.postprocessors
 
     @property
     def compressor(self):

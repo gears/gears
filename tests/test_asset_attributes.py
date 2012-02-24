@@ -66,7 +66,7 @@ class AssetAttributesTests(TestCase):
     def test_format_extension(self):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
-        self.environment.engines.register('.coffee', Mock())
+        self.environment.compilers.register('.coffee', Mock())
 
         def check(path, expected_result):
             format_extension = self.create_attributes(path).format_extension
@@ -82,7 +82,7 @@ class AssetAttributesTests(TestCase):
     def test_suffix(self):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
-        self.environment.engines.register('.coffee', Mock())
+        self.environment.compilers.register('.coffee', Mock())
 
         def check(path, expected_result):
             suffix = self.create_attributes(path).suffix
@@ -94,43 +94,43 @@ class AssetAttributesTests(TestCase):
         check('js/script.js.min.coffee', ['.js', '.min', '.coffee'])
         check('readme', [])
 
-    def test_engine_extensions(self):
+    def test_compiler_extensions(self):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
-        self.environment.engines.register('.coffee', Mock())
-        self.environment.engines.register('.tmpl', Mock())
+        self.environment.compilers.register('.coffee', Mock())
+        self.environment.compilers.register('.tmpl', Mock())
 
         def check(path, expected_result):
-            engine_extensions = self.create_attributes(path).engine_extensions
-            self.assertEqual(engine_extensions, expected_result)
+            compiler_extensions = self.create_attributes(path).compiler_extensions
+            self.assertEqual(compiler_extensions, expected_result)
 
         check('js/script.js', [])
         check('js/script.js.coffee', ['.coffee'])
         check('js/script.js.coffee.tmpl', ['.coffee', '.tmpl'])
         check('js/hot.coffee.js.tmpl', ['.tmpl'])
 
-    def test_engines(self):
-        coffee_engine = Mock()
-        template_engine = Mock()
+    def test_compilers(self):
+        coffee_compiler = Mock()
+        template_compiler = Mock()
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
-        self.environment.engines.register('.coffee', coffee_engine)
-        self.environment.engines.register('.tmpl', template_engine)
+        self.environment.compilers.register('.coffee', coffee_compiler)
+        self.environment.compilers.register('.tmpl', template_compiler)
 
         def check(path, expected_result):
-            engines = self.create_attributes(path).engines
-            self.assertEqual(engines, expected_result)
+            compilers = self.create_attributes(path).compilers
+            self.assertEqual(compilers, expected_result)
 
         check('js/script.js', [])
-        check('js/script.js.coffee', [coffee_engine])
-        check('js/script.js.coffee.tmpl', [coffee_engine, template_engine])
-        check('js/hot.coffee.js.tmpl', [template_engine])
+        check('js/script.js.coffee', [coffee_compiler])
+        check('js/script.js.coffee.tmpl', [coffee_compiler, template_compiler])
+        check('js/hot.coffee.js.tmpl', [template_compiler])
 
     def test_mimetype(self):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
-        self.environment.engines.register('.coffee', Mock())
-        self.environment.engines.register('.styl', Mock())
+        self.environment.compilers.register('.coffee', Mock())
+        self.environment.compilers.register('.styl', Mock())
 
         def check(path, expected_result):
             mimetype = self.create_attributes(path).mimetype

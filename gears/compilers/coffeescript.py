@@ -1,8 +1,8 @@
 import os
-from .base import ExecEngine
+from .base import ExecCompiler
 
 
-class CoffeeScriptEngine(ExecEngine):
+class CoffeeScriptCompiler(ExecCompiler):
 
     result_mimetype = 'application/javascript'
     executable = 'node'

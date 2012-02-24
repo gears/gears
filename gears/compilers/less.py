@@ -1,8 +1,8 @@
 import os
-from .base import ExecEngine
+from .base import ExecCompiler
 
 
-class LessEngine(ExecEngine):
+class LessCompiler(ExecCompiler):
 
     result_mimetype = 'text/css'
     executable = 'node'

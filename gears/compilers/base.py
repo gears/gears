@@ -2,29 +2,29 @@ import subprocess
 from functools import wraps
 
 
-class EngineProcessFailed(Exception):
+class CompilerFailed(Exception):
     pass
 
 
-class BaseEngine(object):
+class BaseCompiler(object):
 
     result_mimetype = None
 
     @classmethod
-    def as_engine(cls, **initkwargs):
+    def as_compiler(cls, **initkwargs):
         @wraps(cls, updated=())
-        def engine(asset):
-            instance = engine.engine_class(**initkwargs)
+        def compiler(asset):
+            instance = compiler.compiler_class(**initkwargs)
             return instance.process(asset)
-        engine.engine_class = cls
-        engine.result_mimetype = cls.result_mimetype
-        return engine
+        compiler.compiler_class = cls
+        compiler.result_mimetype = cls.result_mimetype
+        return compiler
 
     def process(self, asset):
         raise NotImplementedError()
 
 
-class ExecEngine(BaseEngine):
+class ExecCompiler(BaseCompiler):
 
     executable = None
     params = []
@@ -42,7 +42,7 @@ class ExecEngine(BaseEngine):
             stderr=subprocess.PIPE)
         output, errors = p.communicate(input=asset.processed_source.encode('utf-8'))
         if p.returncode != 0:
-            raise EngineProcessFailed(errors)
+            raise CompilerFailed(errors)
         asset.processed_source = output.decode('utf-8')
 
     def get_args(self):

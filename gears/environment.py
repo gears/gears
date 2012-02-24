@@ -5,8 +5,8 @@ import os
 from .asset_attributes import AssetAttributes
 from .assets import build_asset
 from .cache import Cache
-from .engines import (
-    CoffeeScriptEngine, HandlebarsEngine, LessEngine, StylusEngine)
+from .compilers import (
+    CoffeeScriptCompiler, HandlebarsCompiler, LessCompiler, StylusCompiler)
 from .exceptions import FileNotFound
 from .processors import DirectivesProcessor
 
@@ -36,19 +36,19 @@ class MIMETypes(dict):
             del self[extension]
 
 
-class Engines(dict):
+class Compilers(dict):
 
     def __init__(self):
-        super(Engines, self).__init__()
+        super(Compilers, self).__init__()
 
     def register_defaults(self):
-        self.register('.coffee', CoffeeScriptEngine.as_engine())
-        self.register('.handlebars', HandlebarsEngine.as_engine())
-        self.register('.less', LessEngine.as_engine())
-        self.register('.styl', StylusEngine.as_engine())
+        self.register('.coffee', CoffeeScriptCompiler.as_compiler())
+        self.register('.handlebars', HandlebarsCompiler.as_compiler())
+        self.register('.less', LessCompiler.as_compiler())
+        self.register('.styl', StylusCompiler.as_compiler())
 
-    def register(self, extension, engine):
-        self[extension] = engine
+    def register(self, extension, compiler):
+        self[extension] = compiler
 
     def unregister(self, extension):
         if extension in self:
@@ -138,7 +138,7 @@ class Environment(object):
         self.root = root
         self.cache = Cache()
         self.finders = Finders()
-        self.engines = Engines()
+        self.compilers = Compilers()
         self.mimetypes = MIMETypes()
         self.compressors = Compressors()
         self.public_assets = PublicAssets()
@@ -151,13 +151,13 @@ class Environment(object):
             suffixes = Suffixes()
             for extension, mimetype in self.mimetypes.items():
                 suffixes.register(extension, root=True, mimetype=mimetype)
-            for extension, engine in self.engines.items():
-                suffixes.register(extension, to=engine.result_mimetype)
+            for extension, compiler in self.compilers.items():
+                suffixes.register(extension, to=compiler.result_mimetype)
             self._suffixes = suffixes
         return self._suffixes
 
     def register_defaults(self):
-        self.engines.register_defaults()
+        self.compilers.register_defaults()
         self.mimetypes.register_defaults()
         self.public_assets.register_defaults()
         self.preprocessors.register_defaults()
