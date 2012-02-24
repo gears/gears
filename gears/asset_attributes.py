@@ -67,6 +67,10 @@ class AssetAttributes(object):
     def processors(self):
         return self.preprocessors + list(reversed(self.engines)) + self.postprocessors
 
+    @property
+    def compressor(self):
+        return self.environment.compressors.get(self.mimetype)
+
     @cached_property
     def mimetype(self):
         return (self.environment.mimetypes.get(self.format_extension) or

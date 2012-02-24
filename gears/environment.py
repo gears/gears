@@ -80,6 +80,16 @@ class Postprocessors(Processors):
     pass
 
 
+class Compressors(dict):
+
+    def register(self, mimetype, compressor):
+        self[mimetype] = compressor
+
+    def unregister(self, mimetype):
+        if mimetype in self:
+            del self[mimetype]
+
+
 class PublicAssets(list):
 
     def register_defaults(self):
@@ -130,6 +140,7 @@ class Environment(object):
         self.finders = Finders()
         self.engines = Engines()
         self.mimetypes = MIMETypes()
+        self.compressors = Compressors()
         self.public_assets = PublicAssets()
         self.preprocessors = Preprocessors()
         self.postprocessors = Postprocessors()

@@ -110,7 +110,7 @@ class Asset(BaseAsset):
             self._init_from_cache()
 
     def __unicode__(self):
-        return self.bundled_source
+        return self.compressed_source
 
     def __str__(self):
         return unicode(self).encode('utf-8')
@@ -122,7 +122,24 @@ class Asset(BaseAsset):
 
     @cached_property
     def bundled_source(self):
-        return u'\n'.join(r.processed_source for r in self.requirements)
+        data = self.attributes.environment.cache.get(self)
+        if not self.bundle_expired and 'bundled_source' in data:
+            return data['bundled_source']
+        bundled_source = u'\n'.join(r.processed_source for r in self.requirements)
+        data['bundled_source'] = bundled_source
+        return bundled_source
+
+    @cached_property
+    def compressed_source(self):
+        data = self.attributes.environment.cache.get(self)
+        if not self.bundle_expired and 'compressed_source' in data:
+            return data['compressed_source']
+        compressed_source = self.bundled_source
+        compress = self.attributes.compressor
+        if compress:
+            compressed_source = compress(self.bundled_source)
+        data['compressed_source'] = compressed_source
+        return compressed_source
 
     @cached_property
     def mtime(self):
