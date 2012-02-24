@@ -54,8 +54,8 @@ class PreprocessorsTests(TestCase):
         self.preprocessors.register_defaults()
         self.assertItemsEqual(self.preprocessors.keys(), ['text/css', 'application/javascript'])
         self.assertEqual(
-            [p.processor_class for p in self.preprocessors['text/css']],
+            [p.handler_class for p in self.preprocessors['text/css']],
             [DirectivesProcessor])
         self.assertEqual(
-            [p.processor_class for p in self.preprocessors['application/javascript']],
+            [p.handler_class for p in self.preprocessors['application/javascript']],
             [DirectivesProcessor])

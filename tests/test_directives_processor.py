@@ -42,16 +42,16 @@ class DirectivesProcessorTests(TestCase):
 
     def test_fills_asset_requirements(self):
         asset = self.get_asset('requirements')
-        DirectivesProcessor.as_processor()(asset)
+        DirectivesProcessor.as_handler()(asset)
         self.check_paths(asset.requirements.before, ['js/external.js'])
         self.check_paths(asset.requirements.after, ['js/models.js', 'js/views.js'])
 
     def test_modifies_processed_source(self):
         asset = self.get_asset('requirements')
-        DirectivesProcessor.as_processor()(asset)
+        DirectivesProcessor.as_handler()(asset)
         self.assertEqual(asset.processed_source, self.get_output_source('requirements'))
 
     def test_requires_asset_only_once(self):
         asset = self.get_asset('require_multiple_times')
-        DirectivesProcessor.as_processor()(asset)
+        DirectivesProcessor.as_handler()(asset)
         self.check_paths(list(asset.requirements), 'external.js models.js views.js source.js'.split())

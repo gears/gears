@@ -17,7 +17,7 @@ class DirectivesProcessor(BaseProcessor):
             'require_self': self.process_require_self_directive,
         }
 
-    def process(self, asset):
+    def __call__(self, asset):
         self.asset = asset
         self.parse()
         self.process_directives()

@@ -42,10 +42,10 @@ class Compilers(dict):
         super(Compilers, self).__init__()
 
     def register_defaults(self):
-        self.register('.coffee', CoffeeScriptCompiler.as_compiler())
-        self.register('.handlebars', HandlebarsCompiler.as_compiler())
-        self.register('.less', LessCompiler.as_compiler())
-        self.register('.styl', StylusCompiler.as_compiler())
+        self.register('.coffee', CoffeeScriptCompiler.as_handler())
+        self.register('.handlebars', HandlebarsCompiler.as_handler())
+        self.register('.less', LessCompiler.as_handler())
+        self.register('.styl', StylusCompiler.as_handler())
 
     def register(self, extension, compiler):
         self[extension] = compiler
@@ -72,8 +72,8 @@ class Processors(dict):
 class Preprocessors(Processors):
 
     def register_defaults(self):
-        self.register('text/css', DirectivesProcessor.as_processor())
-        self.register('application/javascript', DirectivesProcessor.as_processor())
+        self.register('text/css', DirectivesProcessor.as_handler())
+        self.register('application/javascript', DirectivesProcessor.as_handler())
 
 
 class Postprocessors(Processors):

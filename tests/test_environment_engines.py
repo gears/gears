@@ -16,10 +16,10 @@ class CompilersTests(TestCase):
     def test_register_defaults(self):
         self.compilers.register_defaults()
         self.assertItemsEqual(self.compilers, ['.coffee', '.handlebars', '.less', '.styl'])
-        self.assertIs(self.compilers['.coffee'].compiler_class, CoffeeScriptCompiler)
-        self.assertIs(self.compilers['.handlebars'].compiler_class, HandlebarsCompiler)
-        self.assertIs(self.compilers['.less'].compiler_class, LessCompiler)
-        self.assertIs(self.compilers['.styl'].compiler_class, StylusCompiler)
+        self.assertIs(self.compilers['.coffee'].handler_class, CoffeeScriptCompiler)
+        self.assertIs(self.compilers['.handlebars'].handler_class, HandlebarsCompiler)
+        self.assertIs(self.compilers['.less'].handler_class, LessCompiler)
+        self.assertIs(self.compilers['.styl'].handler_class, StylusCompiler)
 
     def test_register(self):
         self.compilers.register('.css', self.first_compiler)

@@ -16,8 +16,8 @@ class HandlebarsCompiler(ExecCompiler):
     executable = 'node'
     params = [os.path.join(os.path.dirname(__file__), 'handlebars.js')]
 
-    def process(self, asset):
-        super(HandlebarsCompiler, self).process(asset)
+    def __call__(self, asset):
+        super(HandlebarsCompiler, self).__call__(asset)
         asset.processed_source = SOURCE % {
             'name': asset.attributes.path_without_suffix,
             'source': asset.processed_source}

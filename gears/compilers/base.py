@@ -1,27 +1,20 @@
 import subprocess
-from functools import wraps
+from ..asset_handler import BaseAssetHandler
 
 
 class CompilerFailed(Exception):
     pass
 
 
-class BaseCompiler(object):
+class BaseCompiler(BaseAssetHandler):
 
     result_mimetype = None
 
     @classmethod
-    def as_compiler(cls, **initkwargs):
-        @wraps(cls, updated=())
-        def compiler(asset):
-            instance = compiler.compiler_class(**initkwargs)
-            return instance.process(asset)
-        compiler.compiler_class = cls
-        compiler.result_mimetype = cls.result_mimetype
-        return compiler
-
-    def process(self, asset):
-        raise NotImplementedError()
+    def as_handler(cls, **initkwargs):
+        handler = super(BaseCompiler, cls).as_handler(**initkwargs)
+        handler.result_mimetype = cls.result_mimetype
+        return handler
 
 
 class ExecCompiler(BaseCompiler):
@@ -33,7 +26,7 @@ class ExecCompiler(BaseCompiler):
         if executable is not None:
             self.executable = executable
 
-    def process(self, asset):
+    def __call__(self, asset):
         self.asset = asset
         p = subprocess.Popen(
             args=self.get_args(),

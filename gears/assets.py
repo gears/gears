@@ -137,7 +137,7 @@ class Asset(BaseAsset):
         compressed_source = self.bundled_source
         compress = self.attributes.compressor
         if compress:
-            compressed_source = compress(self.bundled_source)
+            compressed_source = compress(self)
         data['compressed_source'] = compressed_source
         return compressed_source
 
