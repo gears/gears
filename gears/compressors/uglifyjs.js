@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var uglify = require('uglify-js'),
     source = '';
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var stylus = require('stylus'),
     source = '';
 

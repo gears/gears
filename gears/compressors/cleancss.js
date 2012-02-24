@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var cleancss = require('clean-css'),
     source = '';
 

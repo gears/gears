@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var coffee = require('coffee-script'),
     source = '';
 

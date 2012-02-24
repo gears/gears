@@ -5,7 +5,10 @@ from .base import ExecEngine
 class StylusEngine(ExecEngine):
 
     result_mimetype = 'text/css'
-    executable = os.path.join(os.path.dirname(__file__), 'stylus.js')
+    executable = 'node'
+    params = [os.path.join(os.path.dirname(__file__), 'stylus.js')]
 
     def get_args(self):
-        return [self.executable, self.asset.absolute_path]
+        args = super(StylusEngine, self).get_args()
+        args.append(self.asset.absolute_path)
+        return args

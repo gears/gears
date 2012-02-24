@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var less   = require('less'),
     source = '';
 

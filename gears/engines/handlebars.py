@@ -13,7 +13,8 @@ SOURCE = '\n'.join((
 class HandlebarsEngine(ExecEngine):
 
     result_mimetype = 'application/javascript'
-    executable = os.path.join(os.path.dirname(__file__), 'handlebars.js')
+    executable = 'node'
+    params = [os.path.join(os.path.dirname(__file__), 'handlebars.js')]
 
     def process(self, asset):
         super(HandlebarsEngine, self).process(asset)
