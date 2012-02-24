@@ -1,1 +1,2 @@
-from .base import CompressorFailed, BaseCompressor, ExecCompressor
+from .cleancss import CleanCSSCompressor
+from .uglifyjs import UglifyJSCompressor
