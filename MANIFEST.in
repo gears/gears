@@ -3,6 +3,7 @@ include LICENSE
 include README.rst
 
 include gears/engines/*.js
+include gears/compressors/*.js
 
 include tests/*.py
 include tests/assets/js/*.js
