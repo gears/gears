@@ -18,8 +18,7 @@ class ProcessorsTests(TestCase):
         self.processors.register('text/css', self.second_processor)
         self.processors.register('text/plain', self.third_processor)
         self.assertIn('text/css', self.processors)
-        self.assertEqual(self.processors['text/css'],
-                         [self.first_processor, self.second_processor])
+        self.assertEqual(self.processors['text/css'], [self.first_processor, self.second_processor])
         self.assertIn('text/plain', self.processors)
         self.assertEqual(self.processors['text/plain'], [self.third_processor])
 
@@ -40,8 +39,7 @@ class ProcessorsTests(TestCase):
     def test_get_if_exists(self):
         self.processors.register('text/css', self.first_processor)
         self.processors.register('text/css', self.second_processor)
-        self.assertEqual(self.processors.get('text/css'),
-                         [self.first_processor, self.second_processor])
+        self.assertEqual(self.processors.get('text/css'), [self.first_processor, self.second_processor])
 
     def test_get_if_does_not_exist(self):
         self.assertEqual(self.processors.get('text/css'), [])
@@ -54,8 +52,10 @@ class PreprocessorsTests(TestCase):
 
     def test_register_defaults(self):
         self.preprocessors.register_defaults()
-        self.assertItemsEqual(self.preprocessors.keys(),
-                              ['text/css', 'application/javascript'])
-        self.assertEqual(self.preprocessors['text/css'], [DirectivesProcessor])
-        self.assertEqual(self.preprocessors['application/javascript'],
-                         [DirectivesProcessor])
+        self.assertItemsEqual(self.preprocessors.keys(), ['text/css', 'application/javascript'])
+        self.assertEqual(
+            [p.handler_class for p in self.preprocessors['text/css']],
+            [DirectivesProcessor])
+        self.assertEqual(
+            [p.handler_class for p in self.preprocessors['application/javascript']],
+            [DirectivesProcessor])

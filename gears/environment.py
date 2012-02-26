@@ -5,11 +5,10 @@ import os
 from .asset_attributes import AssetAttributes
 from .assets import build_asset
 from .cache import Cache
-from .engines import (
-    CoffeeScriptEngine, HandlebarsEngine, LessEngine, StylusEngine)
+from .compilers import (
+    CoffeeScriptCompiler, HandlebarsCompiler, LessCompiler, StylusCompiler)
 from .exceptions import FileNotFound
 from .processors import DirectivesProcessor
-from .utils import first, first_or_none
 
 
 class Finders(list):
@@ -37,19 +36,19 @@ class MIMETypes(dict):
             del self[extension]
 
 
-class Engines(dict):
+class Compilers(dict):
 
     def __init__(self):
-        super(Engines, self).__init__()
+        super(Compilers, self).__init__()
 
     def register_defaults(self):
-        self.register('.coffee', CoffeeScriptEngine())
-        self.register('.handlebars', HandlebarsEngine())
-        self.register('.less', LessEngine())
-        self.register('.styl', StylusEngine())
+        self.register('.coffee', CoffeeScriptCompiler.as_handler())
+        self.register('.handlebars', HandlebarsCompiler.as_handler())
+        self.register('.less', LessCompiler.as_handler())
+        self.register('.styl', StylusCompiler.as_handler())
 
-    def register(self, extension, engine):
-        self[extension] = engine
+    def register(self, extension, compiler):
+        self[extension] = compiler
 
     def unregister(self, extension):
         if extension in self:
@@ -73,12 +72,22 @@ class Processors(dict):
 class Preprocessors(Processors):
 
     def register_defaults(self):
-        self.register('text/css', DirectivesProcessor)
-        self.register('application/javascript', DirectivesProcessor)
+        self.register('text/css', DirectivesProcessor.as_handler())
+        self.register('application/javascript', DirectivesProcessor.as_handler())
 
 
 class Postprocessors(Processors):
     pass
+
+
+class Compressors(dict):
+
+    def register(self, mimetype, compressor):
+        self[mimetype] = compressor
+
+    def unregister(self, mimetype):
+        if mimetype in self:
+            del self[mimetype]
 
 
 class PublicAssets(list):
@@ -129,8 +138,9 @@ class Environment(object):
         self.root = root
         self.cache = Cache()
         self.finders = Finders()
-        self.engines = Engines()
+        self.compilers = Compilers()
         self.mimetypes = MIMETypes()
+        self.compressors = Compressors()
         self.public_assets = PublicAssets()
         self.preprocessors = Preprocessors()
         self.postprocessors = Postprocessors()
@@ -141,13 +151,13 @@ class Environment(object):
             suffixes = Suffixes()
             for extension, mimetype in self.mimetypes.items():
                 suffixes.register(extension, root=True, mimetype=mimetype)
-            for extension, engine in self.engines.items():
-                suffixes.register(extension, to=engine.result_mimetype)
+            for extension, compiler in self.compilers.items():
+                suffixes.register(extension, to=compiler.result_mimetype)
             self._suffixes = suffixes
         return self._suffixes
 
     def register_defaults(self):
-        self.engines.register_defaults()
+        self.compilers.register_defaults()
         self.mimetypes.register_defaults()
         self.public_assets.register_defaults()
         self.preprocessors.register_defaults()
@@ -208,6 +218,6 @@ class Environment(object):
         if not os.path.exists(path):
             os.makedirs(path)
         elif not os.path.isdir(path):
-            raise ISError("%s exists and is not a directory." % path)
+            raise OSError("%s exists and is not a directory." % path)
         with open(filename, 'w') as f:
             f.write(source)
