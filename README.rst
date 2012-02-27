@@ -58,10 +58,9 @@ Features
 Installation
 ------------
 
-While there is no stable release of Gears yet, you can install it from this
-repository using pip::
+You can install ``Gears`` using pip::
 
-    pip install -e https://github.com/trilan/gears#egg=Gears
+    $ pip install Gears
 
 If you want to use compilers you need to install other dependencies:
 
@@ -71,6 +70,28 @@ If you want to use compilers you need to install other dependencies:
 
 Usage
 -----
+
+This example compiles public assets (``assets/js/script.js`` and
+``assets/css/style.css`` by default) from ``assets`` directory to ``static``::
+
+    import os
+
+    from gears.environment import Environment
+    from gears.finders import FileSystemFinder
+
+
+    ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
+    ASSETS_DIR = os.path.join(ROOT_DIR, 'assets')
+    STATIC_DIR = os.path.join(ROOT_DIR, 'static')
+
+    os.environ['NODE_PATH'] = os.path.join(ROOT_DIR, 'node_modules')
+
+    env = Environment(STATIC_DIR)
+    env.finders.register(FileSystemFinder([ASSETS_DIR]))
+    env.register_defaults()
+
+    if __name__ == '__main__':
+        env.save()
 
 There is already mentioned django-gears_ app, which you may want to use in
 your Django projects.
