@@ -5,7 +5,7 @@ from .utils import safe_join
 
 class BaseFinder(object):
 
-    def find(self, path, all=False):
+    def find(self, path):
         raise NotImplementedError()
 
 

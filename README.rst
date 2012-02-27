@@ -4,7 +4,7 @@ Gears
 Gears is a library to compile and concatenate JavaScript and CSS assets, highly
 inspired by Ruby's Sprockets_. It includes support for writing scripts, styles
 and client templates using CoffeeScript_, Handlebars_, Stylus_, Less_, SASS_
-and SCSS_. New compiler engines can be also easily added.
+and SCSS_. New compilers can be also easily added.
 
 There is also an app for Django called django-gears_ that integrates Gears
 into Django project. You can read more on the project page.
@@ -41,7 +41,7 @@ Features
 
 * Writing client templates using Handlebars.
 
-* The list of compiler engines for the asset is specified with asset
+* The list of compilers for the asset is specified with asset
   extensions appended to the original extension. E.g., for the asset
   named ``js/app.js.coffee`` CoffeeScript compiler will be used. Here are
   extensions for the supported compilers:
@@ -58,12 +58,11 @@ Features
 Installation
 ------------
 
-While there is no stable release of Gears yet, you can install it from this
-repository using pip::
+You can install ``Gears`` using pip::
 
-    pip install -e https://github.com/trilan/gears#egg=Gears
+    $ pip install Gears
 
-If you want to use compiler engines you need to install other dependencies:
+If you want to use compilers you need to install other dependencies:
 
 * ``coffee-script``, ``handlebars``, ``stylus``, ``less`` node.js modules for
   CoffeeScript, Handlebars, Stylus, Less support respectively;
@@ -71,6 +70,28 @@ If you want to use compiler engines you need to install other dependencies:
 
 Usage
 -----
+
+This example compiles public assets (``assets/js/script.js`` and
+``assets/css/style.css`` by default) from ``assets`` directory to ``static``::
+
+    import os
+
+    from gears.environment import Environment
+    from gears.finders import FileSystemFinder
+
+
+    ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
+    ASSETS_DIR = os.path.join(ROOT_DIR, 'assets')
+    STATIC_DIR = os.path.join(ROOT_DIR, 'static')
+
+    os.environ['NODE_PATH'] = os.path.join(ROOT_DIR, 'node_modules')
+
+    env = Environment(STATIC_DIR)
+    env.finders.register(FileSystemFinder([ASSETS_DIR]))
+    env.register_defaults()
+
+    if __name__ == '__main__':
+        env.save()
 
 There is already mentioned django-gears_ app, which you may want to use in
 your Django projects.

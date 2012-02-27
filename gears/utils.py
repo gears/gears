@@ -32,17 +32,10 @@ def safe_join(base, *paths):
     return path
 
 
-def first(function, iterable):
-    if function is None:
-        function = bool
+def unique(iterable, key=lambda x: x):
+    yielded = set()
     for item in iterable:
-        if function(item):
-            return item
-    raise ValueError('No suitable value found.')
-
-
-def first_or_none(function, iterable):
-    try:
-        return first(function, iterable)
-    except ValueError:
-        pass
+        keyitem = key(item)
+        if keyitem not in yielded:
+            yielded.add(keyitem)
+            yield item

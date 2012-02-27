@@ -17,7 +17,7 @@ ASSETS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets'))
 STATIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static'))
 
 
-class FakeEngine(object):
+class FakeCompiler(object):
 
     def __init__(self, result_mimetype):
         self.result_mimetype = result_mimetype
@@ -50,17 +50,17 @@ class EnvironmentTests(TestCase):
     def test_suffixes(self):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.txt', 'text/plain')
-        self.environment.engines.register('.styl', FakeEngine('text/css'))
+        self.environment.compilers.register('.styl', FakeCompiler('text/css'))
         self.assertItemsEqual(self.environment.suffixes.find(),
                               ['.css', '.css.styl', '.txt'])
 
     def test_register_defaults(self):
-        self.environment.engines = Mock()
+        self.environment.compilers = Mock()
         self.environment.mimetypes = Mock()
         self.environment.public_assets = Mock()
         self.environment.preprocessors = Mock()
         self.environment.register_defaults()
-        self.environment.engines.register_defaults.assert_called_once_with()
+        self.environment.compilers.register_defaults.assert_called_once_with()
         self.environment.mimetypes.register_defaults.assert_called_once_with()
         self.environment.public_assets.register_defaults.assert_called_once_with()
         self.environment.preprocessors.register_defaults.assert_called_once_with()
@@ -72,8 +72,8 @@ class EnvironmentFindTests(TestCase):
         self.environment = Environment(STATIC_DIR)
         self.environment.register_defaults()
         self.environment.finders.register(FakeFinder())
-        self.environment.engines.register(
-            '.coffee', FakeEngine('application/javascript'))
+        self.environment.compilers.register(
+            '.coffee', FakeCompiler('application/javascript'))
 
     def check_asset_attributes(self, attrs, path):
         self.assertIsInstance(attrs, AssetAttributes)
