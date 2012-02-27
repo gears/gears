@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from functools import wraps
+from subprocess import Popen, PIPE
+
+
+class AssetHandlerError(Exception):
+    pass
 
 
 class BaseAssetHandler(object):
@@ -32,3 +37,35 @@ class BaseAssetHandler(object):
             return handler.handler_class(**initkwargs)(asset)
         handler.handler_class = cls
         return handler
+
+
+class ExecMixin(object):
+    """Provides the ability to process asset through external command."""
+
+    #: The name of the executable to run. It must be a command name, if it is
+    #: available in the PATH environment variable, or a path to the executable.
+    executable = None
+
+    #: The list of executable parameters.
+    params = []
+
+    def run(self, input):
+        """Runs :attr:`executable` with ``input`` as stdin.
+        :class:`AssetHandlerError` exception is raised, if execution is failed,
+        otherwise stdout is returned.
+        """
+        p = self.get_process()
+        output, errors = p.communicate(input=input.encode('utf-8'))
+        if p.returncode != 0:
+            raise AssetHandlerError(errors)
+        return output.decode('utf-8')
+
+    def get_process(self):
+        """Returns :class:`subprocess.Popen` instance with args from
+        :meth:`get_args` result and piped stdin, stdout and stderr.
+        """
+        return Popen(self.get_args(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+
+    def get_args(self):
+        """Returns the list of :class:`subprocess.Popen` arguments."""
+        return [self.executable] + self.params
