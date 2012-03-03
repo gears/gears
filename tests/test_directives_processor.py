@@ -35,21 +35,30 @@ class DirectivesProcessorTests(TestCase):
     def get_asset(self, fixture):
         return Asset(*self.get_environment(fixture).find('source.js'))
 
-    def get_output_source(self, fixture):
+    def get_source(self, fixture, filename):
         fixture_path = self.get_fixture_path(fixture)
-        with open(os.path.join(fixture_path, 'output.js')) as f:
+        with open(os.path.join(fixture_path, filename)) as f:
             return f.read()
 
     def test_fills_asset_requirements(self):
         asset = self.get_asset('requirements')
         DirectivesProcessor.as_handler()(asset)
         self.check_paths(asset.requirements.before, ['js/external.js'])
-        self.check_paths(asset.requirements.after, ['js/models.js', 'js/views.js'])
+        self.check_paths(asset.requirements.after,
+                         ['js/libs/simple_lib.js', 'js/libs/usefull_lib.js',
+                          'js/models.js', 'js/views.js'])
 
     def test_modifies_processed_source(self):
         asset = self.get_asset('requirements')
         DirectivesProcessor.as_handler()(asset)
-        self.assertEqual(asset.processed_source, self.get_output_source('requirements'))
+        self.assertEqual(asset.processed_source,
+                         self.get_source('requirements', 'output.js'))
+
+    def test_modifies_bundled_source(self):
+        asset = self.get_asset('requirements')
+        DirectivesProcessor.as_handler()(asset)
+        self.assertEqual(asset.bundled_source,
+                         self.get_source('requirements', 'bundle.js'))
 
     def test_requires_asset_only_once(self):
         asset = self.get_asset('require_multiple_times')
