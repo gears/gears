@@ -1,10 +1,5 @@
-.. Gears documentation master file, created by
-   sphinx-quickstart on Sat Feb 25 20:20:25 2012.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to Gears's documentation!
-=================================
+Gears
+=====
 
 Gears is a library to compile, concatenate and minify JavaScript and CSS
 assets, highly inspired by Ruby's Sprockets_. It includes support for writing
