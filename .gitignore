@@ -3,3 +3,4 @@
 .coverage
 .tox/
 dist/
+docs/_build/
