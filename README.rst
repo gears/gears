@@ -118,4 +118,4 @@ Feel free to fork, send pull requests or report bugs and issues on github.
 
 .. _django-gears: https://github.com/trilan/django-gears
 .. _flask-gears: https://github.com/trilan/flask-gears
-.. _gears-cli: https://github.com/trilan/flask-gears
+.. _gears-cli: https://github.com/trilan/gears-cli

@@ -25,4 +25,4 @@ public repository (Git_ is required)::
 
 .. _django-gears: https://github.com/trilan/django-gears
 .. _flask-gears: https://github.com/trilan/flask-gears
-.. _gears-cli: https://github.com/trilan/flask-gears
+.. _gears-cli: https://github.com/trilan/gears-cli
