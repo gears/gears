@@ -14,13 +14,14 @@ Installing the development version
 ----------------------------------
 
 If you want to work with the latest version of Gears, install it from the
-public repository::
+public repository (Git_ is required)::
 
-    $ pip install -e https://github.com/trilan/gears@develop#egg=Gears
+    $ pip install -e git+https://github.com/trilan/gears@develop#egg=Gears
 
 
 .. _pip: http://www.pip-installer.org/
 .. _virtualenv: http://virtualenv.org/
+.. _Git: http://git-scm.com/
 
 .. _django-gears: https://github.com/trilan/django-gears
 .. _flask-gears: https://github.com/trilan/flask-gears
