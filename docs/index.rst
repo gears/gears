@@ -21,13 +21,6 @@ Contents:
    installation
    api
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
 
 .. _Sprockets: http://getsprockets.org
 .. _CoffeeScript: http://jashkenas.github.com/coffee-script/
