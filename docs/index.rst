@@ -13,7 +13,13 @@ There is also:
 - gears-cli_, a command-line utility that compiles assets. It also can watch
   assets for changes and automaticaly re-compile them.
 
-Contents:
+Source Code
+-----------
+
+Gears code is hosted on GitHub: https://github.com/trilan/gears.
+
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
