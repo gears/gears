@@ -10,7 +10,7 @@ It is strongly recommended to install Gears within activated virtualenv_.
 If you want to use one of available extensions (django-gears_, Flask-Gears_ or
 gears-cli_), please refer to its documentation instead.
 
-Installing the development version
+Installing the Development Version
 ----------------------------------
 
 If you want to work with the latest version of Gears, install it from the
