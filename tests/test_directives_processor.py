@@ -44,23 +44,33 @@ class DirectivesProcessorTests(TestCase):
         asset = self.get_asset('requirements')
         DirectivesProcessor.as_handler()(asset)
         self.check_paths(asset.requirements.before, ['js/external.js'])
-        self.check_paths(asset.requirements.after,
-                         ['js/libs/simple_lib.js', 'js/libs/usefull_lib.js',
-                          'js/models.js', 'js/views.js'])
+        self.check_paths(asset.requirements.after, [
+            'js/libs/simple_lib.js',
+            'js/libs/useful_lib.js',
+            'js/models.js',
+            'js/views.js',
+        ])
 
     def test_modifies_processed_source(self):
         asset = self.get_asset('requirements')
         DirectivesProcessor.as_handler()(asset)
-        self.assertEqual(asset.processed_source,
-                         self.get_source('requirements', 'output.js'))
+        self.assertEqual(
+            asset.processed_source,
+            self.get_source('requirements', 'output.js'),
+        )
 
     def test_modifies_bundled_source(self):
         asset = self.get_asset('requirements')
         DirectivesProcessor.as_handler()(asset)
-        self.assertEqual(asset.bundled_source,
-                         self.get_source('requirements', 'bundle.js'))
+        self.assertEqual(
+            asset.bundled_source,
+            self.get_source('requirements', 'bundle.js'),
+        )
 
     def test_requires_asset_only_once(self):
         asset = self.get_asset('require_multiple_times')
         DirectivesProcessor.as_handler()(asset)
-        self.check_paths(list(asset.requirements), 'external.js models.js views.js source.js'.split())
+        self.check_paths(
+            list(asset.requirements),
+            'external.js models.js views.js source.js'.split(),
+        )

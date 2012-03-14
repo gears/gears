@@ -11,7 +11,7 @@
 
 console.log('simple_lib.js');
 
-console.log('usefull_lib');
+console.log('useful_lib.js');
 
 (function () {
   console.log('application models');
