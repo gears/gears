@@ -1,7 +1,7 @@
 class Cache(dict):
 
-    def set(self, asset):
-        self[asset.absolute_path] = asset.to_dict()
+    def set(self, key, value):
+        self[key] = value
 
-    def get(self, asset):
-        return super(Cache, self).get(asset.absolute_path)
+    def get(self, key):
+        return super(Cache, self).get(key)

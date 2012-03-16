@@ -105,7 +105,7 @@ class Asset(BaseAsset):
             self.processed_source = self.source
             for process in self.attributes.processors:
                 process(self)
-            self.attributes.environment.cache.set(self)
+            self._save_to_cache()
         else:
             self._init_from_cache()
 
@@ -122,7 +122,7 @@ class Asset(BaseAsset):
 
     @cached_property
     def bundled_source(self):
-        data = self.attributes.environment.cache.get(self)
+        data = self.attributes.environment.cache.get(self._get_cache_key())
         if not self.bundle_expired and 'bundled_source' in data:
             return data['bundled_source']
         bundled_source = u'\n'.join(r.processed_source for r in self.requirements)
@@ -131,7 +131,7 @@ class Asset(BaseAsset):
 
     @cached_property
     def compressed_source(self):
-        data = self.attributes.environment.cache.get(self)
+        data = self.attributes.environment.cache.get(self._get_cache_key())
         if not self.bundle_expired and 'compressed_source' in data:
             return data['compressed_source']
         compressed_source = self.bundled_source
@@ -151,7 +151,7 @@ class Asset(BaseAsset):
 
     @cached_property
     def expired(self):
-        data = self.attributes.environment.cache.get(self)
+        data = self.attributes.environment.cache.get(self._get_cache_key())
         return (data is None or
                 self.mtime > data['mtime'] or
                 self.hexdigest > data['hexdigest'])
@@ -167,9 +167,15 @@ class Asset(BaseAsset):
                 'mtime': self.mtime}
 
     def _init_from_cache(self):
-        data = self.attributes.environment.cache.get(self)
+        data = self.attributes.environment.cache.get(self._get_cache_key())
         self.requirements = Requirements.from_dict(self, data['requirements'])
         self.processed_source = data['processed_source']
+
+    def _save_to_cache(self):
+        self.attributes.environment.cache.set(self._get_cache_key(), self.to_dict())
+
+    def _get_cache_key(self):
+        return 'asset:%s' % self.absolute_path
 
 
 class StaticAsset(BaseAsset):
