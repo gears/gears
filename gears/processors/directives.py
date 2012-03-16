@@ -1,6 +1,5 @@
 import os
 import shlex
-from functools import wraps
 
 from .base import BaseProcessor
 from ..asset_attributes import AssetAttributes
