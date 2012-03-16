@@ -61,6 +61,15 @@ Features
 
 * Caching
 
+* Compressing. Supported compressors:
+
+  * SlimIt_ (Python);
+  * cssmin_ (Python);
+  * UglifyJS_ (Node.js);
+  * clean-css_ (Node.js).
+
+  New compilers can be also easily added.
+
 Installation
 ------------
 
@@ -115,6 +124,10 @@ Feel free to fork, send pull requests or report bugs and issues on github.
 .. _Less: http://lesscss.org/
 .. _SASS: http://sass-lang.com/
 .. _SCSS: http://sass-lang.com/
+.. _SlimIt: http://slimit.org/
+.. _cssmin: https://github.com/zacharyvoase/cssmin
+.. _UglifyJS: https://github.com/mishoo/UglifyJS
+.. _clean-css: https://github.com/GoalSmashers/clean-css
 
 .. _django-gears: https://github.com/trilan/django-gears
 .. _flask-gears: https://github.com/trilan/flask-gears
