@@ -42,7 +42,7 @@ class Requirements(object):
 
     @cached_property
     def expired(self):
-        return (any(asset.bundle_expired for asset in self.before) or 
+        return (any(asset.bundle_expired for asset in self.before) or
                 any(asset.bundle_expired for asset in self.after))
 
     def add(self, asset):
@@ -170,7 +170,6 @@ class Asset(BaseAsset):
         data = self.attributes.environment.cache.get(self)
         self.requirements = Requirements.from_dict(self, data['requirements'])
         self.processed_source = data['processed_source']
-
 
 
 class StaticAsset(BaseAsset):
