@@ -39,6 +39,7 @@ class DirectivesProcessor(BaseProcessor):
         list = self.asset.attributes.environment.list(path, self.asset.attributes.suffix)
         for asset_attributes, absolute_path in sorted(list, key=lambda x: x[0].path):
             self.asset.requirements.add(self.get_asset(asset_attributes, absolute_path))
+            self.asset.dependencies.add(os.path.dirname(absolute_path))
 
     def process_require_self_directive(self):
         self.asset.requirements.add(self.asset)
