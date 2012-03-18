@@ -8,8 +8,12 @@ inspired by Ruby's Sprockets_. It includes support for writing scripts, styles
 and client templates using CoffeeScript_, Handlebars_, Stylus_, Less_, SASS_
 and SCSS_. New compilers can be also easily added.
 
-There is also an app for Django called django-gears_ that integrates Gears
-into Django project. You can read more on the project page.
+There is also:
+
+- django-gears_, an app for Django that integrates Gears with Django project;
+- Flask-Gears_, an extension that integrates Gears with Flask application;
+- gears-cli_, a command-line utility that compiles assets. It also can watch
+  assets for changes and automaticaly re-compile them.
 
 Features
 --------
@@ -56,6 +60,15 @@ Features
   * SCSS - ``.css.scss``.
 
 * Caching
+
+* Compressing. Supported compressors:
+
+  * SlimIt_ (Python);
+  * cssmin_ (Python);
+  * UglifyJS_ (Node.js);
+  * clean-css_ (Node.js).
+
+  New compilers can be also easily added.
 
 Installation
 ------------
@@ -111,5 +124,11 @@ Feel free to fork, send pull requests or report bugs and issues on github.
 .. _Less: http://lesscss.org/
 .. _SASS: http://sass-lang.com/
 .. _SCSS: http://sass-lang.com/
+.. _SlimIt: http://slimit.org/
+.. _cssmin: https://github.com/zacharyvoase/cssmin
+.. _UglifyJS: https://github.com/mishoo/UglifyJS
+.. _clean-css: https://github.com/GoalSmashers/clean-css
 
 .. _django-gears: https://github.com/trilan/django-gears
+.. _flask-gears: https://github.com/trilan/flask-gears
+.. _gears-cli: https://github.com/trilan/gears-cli

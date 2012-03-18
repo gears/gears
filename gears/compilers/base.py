@@ -1,13 +1,14 @@
-import subprocess
-from ..asset_handler import BaseAssetHandler
+# -*- coding: utf-8 -*-
 
-
-class CompilerFailed(Exception):
-    pass
+from ..asset_handler import BaseAssetHandler, ExecMixin
 
 
 class BaseCompiler(BaseAssetHandler):
+    """Base class for all asset compilers. Subclass's :meth:`__call__` method
+    must change asset's :attr:`~gears.assets.Asset.processed_source` attribute.
+    """
 
+    #: MIME-type of the asset source code after compiling.
     result_mimetype = None
 
     @classmethod
@@ -17,26 +18,11 @@ class BaseCompiler(BaseAssetHandler):
         return handler
 
 
-class ExecCompiler(BaseCompiler):
-
-    executable = None
-    params = []
+class ExecCompiler(BaseCompiler, ExecMixin):
 
     def __init__(self, executable=None):
         if executable is not None:
             self.executable = executable
 
     def __call__(self, asset):
-        self.asset = asset
-        p = subprocess.Popen(
-            args=self.get_args(),
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-        output, errors = p.communicate(input=asset.processed_source.encode('utf-8'))
-        if p.returncode != 0:
-            raise CompilerFailed(errors)
-        asset.processed_source = output.decode('utf-8')
-
-    def get_args(self):
-        return [self.executable] + self.params
+        asset.processed_source = self.run(asset.processed_source)

@@ -42,7 +42,7 @@ class Requirements(object):
 
     @cached_property
     def expired(self):
-        return (any(asset.bundle_expired for asset in self.before) or 
+        return (any(asset.bundle_expired for asset in self.before) or
                 any(asset.bundle_expired for asset in self.after))
 
     def add(self, asset):
@@ -78,6 +78,79 @@ class Requirements(object):
         return (asset.absolute_path, asset.attributes.path)
 
 
+class Dependency(object):
+
+    def __init__(self, environment, absolute_path):
+        self.environment = environment
+        self.absolute_path = absolute_path
+        if self.expired:
+            self._save_to_cache()
+
+    def __eq__(self, other):
+        return self.absolute_path == other.absolute_path
+
+    def __hash__(self):
+        return hash(self.absolute_path)
+
+    @cached_property
+    def source(self):
+        if os.path.isdir(self.absolute_path):
+            return ', '.join(sorted(os.listdir(self.absolute_path)))
+        with codecs.open(self.absolute_path, encoding='utf-8') as f:
+            return f.read()
+
+    @cached_property
+    def mtime(self):
+        return os.stat(self.absolute_path).st_mtime
+
+    @cached_property
+    def hexdigest(self):
+        return hashlib.sha1(self.source.encode('utf-8')).hexdigest()
+
+    @cached_property
+    def expired(self):
+        data = self.environment.cache.get(self._get_cache_key())
+        return (data is None or
+                self.mtime > data['mtime'] or
+                self.hexdigest > data['hexdigest'])
+
+    def to_dict(self):
+        return {'mtime': self.mtime, 'hexdigest': self.hexdigest}
+
+    def _save_to_cache(self):
+        self.environment.cache.set(self._get_cache_key(), self.to_dict())
+
+    def _get_cache_key(self):
+        return 'dependency:%s' % self.absolute_path
+
+
+class Dependencies(object):
+
+    def __init__(self, environment):
+        self.environment = environment
+        self._registry = set()
+
+    @classmethod
+    def from_list(cls, environment, data):
+        self = cls(environment)
+        for absolute_path in data:
+            self.add(absolute_path)
+        return self
+
+    @cached_property
+    def expired(self):
+        return any(d.expired for d in self._registry)
+
+    def add(self, absolute_path):
+        self._registry.add(Dependency(self.environment, absolute_path))
+
+    def clear(self):
+        self._registry.clear()
+
+    def to_list(self):
+        return [d.absolute_path for d in self._registry]
+
+
 class BaseAsset(object):
 
     def __init__(self, attributes, absolute_path, calls=None):
@@ -101,11 +174,12 @@ class Asset(BaseAsset):
     def __init__(self, *args, **kwargs):
         super(Asset, self).__init__(*args, **kwargs)
         if self.expired:
+            self.dependencies.clear()
             self.requirements = Requirements(self)
             self.processed_source = self.source
             for process in self.attributes.processors:
                 process(self)
-            self.attributes.environment.cache.set(self)
+            self._save_to_cache()
         else:
             self._init_from_cache()
 
@@ -115,6 +189,17 @@ class Asset(BaseAsset):
     def __str__(self):
         return unicode(self).encode('utf-8')
 
+    @property
+    def cached_data(self):
+        return self.attributes.environment.cache.get(self._get_cache_key())
+
+    @cached_property
+    def dependencies(self):
+        if self.cached_data:
+            data = self.cached_data['dependencies']
+            return Dependencies.from_list(self.attributes.environment, data)
+        return Dependencies(self.attributes.environment)
+
     @cached_property
     def source(self):
         with codecs.open(self.absolute_path, encoding='utf-8') as f:
@@ -122,23 +207,21 @@ class Asset(BaseAsset):
 
     @cached_property
     def bundled_source(self):
-        data = self.attributes.environment.cache.get(self)
-        if not self.bundle_expired and 'bundled_source' in data:
-            return data['bundled_source']
+        if not self.bundle_expired and 'bundled_source' in self.cached_data:
+            return self.cached_data['bundled_source']
         bundled_source = u'\n'.join(r.processed_source for r in self.requirements)
-        data['bundled_source'] = bundled_source
+        self.cached_data['bundled_source'] = bundled_source
         return bundled_source
 
     @cached_property
     def compressed_source(self):
-        data = self.attributes.environment.cache.get(self)
-        if not self.bundle_expired and 'compressed_source' in data:
-            return data['compressed_source']
+        if not self.bundle_expired and 'compressed_source' in self.cached_data:
+            return self.cached_data['compressed_source']
         compressed_source = self.bundled_source
         compress = self.attributes.compressor
         if compress:
             compressed_source = compress(self)
-        data['compressed_source'] = compressed_source
+        self.cached_data['compressed_source'] = compressed_source
         return compressed_source
 
     @cached_property
@@ -151,10 +234,10 @@ class Asset(BaseAsset):
 
     @cached_property
     def expired(self):
-        data = self.attributes.environment.cache.get(self)
-        return (data is None or
-                self.mtime > data['mtime'] or
-                self.hexdigest > data['hexdigest'])
+        return (self.cached_data is None or
+                self.mtime > self.cached_data['mtime'] or
+                self.hexdigest > self.cached_data['hexdigest'] or
+                self.dependencies.expired)
 
     @cached_property
     def bundle_expired(self):
@@ -163,14 +246,22 @@ class Asset(BaseAsset):
     def to_dict(self):
         return {'processed_source': self.processed_source,
                 'requirements': self.requirements.to_dict(),
+                'dependencies': self.dependencies.to_list(),
                 'hexdigest': self.hexdigest,
                 'mtime': self.mtime}
 
     def _init_from_cache(self):
-        data = self.attributes.environment.cache.get(self)
-        self.requirements = Requirements.from_dict(self, data['requirements'])
-        self.processed_source = data['processed_source']
+        self.dependencies = Dependencies.from_list(
+            self.attributes.environment,
+            self.cached_data['dependencies'])
+        self.requirements = Requirements.from_dict(self, self.cached_data['requirements'])
+        self.processed_source = self.cached_data['processed_source']
 
+    def _save_to_cache(self):
+        self.attributes.environment.cache.set(self._get_cache_key(), self.to_dict())
+
+    def _get_cache_key(self):
+        return 'asset:%s' % self.absolute_path
 
 
 class StaticAsset(BaseAsset):
