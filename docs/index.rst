@@ -27,6 +27,7 @@ Contents
    about
    installation
    api
+   changelog
 
 
 .. _Sprockets: http://getsprockets.org
