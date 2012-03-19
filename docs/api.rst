@@ -3,6 +3,38 @@
 API
 ===
 
+.. module:: gears.environment
+
+Environment
+-----------
+
+.. autoclass:: Environment
+   :members:
+
+.. autoclass:: Finders
+   :members:
+
+.. autoclass:: MIMETypes
+   :members:
+
+.. autoclass:: Compilers
+   :members:
+
+.. autoclass:: Preprocessors
+   :members:
+
+.. autoclass:: Postprocessors
+   :members:
+
+.. autoclass:: Compressors
+   :members:
+
+.. autoclass:: PublicAssets
+   :members:
+
+.. autoclass:: Suffixes
+   :members:
+
 .. module:: gears.asset_attributes
 
 Asset Attributes
