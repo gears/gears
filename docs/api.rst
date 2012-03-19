@@ -11,26 +11,50 @@ Environment
 .. autoclass:: Environment
    :members:
 
+File Finders Registry
+^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: Finders
    :members:
+
+MIME Types Registry
+^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: MIMETypes
    :members:
 
+Compilers Registry
+^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: Compilers
    :members:
+
+Preprocessors Registry
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: Preprocessors
    :members:
 
+Postprocessors Registry
+^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: Postprocessors
    :members:
+
+Compressors Registry
+^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: Compressors
    :members:
 
+Public Assets Registry
+^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: PublicAssets
    :members:
+
+Suffixes Registry
+^^^^^^^^^^^^^^^^^
 
 .. autoclass:: Suffixes
    :members:
