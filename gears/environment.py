@@ -98,21 +98,22 @@ class Processors(dict):
 
     def unregister(self, mimetype, processor):
         """Remove passed `processor` for passed `mimetype`. If processor for
-        this mimetype does not found in the registry, nothing happens.
+        this MIME-type does not found in the registry, nothing happens.
         """
         if mimetype in self and processor in self[mimetype]:
             self[mimetype].remove(processor)
 
     def get(self, mimetype):
         """Return a list of processors, registered for passed `mimetype`. If
-        no processors are registered for this mimetype, empty list is returned.
+        no processors are registered for this MIME-type, empty list is
+        returned.
         """
         return super(Processors, self).get(mimetype, [])
 
 
 class Preprocessors(Processors):
     """The registry for asset preprocessors. It acts like a dictionary with
-    mimetypes as keys and lists of processors as values.
+    MIME-types as keys and lists of processors as values.
     """
 
     def register_defaults(self):
