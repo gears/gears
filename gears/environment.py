@@ -174,7 +174,7 @@ class Suffixes(list):
     """The registry for asset suffixes. It acts like a list of dictionaries.
     Every dictionary has two keys: ``extensions`` and ``mimetype``:
 
-    - ``extensions`` is a suffix as a list (e.g. ``['.js', '.coffee']);
+    - ``extensions`` is a suffix as a list (e.g. ``['.js', '.coffee']``);
     - ``mimetype`` is a MIME-type, for which this suffix is registered.
     """
 
