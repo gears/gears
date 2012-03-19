@@ -63,9 +63,6 @@ class Compilers(dict):
     compiler.
     """
 
-    def __init__(self):
-        super(Compilers, self).__init__()
-
     def register_defaults(self):
         """Register :class:`~gears.compilers.CoffeeScriptCompiler`,
         :class:`~gears.compilers.HandlebarsCompiler`,
