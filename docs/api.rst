@@ -82,7 +82,7 @@ Asset Handlers
 .. autoclass:: ExecMixin
    :members:
 
-.. module:: gears.processors.base
+.. module:: gears.processors
 
 Processors
 ^^^^^^^^^^
@@ -90,7 +90,7 @@ Processors
 .. autoclass:: BaseProcessor
    :members:
 
-.. module:: gears.compilers.base
+.. module:: gears.compilers
 
 Compilers
 ^^^^^^^^^
