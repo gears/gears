@@ -8,7 +8,7 @@ class BaseCompiler(BaseAssetHandler):
     must change asset's :attr:`~gears.assets.Asset.processed_source` attribute.
     """
 
-    #: MIME-type of the asset source code after compiling.
+    #: MIME type of the asset source code after compiling.
     result_mimetype = None
 
     @classmethod

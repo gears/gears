@@ -168,6 +168,6 @@ class AssetAttributes(object):
 
     @cached_property
     def mimetype(self):
-        """MIME-type of the asset."""
+        """MIME type of the asset."""
         return (self.environment.mimetypes.get(self.format_extension) or
                 'application/octet-stream')

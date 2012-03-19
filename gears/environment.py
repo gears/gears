@@ -33,23 +33,23 @@ class Finders(list):
 
 
 class MIMETypes(dict):
-    """The registry for MIME-types. It acts like a dict with extensions as
-    keys and MIME-types as values.
+    """The registry for MIME types. It acts like a dict with extensions as
+    keys and MIME types as values.
     """
 
     def register_defaults(self):
-        """Register MIME-types for ``.js`` and ``.css`` extensions."""
+        """Register MIME types for ``.js`` and ``.css`` extensions."""
         self.register('.css', 'text/css')
         self.register('.js', 'application/javascript')
 
     def register(self, extension, mimetype):
-        """Register passed ``mimetype`` MIME-type with ``extension`` extension.
+        """Register passed ``mimetype`` MIME type with ``extension`` extension.
         """
         self[extension] = mimetype
 
     def unregister(self, extension):
-        """Remove registered MIME-type for passed ``extension`` extension. If
-        MIME-type for this extension does not found in the registry, nothing
+        """Remove registered MIME type for passed ``extension`` extension. If
+        MIME type for this extension does not found in the registry, nothing
         happens.
         """
         if extension in self:
@@ -98,14 +98,14 @@ class Processors(dict):
 
     def unregister(self, mimetype, processor):
         """Remove passed `processor` for passed `mimetype`. If processor for
-        this MIME-type does not found in the registry, nothing happens.
+        this MIME type does not found in the registry, nothing happens.
         """
         if mimetype in self and processor in self[mimetype]:
             self[mimetype].remove(processor)
 
     def get(self, mimetype):
         """Return a list of processors, registered for passed `mimetype`. If
-        no processors are registered for this MIME-type, empty list is
+        no processors are registered for this MIME type, empty list is
         returned.
         """
         return super(Processors, self).get(mimetype, [])
@@ -113,12 +113,12 @@ class Processors(dict):
 
 class Preprocessors(Processors):
     """The registry for asset preprocessors. It acts like a dictionary with
-    MIME-types as keys and lists of processors as values.
+    MIME types as keys and lists of processors as values.
     """
 
     def register_defaults(self):
         """Register :class:`~gears.processors.DirectivesProcessor` as
-        a preprocessor for `text/css` and `application/javascript` MIME-types.
+        a preprocessor for `text/css` and `application/javascript` MIME types.
         """
         self.register('text/css', DirectivesProcessor.as_handler())
         self.register('application/javascript', DirectivesProcessor.as_handler())
@@ -126,13 +126,13 @@ class Preprocessors(Processors):
 
 class Postprocessors(Processors):
     """The registry for asset postprocessors. It acts like a dictionary with
-    MIME-types as keys and lists of processors as values.
+    MIME types as keys and lists of processors as values.
     """
 
 
 class Compressors(dict):
     """The registry for asset compressors. It acts like a dictionary with
-    MIME-types as keys and compressors as values.
+    MIME types as keys and compressors as values.
     """
 
     def register(self, mimetype, compressor):
@@ -141,7 +141,7 @@ class Compressors(dict):
 
     def unregister(self, mimetype):
         """Remove registered compressors for passed `mimetype`. If compressor
-        for this MIME-type does not found in the registry, nothing happens.
+        for this MIME type does not found in the registry, nothing happens.
         """
         if mimetype in self:
             del self[mimetype]
@@ -175,7 +175,7 @@ class Suffixes(list):
     Every dictionary has two keys: ``extensions`` and ``mimetype``:
 
     - ``extensions`` is a suffix as a list (e.g. ``['.js', '.coffee']``);
-    - ``mimetype`` is a MIME-type, for which this suffix is registered.
+    - ``mimetype`` is a MIME type, for which this suffix is registered.
     """
 
     def register(self, extension, root=False, to=None, mimetype=None):
@@ -207,7 +207,7 @@ class Environment(object):
     """This is the central object, that links all Gears parts. It is passed the
     absolute path to the directory where public assets will be saved.
     Environment contains registries for file finders, compilers, compressors,
-    processors, supported MIME-types and public assets.
+    processors, supported MIME types and public assets.
 
     :param root: the absolute path to the directory where handled public assets
                  will be saved by :meth:`save` method.
@@ -228,7 +228,7 @@ class Environment(object):
         #: :class:`~gears.environment.Compilers` for more information.
         self.compilers = Compilers()
 
-        #: The registry for supported MIME-types. See
+        #: The registry for supported MIME types. See
         #: :class:`~gears.environment.MIMETypes` for more information.
         self.mimetypes = MIMETypes()
 
@@ -252,7 +252,7 @@ class Environment(object):
     @property
     def suffixes(self):
         """The registry for supported suffixes of assets. It is built from
-        MIME-types and compilers registries, and is cached at the first call.
+        MIME types and compilers registries, and is cached at the first call.
         See :class:`~gears.environment.Suffixes` for more information.
         """
         if not hasattr(self, '_suffixes'):
@@ -265,7 +265,7 @@ class Environment(object):
         return self._suffixes
 
     def register_defaults(self):
-        """Register default compilers, preprocessors, MIME-Types and public
+        """Register default compilers, preprocessors, MIME types and public
         assets.
         """
         self.compilers.register_defaults()
