@@ -91,17 +91,17 @@ class Compilers(dict):
 class Processors(dict):
     """Base class for processors registries."""
 
-    def register(self, mimetype, processor_class):
+    def register(self, mimetype, processor):
         """Register passed `processor` for passed `mimetype`."""
-        if mimetype not in self or processor_class not in self[mimetype]:
-            self.setdefault(mimetype, []).append(processor_class)
+        if mimetype not in self or processor not in self[mimetype]:
+            self.setdefault(mimetype, []).append(processor)
 
-    def unregister(self, mimetype, processor_class):
+    def unregister(self, mimetype, processor):
         """Remove passed `processor` for passed `mimetype`. If processor for
         this mimetype does not found in the registry, nothing happens.
         """
-        if mimetype in self and processor_class in self[mimetype]:
-            self[mimetype].remove(processor_class)
+        if mimetype in self and processor in self[mimetype]:
+            self[mimetype].remove(processor)
 
     def get(self, mimetype):
         """Return a list of processors, registered for passed `mimetype`. If
