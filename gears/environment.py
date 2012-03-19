@@ -34,7 +34,8 @@ class Finders(list):
 
 class MIMETypes(dict):
     """The registry for MIME types. It acts like a dict with extensions as
-    keys and MIME types as values.
+    keys and MIME types as values. Every registered extension can have only one
+    MIME type.
     """
 
     def register_defaults(self):
@@ -58,7 +59,8 @@ class MIMETypes(dict):
 
 class Compilers(dict):
     """The registry for compilers. It acts like a dict with extensions as keys
-    and compilers as values.
+    and compilers as values. Every registered extension can have only one
+    compiler.
     """
 
     def __init__(self):
@@ -113,7 +115,9 @@ class Processors(dict):
 
 class Preprocessors(Processors):
     """The registry for asset preprocessors. It acts like a dictionary with
-    MIME types as keys and lists of processors as values.
+    MIME types as keys and lists of processors as values. Every registered MIME
+    type can have many preprocessors. Preprocessors for the MIME type are used
+    in the order they were added.
     """
 
     def register_defaults(self):
@@ -126,13 +130,16 @@ class Preprocessors(Processors):
 
 class Postprocessors(Processors):
     """The registry for asset postprocessors. It acts like a dictionary with
-    MIME types as keys and lists of processors as values.
+    MIME types as keys and lists of processors as values. Every registered MIME
+    type can have many postprocessors. Postprocessors for the MIME type are
+    used in the order they were added.
     """
 
 
 class Compressors(dict):
     """The registry for asset compressors. It acts like a dictionary with
-    MIME types as keys and compressors as values.
+    MIME types as keys and compressors as values. Every registered MIME type
+    can have only one compressor.
     """
 
     def register(self, mimetype, compressor):
