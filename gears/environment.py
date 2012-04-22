@@ -215,14 +215,13 @@ class Environment(object):
 
     :param root: the absolute path to the directory where handled public assets
                  will be saved by :meth:`save` method.
+    :param cache: a cache object. It is used by assets and dependencies to
+                  store compilation results.
     """
 
-    def __init__(self, root):
+    def __init__(self, root, cache=None):
         self.root = root
-
-        #: A cache object. It is used by assets and dependencies to store
-        #: compilation results.
-        self.cache = Cache()
+        self.cache = cache if cache is not None else Cache()
 
         #: The registry for file finders. See
         #: :class:`~gears.environment.Finders` for more information.
