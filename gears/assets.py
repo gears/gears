@@ -173,6 +173,7 @@ class Asset(BaseAsset):
 
     def __init__(self, *args, **kwargs):
         super(Asset, self).__init__(*args, **kwargs)
+        self.cache = self.attributes.environment.cache
         if self.expired:
             self.dependencies.clear()
             self.requirements = Requirements(self)
@@ -191,7 +192,7 @@ class Asset(BaseAsset):
 
     @property
     def cached_data(self):
-        return self.attributes.environment.cache.get(self._get_cache_key())
+        return self.cache.get(self._get_cache_key())
 
     @cached_property
     def dependencies(self):
@@ -207,21 +208,27 @@ class Asset(BaseAsset):
 
     @cached_property
     def bundled_source(self):
-        if not self.bundle_expired and 'bundled_source' in self.cached_data:
-            return self.cached_data['bundled_source']
+        cache_key = self._get_cache_key('bundled_source')
+        if not self.bundle_expired:
+            bundled_source = self.cache.get(cache_key)
+            if bundled_source is not None:
+                return bundled_source
         bundled_source = u'\n'.join(r.processed_source for r in self.requirements)
-        self.cached_data['bundled_source'] = bundled_source
+        self.cache.set(cache_key, bundled_source)
         return bundled_source
 
     @cached_property
     def compressed_source(self):
-        if not self.bundle_expired and 'compressed_source' in self.cached_data:
-            return self.cached_data['compressed_source']
+        cache_key = self._get_cache_key('compressed_source')
+        if not self.bundle_expired:
+            compressed_source = self.cache.get(cache_key)
+            if compressed_source is not None:
+                return compressed_source
         compressed_source = self.bundled_source
         compress = self.attributes.compressor
         if compress:
             compressed_source = compress(self)
-        self.cached_data['compressed_source'] = compressed_source
+        self.cache.set(cache_key, compressed_source)
         return compressed_source
 
     @cached_property
@@ -258,10 +265,10 @@ class Asset(BaseAsset):
         self.processed_source = self.cached_data['processed_source']
 
     def _save_to_cache(self):
-        self.attributes.environment.cache.set(self._get_cache_key(), self.to_dict())
+        self.cache.set(self._get_cache_key(), self.to_dict())
 
-    def _get_cache_key(self):
-        return 'asset:%s' % self.absolute_path
+    def _get_cache_key(self, suffix='data'):
+        return 'asset:%s:%s' % (self.absolute_path, suffix)
 
 
 class StaticAsset(BaseAsset):
