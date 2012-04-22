@@ -8,13 +8,13 @@ except ImportError:
     import pickle
 
 
-class Cache(dict):
+class SimpleCache(dict):
 
     def set(self, key, value):
         self[key] = value
 
     def get(self, key):
-        return super(Cache, self).get(key)
+        return super(SimpleCache, self).get(key)
 
 
 class FileBasedCache(object):

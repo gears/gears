@@ -4,7 +4,7 @@ import os
 
 from .asset_attributes import AssetAttributes
 from .assets import build_asset
-from .cache import Cache
+from .cache import SimpleCache
 from .compilers import (
     CoffeeScriptCompiler, HandlebarsCompiler, LessCompiler, StylusCompiler)
 from .exceptions import FileNotFound
@@ -221,7 +221,7 @@ class Environment(object):
 
     def __init__(self, root, cache=None):
         self.root = root
-        self.cache = cache if cache is not None else Cache()
+        self.cache = cache if cache is not None else SimpleCache()
 
         #: The registry for file finders. See
         #: :class:`~gears.environment.Finders` for more information.
