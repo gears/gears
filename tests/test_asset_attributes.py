@@ -1,14 +1,24 @@
 from gears.asset_attributes import AssetAttributes
+from gears.compilers import BaseCompiler, CoffeeScriptCompiler, StylusCompiler
 from gears.environment import Environment
 
 from mock import Mock
 from unittest2 import TestCase
 
 
+class TemplateCompiler(BaseCompiler):
+
+    def __call__(self, asset):
+        pass
+
+
 class AssetAttributesTests(TestCase):
 
     def setUp(self):
         self.environment = Environment('assets')
+        self.coffee_script_compiler = CoffeeScriptCompiler.as_handler()
+        self.stylus_compiler = StylusCompiler.as_handler()
+        self.template_compiler = TemplateCompiler.as_handler()
 
     def create_attributes(self, path):
         return AssetAttributes(self.environment, path)
@@ -66,7 +76,7 @@ class AssetAttributesTests(TestCase):
     def test_format_extension(self):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
-        self.environment.compilers.register('.coffee', Mock())
+        self.environment.compilers.register('.coffee', self.coffee_script_compiler)
 
         def check(path, expected_result):
             format_extension = self.create_attributes(path).format_extension
@@ -82,7 +92,7 @@ class AssetAttributesTests(TestCase):
     def test_suffix(self):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
-        self.environment.compilers.register('.coffee', Mock())
+        self.environment.compilers.register('.coffee', self.coffee_script_compiler)
 
         def check(path, expected_result):
             suffix = self.create_attributes(path).suffix
@@ -97,8 +107,8 @@ class AssetAttributesTests(TestCase):
     def test_compiler_extensions(self):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
-        self.environment.compilers.register('.coffee', Mock())
-        self.environment.compilers.register('.tmpl', Mock())
+        self.environment.compilers.register('.coffee', self.coffee_script_compiler)
+        self.environment.compilers.register('.tmpl', self.template_compiler)
 
         def check(path, expected_result):
             compiler_extensions = self.create_attributes(path).compiler_extensions
@@ -110,27 +120,25 @@ class AssetAttributesTests(TestCase):
         check('js/hot.coffee.js.tmpl', ['.tmpl'])
 
     def test_compilers(self):
-        coffee_compiler = Mock()
-        template_compiler = Mock()
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
-        self.environment.compilers.register('.coffee', coffee_compiler)
-        self.environment.compilers.register('.tmpl', template_compiler)
+        self.environment.compilers.register('.coffee', self.coffee_script_compiler)
+        self.environment.compilers.register('.tmpl', self.template_compiler)
 
         def check(path, expected_result):
             compilers = self.create_attributes(path).compilers
             self.assertEqual(compilers, expected_result)
 
         check('js/script.js', [])
-        check('js/script.js.coffee', [coffee_compiler])
-        check('js/script.js.coffee.tmpl', [coffee_compiler, template_compiler])
-        check('js/hot.coffee.js.tmpl', [template_compiler])
+        check('js/script.js.coffee', [self.coffee_script_compiler])
+        check('js/script.js.coffee.tmpl', [self.coffee_script_compiler, self.template_compiler])
+        check('js/hot.coffee.js.tmpl', [self.template_compiler])
 
     def test_mimetype(self):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.js', 'application/javascript')
-        self.environment.compilers.register('.coffee', Mock())
-        self.environment.compilers.register('.styl', Mock())
+        self.environment.compilers.register('.coffee', self.coffee_script_compiler)
+        self.environment.compilers.register('.styl', self.stylus_compiler)
 
         def check(path, expected_result):
             mimetype = self.create_attributes(path).mimetype
