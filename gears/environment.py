@@ -176,15 +176,21 @@ class PublicAssets(list):
 
 class Suffixes(list):
     """The registry for asset suffixes. It acts like a list of dictionaries.
-    Every dictionary has two keys: ``extensions`` and ``mimetype``:
+    Every dictionary has three keys: ``extensions``, ``result_mimetype`` and
+    ``mimetype``:
 
     - ``extensions`` is a suffix as a list (e.g. ``['.js', '.coffee']``);
+    - ``result_mimetype`` is a MIME type of a compiled asset with this suffix;
     - ``mimetype`` is a MIME type, for which this suffix is registered.
     """
 
     def register(self, extension, root=False, to=None, mimetype=None):
         if root:
-            self.append({'extensions': [extension], 'mimetype': mimetype})
+            self.append({
+                'extensions': [extension],
+                'result_mimetype': mimetype,
+                'mimetype': mimetype,
+            })
             return
         new = []
         for suffix in self:
@@ -192,7 +198,11 @@ class Suffixes(list):
                 continue
             extensions = list(suffix['extensions'])
             extensions.append(extension)
-            new.append({'extensions': extensions, 'mimetype': mimetype})
+            new.append({
+                'extensions': extensions,
+                'result_mimetype': suffix['result_mimetype'],
+                'mimetype': mimetype,
+            })
         self.extend(new)
 
     def unregister(self, extension):
@@ -200,11 +210,12 @@ class Suffixes(list):
             if extension in suffix['extensions']:
                 self.remove(suffix)
 
-    def find(self, *extensions):
-        extensions = list(extensions)
-        length = len(extensions)
-        return [''.join(suffix['extensions']) for suffix in self
-                if suffix['extensions'][:length] == extensions]
+    def find(self, mimetype=None):
+        suffixes = []
+        for suffix in self:
+            if mimetype is None or suffix['result_mimetype'] == mimetype:
+                suffixes.append(''.join(suffix['extensions']))
+        return suffixes
 
 
 class Environment(object):
@@ -305,7 +316,7 @@ class Environment(object):
         elif logical:
             asset_attribute = AssetAttributes(self, item)
             path = asset_attribute.path_without_suffix
-            for suffix in self.suffixes.find(*asset_attribute.suffix):
+            for suffix in self.suffixes.find(asset_attribute.mimetype):
                 try:
                     return self.find(path + suffix)
                 except FileNotFound:
@@ -319,29 +330,28 @@ class Environment(object):
                 return AssetAttributes(self, item), absolute_path
         raise FileNotFound(item)
 
-    def list(self, path, suffix=None):
+    def list(self, path, mimetype=None):
         """Yield two-tuples for all files found in the directory given by
         ``path`` parameter. Result can be filtered by the second parameter,
-        ``suffix``, that must be a list or tuple of file extensions. Each tuple
-        has :class:`~gears.asset_attributes.AssetAttributes` instance for found
-        file path as first item, and absolute path to this file as second item.
+        ``mimetype``, that must be a MIME type of assets compiled source code.
+        Each tuple has :class:`~gears.asset_attributes.AssetAttributes`
+        instance for found file path as first item, and absolute path to this
+        file as second item.
 
         Usage example::
 
             # Yield all files from 'js/templates' directory.
             environment.list('js/libs')
 
-            # Yield only files that are in 'js/templates' directory and match
-            # pattern '*.js.handlebars' or are compiled to files that match
-            # pattern.
-            environment.list('js/templates', suffix=('.js', '.handlebars'))
+            # Yield only files that are in 'js/templates' directory and have
+            # 'application/javascript' MIME type of compiled source code.
+            environment.list('js/templates', mimetype='application/javascript')
         """
         found = set()
-        suffixes = self.suffixes.find(*suffix)
         for finder in self.finders:
             for logical_path, absolute_path in finder.list(path):
                 asset_attributes = AssetAttributes(self, logical_path)
-                if ''.join(asset_attributes.suffix) not in suffixes:
+                if mimetype is not None and asset_attributes.mimetype != mimetype:
                     continue
                 if logical_path not in found:
                     yield asset_attributes, absolute_path
