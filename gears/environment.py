@@ -176,15 +176,21 @@ class PublicAssets(list):
 
 class Suffixes(list):
     """The registry for asset suffixes. It acts like a list of dictionaries.
-    Every dictionary has two keys: ``extensions`` and ``mimetype``:
+    Every dictionary has three keys: ``extensions``, ``result_mimetype`` and
+    ``mimetype``:
 
     - ``extensions`` is a suffix as a list (e.g. ``['.js', '.coffee']``);
+    - ``result_mimetype`` is a MIME type of a compiled asset with this suffix;
     - ``mimetype`` is a MIME type, for which this suffix is registered.
     """
 
     def register(self, extension, root=False, to=None, mimetype=None):
         if root:
-            self.append({'extensions': [extension], 'mimetype': mimetype})
+            self.append({
+                'extensions': [extension],
+                'result_mimetype': mimetype,
+                'mimetype': mimetype,
+            })
             return
         new = []
         for suffix in self:
@@ -192,7 +198,11 @@ class Suffixes(list):
                 continue
             extensions = list(suffix['extensions'])
             extensions.append(extension)
-            new.append({'extensions': extensions, 'mimetype': mimetype})
+            new.append({
+                'extensions': extensions,
+                'result_mimetype': suffix['result_mimetype'],
+                'mimetype': mimetype,
+            })
         self.extend(new)
 
     def unregister(self, extension):

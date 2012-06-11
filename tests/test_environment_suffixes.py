@@ -11,8 +11,8 @@ class SuffixesTests(TestCase):
         self.suffixes.register('.css', root=True, mimetype='text/css')
         self.suffixes.register('.txt', root=True, mimetype='text/plain')
         self.assertEqual(self.suffixes, [
-            {'extensions': ['.css'], 'mimetype': 'text/css'},
-            {'extensions': ['.txt'], 'mimetype': 'text/plain'},
+            {'extensions': ['.css'], 'result_mimetype': 'text/css', 'mimetype': 'text/css'},
+            {'extensions': ['.txt'], 'result_mimetype': 'text/plain', 'mimetype': 'text/plain'},
         ])
 
     def test_register_extension_to_mimetype(self):
@@ -20,9 +20,9 @@ class SuffixesTests(TestCase):
         self.suffixes.register('.txt', root=True, mimetype='text/plain')
         self.suffixes.register('.styl', to='text/css')
         self.assertEqual(self.suffixes, [
-            {'extensions': ['.css'], 'mimetype': 'text/css'},
-            {'extensions': ['.txt'], 'mimetype': 'text/plain'},
-            {'extensions': ['.css', '.styl'], 'mimetype': None},
+            {'extensions': ['.css'], 'result_mimetype': 'text/css', 'mimetype': 'text/css'},
+            {'extensions': ['.txt'], 'result_mimetype': 'text/plain', 'mimetype': 'text/plain'},
+            {'extensions': ['.css', '.styl'], 'result_mimetype': 'text/css', 'mimetype': None},
         ])
 
     def test_register_extension_to_none(self):
@@ -31,12 +31,12 @@ class SuffixesTests(TestCase):
         self.suffixes.register('.styl', to='text/css')
         self.suffixes.register('.tmpl')
         self.assertEqual(self.suffixes, [
-            {'extensions': ['.css'], 'mimetype': 'text/css'},
-            {'extensions': ['.txt'], 'mimetype': 'text/plain'},
-            {'extensions': ['.css', '.styl'], 'mimetype': None},
-            {'extensions': ['.css', '.tmpl'], 'mimetype': None},
-            {'extensions': ['.txt', '.tmpl'], 'mimetype': None},
-            {'extensions': ['.css', '.styl', '.tmpl'], 'mimetype': None},
+            {'extensions': ['.css'], 'result_mimetype': 'text/css', 'mimetype': 'text/css'},
+            {'extensions': ['.txt'], 'result_mimetype': 'text/plain', 'mimetype': 'text/plain'},
+            {'extensions': ['.css', '.styl'], 'result_mimetype': 'text/css', 'mimetype': None},
+            {'extensions': ['.css', '.tmpl'], 'result_mimetype': 'text/css', 'mimetype': None},
+            {'extensions': ['.txt', '.tmpl'], 'result_mimetype': 'text/plain', 'mimetype': None},
+            {'extensions': ['.css', '.styl', '.tmpl'], 'result_mimetype': 'text/css', 'mimetype': None},
         ])
 
     def test_unregister_extension(self):
@@ -46,8 +46,8 @@ class SuffixesTests(TestCase):
         self.suffixes.register('.tmpl')
         self.suffixes.unregister('.css')
         self.assertEqual(self.suffixes, [
-            {'extensions': ['.txt'], 'mimetype': 'text/plain'},
-            {'extensions': ['.txt', '.tmpl'], 'mimetype': None},
+            {'extensions': ['.txt'], 'result_mimetype': 'text/plain', 'mimetype': 'text/plain'},
+            {'extensions': ['.txt', '.tmpl'], 'result_mimetype': 'text/plain', 'mimetype': None},
         ])
 
     def test_find_all(self):
