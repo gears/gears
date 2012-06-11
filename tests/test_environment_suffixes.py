@@ -56,17 +56,12 @@ class SuffixesTests(TestCase):
         self.suffixes.register('.styl', to='text/css')
         self.assertEqual(self.suffixes.find(), ['.css', '.txt', '.css.styl'])
 
-    def test_find_by_extension(self):
+    def test_find_by_mimetype(self):
         self.suffixes.register('.css', root=True, mimetype='text/css')
         self.suffixes.register('.txt', root=True, mimetype='text/plain')
         self.suffixes.register('.styl', to='text/css')
-        self.assertEqual(self.suffixes.find('.css'), ['.css', '.css.styl'])
-
-    def test_find_by_many_extensions(self):
-        self.suffixes.register('.css', root=True, mimetype='text/css')
-        self.suffixes.register('.txt', root=True, mimetype='text/plain')
-        self.suffixes.register('.styl', to='text/css')
-        self.assertEqual(self.suffixes.find('.css', '.styl'), ['.css.styl'])
+        self.assertEqual(self.suffixes.find('text/css'), ['.css', '.css.styl'])
+        self.assertEqual(self.suffixes.find('text/plain'), ['.txt'])
 
     def test_find_nothing(self):
-        self.assertEqual(self.suffixes.find('.css'), [])
+        self.assertEqual(self.suffixes.find('application/javascript'), [])
