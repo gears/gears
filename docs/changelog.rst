@@ -1,6 +1,13 @@
 Changelog
 =========
 
+next release
+------------
+
+- Asset requirements are restricted by MIME type now, not by extension. E.g.,
+  you can require Handlebars templates or JavaScript assets from CoffeeScript
+  now.
+
 0.2 (2012-02-18)
 ----------------
 
