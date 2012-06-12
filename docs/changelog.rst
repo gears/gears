@@ -4,6 +4,10 @@ Changelog
 next release
 ------------
 
+- Main extensions (``.js`` or ``.css``) can be omitted now in asset file names.
+  E.g., you can rename ``application.js.coffee`` asset to
+  ``application.coffee``.
+
 - Asset requirements are restricted by MIME type now, not by extension. E.g.,
   you can require Handlebars templates or JavaScript assets from CoffeeScript
   now.
