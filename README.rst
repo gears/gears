@@ -1,7 +1,7 @@
 Gears
 =====
 
-.. image:: https://secure.travis-ci.org/trilan/gears.png?branch=develop
+.. image:: https://secure.travis-ci.org/gears/gears.png?branch=develop
 
 Gears is a library to compile and concatenate JavaScript and CSS assets, highly
 inspired by Ruby's Sprockets_. It includes support for writing scripts, styles
@@ -129,6 +129,6 @@ Feel free to fork, send pull requests or report bugs and issues on github.
 .. _UglifyJS: https://github.com/mishoo/UglifyJS
 .. _clean-css: https://github.com/GoalSmashers/clean-css
 
-.. _django-gears: https://github.com/trilan/django-gears
-.. _flask-gears: https://github.com/trilan/flask-gears
-.. _gears-cli: https://github.com/trilan/gears-cli
+.. _django-gears: https://github.com/gears/django-gears
+.. _flask-gears: https://github.com/gears/flask-gears
+.. _gears-cli: https://github.com/gears/gears-cli

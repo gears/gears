@@ -12,7 +12,7 @@ setup(
     license='ISC',
     description='Compiles and concatenates JavaScript and CSS assets.',
     long_description=read('README.rst'),
-    url='https://github.com/trilan/gears',
+    url='https://github.com/gears/gears',
     author='Mike Yumatov',
     author_email='mike@yumatov.org',
     packages=find_packages(),
