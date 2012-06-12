@@ -135,7 +135,7 @@ class AssetAttributes(object):
         Example::
 
             >>> attrs = AssetAttributes(environment, 'js/lib/external.min.js.coffee')
-            >>> attrs.suffix
+            >>> attrs.compiler_extensions
             ['.coffee']
         """
         try:
