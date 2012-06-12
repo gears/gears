@@ -51,8 +51,9 @@ class EnvironmentTests(TestCase):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.txt', 'text/plain')
         self.environment.compilers.register('.styl', FakeCompiler('text/css'))
-        self.assertItemsEqual(self.environment.suffixes.find(),
-                              ['.css', '.css.styl', '.txt'])
+        self.assertItemsEqual(self.environment.suffixes.find(), [
+            '.css', '.styl', '.css.styl', '.txt',
+        ])
 
     def test_register_defaults(self):
         self.environment.compilers = Mock()

@@ -188,6 +188,7 @@ class Suffixes(list):
         if root:
             self.append({
                 'suffix': [extension],
+                'full': [extension],
                 'result_mimetype': mimetype,
                 'mimetype': mimetype,
             })
@@ -196,18 +197,28 @@ class Suffixes(list):
         for item in self:
             if to is not None and item['mimetype'] != to:
                 continue
-            extensions = list(item['suffix'])
-            extensions.append(extension)
+            suffix = list(item['suffix'])
+            suffix.append(extension)
+            full = list(item['full'])
+            full.append(extension)
             new.append({
-                'suffix': extensions,
+                'suffix': suffix,
+                'full': full,
                 'result_mimetype': item['result_mimetype'],
                 'mimetype': mimetype,
             })
+            if to is not None:
+                new.append({
+                    'suffix': [extension],
+                    'full': full,
+                    'result_mimetype': item['result_mimetype'],
+                    'mimetype': mimetype,
+                })
         self.extend(new)
 
     def unregister(self, extension):
         for item in list(self):
-            if extension in item['suffix']:
+            if extension in item['full']:
                 self.remove(item)
 
     def find(self, mimetype=None):
