@@ -325,9 +325,9 @@ class Environment(object):
                 except FileNotFound:
                     continue
         elif logical:
-            asset_attribute = AssetAttributes(self, item)
-            path = asset_attribute.path_without_suffix
-            for suffix in self.suffixes.find(asset_attribute.mimetype):
+            asset_attributes = AssetAttributes(self, item)
+            path = asset_attributes.path_without_suffix
+            for suffix in self.suffixes.find(asset_attributes.mimetype):
                 try:
                     return self.find(path + suffix)
                 except FileNotFound:
