@@ -179,7 +179,7 @@ class Suffixes(list):
     Every dictionary has three keys: ``extensions``, ``result_mimetype`` and
     ``mimetype``:
 
-    - ``extensions`` is a suffix as a list (e.g. ``['.js', '.coffee']``);
+    - ``suffix`` is a suffix as a list of extensions (e.g. ``['.js', '.coffee']``);
     - ``result_mimetype`` is a MIME type of a compiled asset with this suffix;
     - ``mimetype`` is a MIME type, for which this suffix is registered.
     """
@@ -187,34 +187,34 @@ class Suffixes(list):
     def register(self, extension, root=False, to=None, mimetype=None):
         if root:
             self.append({
-                'extensions': [extension],
+                'suffix': [extension],
                 'result_mimetype': mimetype,
                 'mimetype': mimetype,
             })
             return
         new = []
-        for suffix in self:
-            if to is not None and suffix['mimetype'] != to:
+        for item in self:
+            if to is not None and item['mimetype'] != to:
                 continue
-            extensions = list(suffix['extensions'])
+            extensions = list(item['suffix'])
             extensions.append(extension)
             new.append({
-                'extensions': extensions,
-                'result_mimetype': suffix['result_mimetype'],
+                'suffix': extensions,
+                'result_mimetype': item['result_mimetype'],
                 'mimetype': mimetype,
             })
         self.extend(new)
 
     def unregister(self, extension):
-        for suffix in list(self):
-            if extension in suffix['extensions']:
-                self.remove(suffix)
+        for item in list(self):
+            if extension in item['suffix']:
+                self.remove(item)
 
     def find(self, mimetype=None):
         suffixes = []
-        for suffix in self:
-            if mimetype is None or suffix['result_mimetype'] == mimetype:
-                suffixes.append(''.join(suffix['extensions']))
+        for item in self:
+            if mimetype is None or item['result_mimetype'] == mimetype:
+                suffixes.append(''.join(item['suffix']))
         return suffixes
 
 
