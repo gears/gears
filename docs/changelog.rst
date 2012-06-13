@@ -17,11 +17,11 @@ next release
   you can require Handlebars templates or JavaScript assets from CoffeeScript
   now.
 
-- Add file-based cache.
+- Added file-based cache.
 
 - Environment cache is pluggable now.
 
-- Fix cache usage in assets.
+- Fixed cache usage in assets.
 
 0.2 (2012-02-18)
 ----------------
