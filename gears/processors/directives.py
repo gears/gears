@@ -14,6 +14,7 @@ class DirectivesProcessor(BaseProcessor):
             'require': self.process_require_directive,
             'require_directory': self.process_require_directory_directive,
             'require_self': self.process_require_self_directive,
+            'depend_on': self.process_depend_on_directive,
         }
 
     def __call__(self, asset):
@@ -43,6 +44,9 @@ class DirectivesProcessor(BaseProcessor):
 
     def process_require_self_directive(self):
         self.asset.requirements.add(self.asset)
+
+    def process_depend_on_directive(self, path):
+        self.asset.dependencies.add(self.find(path)[1])
 
     def find(self, require_path):
         require_path = self.get_relative_path(require_path)

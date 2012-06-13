@@ -4,6 +4,11 @@ Changelog
 next release
 ------------
 
+- Added ``depend_on`` directive. It is useful when you need to specify files
+  that affect an asset, but not to include them into bundled asset or to
+  include them using compilers. E.g., if you use ``@import`` functionality in
+  some CSS pre-processors (Less or Stylus).
+
 - Main extensions (``.js`` or ``.css``) can be omitted now in asset file names.
   E.g., you can rename ``application.js.coffee`` asset to
   ``application.coffee``.
