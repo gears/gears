@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next release
-------------
+0.3 (2012-06-24)
+----------------
 
 - Added ``depend_on`` directive. It is useful when you need to specify files
   that affect an asset, but not to include them into bundled asset or to
