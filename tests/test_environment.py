@@ -51,8 +51,9 @@ class EnvironmentTests(TestCase):
         self.environment.mimetypes.register('.css', 'text/css')
         self.environment.mimetypes.register('.txt', 'text/plain')
         self.environment.compilers.register('.styl', FakeCompiler('text/css'))
-        self.assertItemsEqual(self.environment.suffixes.find(),
-                              ['.css', '.css.styl', '.txt'])
+        self.assertItemsEqual(self.environment.suffixes.find(), [
+            '.css', '.styl', '.css.styl', '.txt',
+        ])
 
     def test_register_defaults(self):
         self.environment.compilers = Mock()
@@ -133,7 +134,7 @@ class EnvironmentListTests(TestCase):
         self.environment.finders.register(FileSystemFinder([ASSETS_DIR]))
 
     def test_list(self):
-        items = list(self.environment.list('js/templates', ['.js', '.handlebars']))
+        items = list(self.environment.list('js/templates', 'application/javascript'))
         self.assertEqual(len(items), 3)
         for i, item in enumerate(sorted(items, key=lambda x: x[1])):
             path = 'js/templates/%s.js.handlebars' % 'abc'[i]

@@ -3,6 +3,62 @@
 API
 ===
 
+.. module:: gears.environment
+
+Environment
+-----------
+
+.. autoclass:: Environment
+   :members:
+
+File Finders Registry
+^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: Finders
+   :members:
+
+MIME Types Registry
+^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: MIMETypes
+   :members:
+
+Compilers Registry
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: Compilers
+   :members:
+
+Preprocessors Registry
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: Preprocessors
+   :members:
+
+Postprocessors Registry
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: Postprocessors
+   :members:
+
+Compressors Registry
+^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: Compressors
+   :members:
+
+Public Assets Registry
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: PublicAssets
+   :members:
+
+Suffixes Registry
+^^^^^^^^^^^^^^^^^
+
+.. autoclass:: Suffixes
+   :members:
+
 .. module:: gears.asset_attributes
 
 Asset Attributes
@@ -26,7 +82,7 @@ Asset Handlers
 .. autoclass:: ExecMixin
    :members:
 
-.. module:: gears.processors.base
+.. module:: gears.processors
 
 Processors
 ^^^^^^^^^^
@@ -34,7 +90,7 @@ Processors
 .. autoclass:: BaseProcessor
    :members:
 
-.. module:: gears.compilers.base
+.. module:: gears.compilers
 
 Compilers
 ^^^^^^^^^

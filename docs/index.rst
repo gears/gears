@@ -16,7 +16,7 @@ There is also:
 Source Code
 -----------
 
-Gears code is hosted on GitHub: https://github.com/trilan/gears.
+Gears code is hosted on GitHub: https://github.com/gears/gears.
 
 Contents
 --------
@@ -38,6 +38,6 @@ Contents
 .. _SASS: http://sass-lang.com/
 .. _SCSS: http://sass-lang.com/
 
-.. _django-gears: https://github.com/trilan/django-gears
-.. _flask-gears: https://github.com/trilan/flask-gears
-.. _gears-cli: https://github.com/trilan/gears-cli
+.. _django-gears: https://github.com/gears/django-gears
+.. _flask-gears: https://github.com/gears/flask-gears
+.. _gears-cli: https://github.com/gears/gears-cli

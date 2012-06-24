@@ -3,6 +3,7 @@ from __future__ import with_statement
 import os
 
 from gears.assets import Requirements, Asset
+from gears.compilers import BaseCompiler
 from gears.environment import Environment
 from gears.finders import FileSystemFinder
 from gears.processors import DirectivesProcessor
@@ -12,6 +13,14 @@ from unittest2 import TestCase
 
 TESTS_DIR = os.path.dirname(__file__)
 FIXTURES_DIR = os.path.join(TESTS_DIR, 'fixtures', 'directives_processor')
+
+
+class FakeLessCompiler(BaseCompiler):
+
+    result_mimetype = 'text/css'
+
+    def __call__(self, asset):
+        pass
 
 
 class DirectivesProcessorTests(TestCase):
@@ -32,8 +41,12 @@ class DirectivesProcessorTests(TestCase):
         environment.preprocessors.register_defaults()
         return environment
 
-    def get_asset(self, fixture):
-        return Asset(*self.get_environment(fixture).find('source.js'))
+    def get_asset(self, fixture, source='source.js'):
+        if isinstance(fixture, Environment):
+            environment = fixture
+        else:
+            environment = self.get_environment(fixture)
+        return Asset(*environment.find(source))
 
     def get_source(self, fixture, filename):
         fixture_path = self.get_fixture_path(fixture)
@@ -74,3 +87,12 @@ class DirectivesProcessorTests(TestCase):
             list(asset.requirements),
             'external.js models.js views.js source.js'.split(),
         )
+
+    def test_depend_on_directive(self):
+        environment = self.get_environment('depend_on')
+        environment.compilers.register('.less', FakeLessCompiler.as_handler())
+        asset = self.get_asset(environment, 'source.less')
+        DirectivesProcessor.as_handler()(asset)
+        self.assertItemsEqual(asset.dependencies.to_list(), [
+            os.path.join(os.path.dirname(asset.absolute_path), 'mixins/colors.less'),
+        ])

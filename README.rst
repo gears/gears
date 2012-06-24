@@ -1,7 +1,7 @@
 Gears
 =====
 
-.. image:: https://secure.travis-ci.org/trilan/gears.png?branch=develop
+.. image:: https://secure.travis-ci.org/gears/gears.png?branch=develop
 
 Gears is a library to compile and concatenate JavaScript and CSS assets, highly
 inspired by Ruby's Sprockets_. It includes support for writing scripts, styles
@@ -27,7 +27,7 @@ Features
        *= require_directory templates
        */
 
-  Three directive types is supported for now:
+  Four directive types is supported for now:
 
   * ``require :path``: includes the contents of the asset ``path`` suffixed
     with the same extension as the current asset (e.g., if
@@ -41,6 +41,11 @@ Features
   * ``require_self``: includes the contents of the current asset at the current
     place. If there is no ``require_self`` directive, the contents will be
     appended at the end of asset.
+
+  * ``depend_on :path``: it is useful when you need to specify files that
+    affect an asset, but not to include them into bundled asset or to include
+    them using compilers. E.g., if you use ``@import`` functionality in some
+    CSS pre-processors (Less or Stylus).
 
 * Scripting and styling in modern languages like CoffeeScript, Stylus, Less,
   SASS and SCSS (support for new languages can be easily added).
@@ -129,6 +134,6 @@ Feel free to fork, send pull requests or report bugs and issues on github.
 .. _UglifyJS: https://github.com/mishoo/UglifyJS
 .. _clean-css: https://github.com/GoalSmashers/clean-css
 
-.. _django-gears: https://github.com/trilan/django-gears
-.. _flask-gears: https://github.com/trilan/flask-gears
-.. _gears-cli: https://github.com/trilan/gears-cli
+.. _django-gears: https://github.com/gears/django-gears
+.. _flask-gears: https://github.com/gears/flask-gears
+.. _gears-cli: https://github.com/gears/gears-cli

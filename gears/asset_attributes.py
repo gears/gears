@@ -78,7 +78,8 @@ class AssetAttributes(object):
             >>> attrs.logical_path
             'js/models.js'
         """
-        return self.path_without_suffix + self.format_extension
+        format_extension = self.format_extension or self.compiler_format_extension
+        return self.path_without_suffix + format_extension
 
     @cached_property
     def extensions(self):
@@ -134,10 +135,15 @@ class AssetAttributes(object):
         Example::
 
             >>> attrs = AssetAttributes(environment, 'js/lib/external.min.js.coffee')
-            >>> attrs.suffix
+            >>> attrs.compiler_extensions
             ['.coffee']
         """
-        return [e for e in self.suffix[1:] if self.environment.compilers.get(e)]
+        try:
+            index = self.extensions.index(self.format_extension)
+        except ValueError:
+            index = 0
+        extensions = self.extensions[index:]
+        return [e for e in extensions if self.environment.compilers.get(e)]
 
     @cached_property
     def compilers(self):
@@ -168,6 +174,22 @@ class AssetAttributes(object):
 
     @cached_property
     def mimetype(self):
-        """MIME-type of the asset."""
+        """MIME type of the asset."""
         return (self.environment.mimetypes.get(self.format_extension) or
-                'application/octet-stream')
+                self.compiler_mimetype or 'application/octet-stream')
+
+    @cached_property
+    def compiler_mimetype(self):
+        """Implicit MIME type of the asset by its compilers."""
+        for compiler in reversed(self.compilers):
+            if compiler.result_mimetype:
+                return compiler.result_mimetype
+        return None
+
+    @cached_property
+    def compiler_format_extension(self):
+        """Implicit format extension on the asset by its compilers."""
+        for extension, mimetype in self.environment.mimetypes.items():
+            if mimetype == self.compiler_mimetype:
+                return extension
+        return None
