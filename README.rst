@@ -5,8 +5,8 @@ Gears
 
 Gears is a library to compile and concatenate JavaScript and CSS assets, highly
 inspired by Ruby's Sprockets_. It includes support for writing scripts, styles
-and client templates using CoffeeScript_, Handlebars_, Stylus_, Less_, SASS_
-and SCSS_. New compilers can be also easily added.
+and client templates using CoffeeScript_, Handlebars_, Stylus_, Less_. New
+compilers can be also easily added.
 
 There is also:
 
@@ -47,8 +47,8 @@ Features
     them using compilers. E.g., if you use ``@import`` functionality in some
     CSS pre-processors (Less or Stylus).
 
-* Scripting and styling in modern languages like CoffeeScript, Stylus, Less,
-  SASS and SCSS (support for new languages can be easily added).
+* Scripting and styling in modern languages like CoffeeScript, Stylus, Less
+  (support for new languages can be easily added).
 
 * Writing client templates using Handlebars.
 
@@ -60,9 +60,7 @@ Features
   * CoffeeScript - ``.js.coffee``;
   * Handlebars - ``.js.handlebars``;
   * Stylus - ``.css.styl``;
-  * Less - ``.css.less``;
-  * SASS - ``.css.sass``;
-  * SCSS - ``.css.scss``.
+  * Less - ``.css.less``.
 
 * Caching
 
@@ -86,7 +84,6 @@ If you want to use compilers you need to install other dependencies:
 
 * ``coffee-script``, ``handlebars``, ``stylus``, ``less`` node.js modules for
   CoffeeScript, Handlebars, Stylus, Less support respectively;
-* ``sass`` Ruby gem for SASS and SCSS support.
 
 Usage
 -----
@@ -127,8 +124,6 @@ Feel free to fork, send pull requests or report bugs and issues on github.
 .. _Handlebars: http://www.handlebarsjs.com/
 .. _Stylus: http://learnboost.github.com/stylus/
 .. _Less: http://lesscss.org/
-.. _SASS: http://sass-lang.com/
-.. _SCSS: http://sass-lang.com/
 .. _SlimIt: http://slimit.org/
 .. _cssmin: https://github.com/zacharyvoase/cssmin
 .. _UglifyJS: https://github.com/mishoo/UglifyJS

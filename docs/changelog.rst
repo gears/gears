@@ -1,6 +1,12 @@
 Changelog
 =========
 
+next release
+------------
+
+- SASS and SCSS compilers has been removed since they did nothing to really
+  support SASS and SCSS compilation.
+
 0.3 (2012-06-24)
 ----------------
 
