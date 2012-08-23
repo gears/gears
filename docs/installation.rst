@@ -5,15 +5,19 @@ You can install Gears with pip_::
 
     $ pip install Gears
 
-If you want to use compilers, you need to install other dependencies::
+If you want to use node.js-dependent compilers or compressors, you need to
+install other dependencies::
 
     $ pip install gears-less          # LESS
     $ pip install gears-stylus        # Stylus
     $ pip install gears-handlebars    # Handlebars
     $ pip install gears-coffeescript  # CoffeeScript
 
-Please note that all these compilers require node.js to be installed on your
-system.
+    $ pip install gears-uglifyjs      # UglifyJS
+    $ pip install gears-clean-css     # clean-css
+
+Please note that all these compilers and compressors require node.js to be
+installed on your system.
 
 It is strongly recommended to install Gears within activated virtualenv_.
 

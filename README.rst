@@ -70,8 +70,8 @@ Features
 
   * SlimIt_ (Python);
   * cssmin_ (Python);
-  * UglifyJS_ (Node.js);
-  * clean-css_ (Node.js).
+  * UglifyJS_ (Node.js, using gears-uglifyjs_);
+  * clean-css_ (Node.js, using gears-clean-css_).
 
   New compilers can be also easily added.
 
@@ -82,15 +82,19 @@ You can install ``Gears`` using pip::
 
     $ pip install Gears
 
-If you want to use compilers, you need to install other dependencies::
+If you want to use node.js-dependent compilers or compressors, you need to
+install other dependencies::
 
     $ pip install gears-less          # LESS
     $ pip install gears-stylus        # Stylus
     $ pip install gears-handlebars    # Handlebars
     $ pip install gears-coffeescript  # CoffeeScript
 
-Please note that all these compilers require node.js to be installed on your
-system.
+    $ pip install gears-uglifyjs      # UglifyJS
+    $ pip install gears-clean-css     # clean-css
+
+Please note that all these compilers and compressors require node.js to be
+installed on your system.
 
 Usage
 -----
@@ -138,6 +142,9 @@ Feel free to fork, send pull requests or report bugs and issues on github.
 .. _gears-stylus: https://github.com/gears/gears-stylus
 .. _gears-handlebars: https://github.com/gears/gears-handlebars
 .. _gears-coffeescript: https://github.com/gears/gears-coffeescript
+
+.. _gears-uglifyjs: https://github.com/gears/gears-uglifyjs
+.. _gears-clean-css: https://github.com/gears/gears-clean-css
 
 .. _django-gears: https://github.com/gears/django-gears
 .. _flask-gears: https://github.com/gears/flask-gears
