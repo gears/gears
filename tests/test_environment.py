@@ -56,12 +56,10 @@ class EnvironmentTests(TestCase):
         ])
 
     def test_register_defaults(self):
-        self.environment.compilers = Mock()
         self.environment.mimetypes = Mock()
         self.environment.public_assets = Mock()
         self.environment.preprocessors = Mock()
         self.environment.register_defaults()
-        self.environment.compilers.register_defaults.assert_called_once_with()
         self.environment.mimetypes.register_defaults.assert_called_once_with()
         self.environment.public_assets.register_defaults.assert_called_once_with()
         self.environment.preprocessors.register_defaults.assert_called_once_with()

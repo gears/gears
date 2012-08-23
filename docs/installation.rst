@@ -5,6 +5,16 @@ You can install Gears with pip_::
 
     $ pip install Gears
 
+If you want to use compilers, you need to install other dependencies::
+
+    $ pip install gears-less          # LESS
+    $ pip install gears-stylus        # Stylus
+    $ pip install gears-handlebars    # Handlebars
+    $ pip install gears-coffeescript  # CoffeeScript
+
+Please note that all these compilers require node.js to be installed on your
+system.
+
 It is strongly recommended to install Gears within activated virtualenv_.
 
 If you want to use one of available extensions (django-gears_, Flask-Gears_ or

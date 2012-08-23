@@ -4,9 +4,11 @@ Gears
 .. image:: https://secure.travis-ci.org/gears/gears.png?branch=develop
 
 Gears is a library to compile and concatenate JavaScript and CSS assets, highly
-inspired by Ruby's Sprockets_. It includes support for writing scripts, styles
-and client templates using CoffeeScript_, Handlebars_, Stylus_, Less_. New
-compilers can be also easily added.
+inspired by Ruby's Sprockets_. You can also write scripts, styles and client
+templates using CoffeeScript_, Handlebars_, Stylus_, Less_, and compile them
+using external packages (gears-coffeescript_, gears-handlebars_, gears-stylus_,
+gears-less_). These packages already include all required node.js modules, so
+you don't need to worry about installing them yourself.
 
 There is also:
 
@@ -55,7 +57,7 @@ Features
 * The list of compilers for the asset is specified with asset
   extensions appended to the original extension. E.g., for the asset
   named ``js/app.js.coffee`` CoffeeScript compiler will be used. Here are
-  extensions for the supported compilers:
+  extensions for the supported compilers (through external packages):
 
   * CoffeeScript - ``.js.coffee``;
   * Handlebars - ``.js.handlebars``;
@@ -80,10 +82,15 @@ You can install ``Gears`` using pip::
 
     $ pip install Gears
 
-If you want to use compilers you need to install other dependencies:
+If you want to use compilers, you need to install other dependencies::
 
-* ``coffee-script``, ``handlebars``, ``stylus``, ``less`` node.js modules for
-  CoffeeScript, Handlebars, Stylus, Less support respectively;
+    $ pip install gears-less          # LESS
+    $ pip install gears-stylus        # Stylus
+    $ pip install gears-handlebars    # Handlebars
+    $ pip install gears-coffeescript  # CoffeeScript
+
+Please note that all these compilers require node.js to be installed on your
+system.
 
 Usage
 -----
@@ -126,6 +133,11 @@ Feel free to fork, send pull requests or report bugs and issues on github.
 .. _cssmin: https://github.com/zacharyvoase/cssmin
 .. _UglifyJS: https://github.com/mishoo/UglifyJS
 .. _clean-css: https://github.com/GoalSmashers/clean-css
+
+.. _gears-less: https://github.com/gears/gears-less
+.. _gears-stylus: https://github.com/gears/gears-stylus
+.. _gears-handlebars: https://github.com/gears/gears-handlebars
+.. _gears-coffeescript: https://github.com/gears/gears-coffeescript
 
 .. _django-gears: https://github.com/gears/django-gears
 .. _flask-gears: https://github.com/gears/flask-gears

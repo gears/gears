@@ -1,5 +1,3 @@
-from gears.compilers import (
-    CoffeeScriptCompiler, HandlebarsCompiler, LessCompiler, StylusCompiler)
 from gears.environment import Compilers
 
 from mock import Mock
@@ -12,14 +10,6 @@ class CompilersTests(TestCase):
         self.compilers = Compilers()
         self.first_compiler = Mock()
         self.second_compiler = Mock()
-
-    def test_register_defaults(self):
-        self.compilers.register_defaults()
-        self.assertItemsEqual(self.compilers, ['.coffee', '.handlebars', '.less', '.styl'])
-        self.assertIs(self.compilers['.coffee'].handler_class, CoffeeScriptCompiler)
-        self.assertIs(self.compilers['.handlebars'].handler_class, HandlebarsCompiler)
-        self.assertIs(self.compilers['.less'].handler_class, LessCompiler)
-        self.assertIs(self.compilers['.styl'].handler_class, StylusCompiler)
 
     def test_register(self):
         self.compilers.register('.css', self.first_compiler)

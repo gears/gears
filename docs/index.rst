@@ -2,9 +2,12 @@ Gears
 =====
 
 Gears is a library to compile, concatenate and minify JavaScript and CSS
-assets, highly inspired by Ruby's Sprockets_. It includes support for writing
-scripts, styles and client templates using CoffeeScript_, Handlebars_, Stylus_,
-Less_. New compilers can be also easily added.
+assets, highly inspired by Ruby's Sprockets_. You can also write scripts,
+styles and client templates using CoffeeScript_, Handlebars_, Stylus_, Less_,
+and compile them using external packages (gears-coffeescript_,
+gears-handlebars_, gears-stylus_, gears-less_). These packages already include
+all required node.js modules, so you don't need to worry about installing them
+yourself.
 
 There is also:
 
@@ -35,6 +38,11 @@ Contents
 .. _Handlebars: http://www.handlebarsjs.com/
 .. _Stylus: http://learnboost.github.com/stylus/
 .. _Less: http://lesscss.org/
+
+.. _gears-less: https://github.com/gears/gears-less
+.. _gears-stylus: https://github.com/gears/gears-stylus
+.. _gears-handlebars: https://github.com/gears/gears-handlebars
+.. _gears-coffeescript: https://github.com/gears/gears-coffeescript
 
 .. _django-gears: https://github.com/gears/django-gears
 .. _flask-gears: https://github.com/gears/flask-gears

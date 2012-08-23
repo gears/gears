@@ -4,6 +4,13 @@ Changelog
 next release
 ------------
 
+- CoffeeScript, Handlebars, Stylus and LESS compilers have been moved into
+  separate packages (gears-coffeescript_, gears-handlebars_, gears-stylus_,
+  gears-less_), as they required some additional work to make them work
+  (install some node.js modules, point your app to them, etc.). Now all these
+  packages already include all required node.js modules, so you don't need to
+  worry about installing them yourself.
+
 - SASS and SCSS compilers have been removed since they did nothing to really
   support SASS and SCSS compilation.
 
@@ -64,6 +71,11 @@ next release
 
 First public release.
 
+
+.. _gears-less: https://github.com/gears/gears-less
+.. _gears-stylus: https://github.com/gears/gears-stylus
+.. _gears-handlebars: https://github.com/gears/gears-handlebars
+.. _gears-coffeescript: https://github.com/gears/gears-coffeescript
 
 .. _SlimIt: http://slimit.org/
 .. _cssmin: https://github.com/zacharyvoase/cssmin

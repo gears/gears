@@ -1,9 +1,25 @@
 from gears.asset_attributes import AssetAttributes
-from gears.compilers import BaseCompiler, CoffeeScriptCompiler, StylusCompiler
+from gears.compilers import BaseCompiler
 from gears.environment import Environment
 
 from mock import Mock
 from unittest2 import TestCase
+
+
+class StylusCompiler(BaseCompiler):
+
+    result_mimetype = 'text/css'
+
+    def __call__(self, asset):
+        pass
+
+
+class CoffeeScriptCompiler(BaseCompiler):
+
+    result_mimetype = 'application/javascript'
+
+    def __call__(self, asset):
+        pass
 
 
 class TemplateCompiler(BaseCompiler):

@@ -5,8 +5,6 @@ import os
 from .asset_attributes import AssetAttributes
 from .assets import build_asset
 from .cache import SimpleCache
-from .compilers import (
-    CoffeeScriptCompiler, HandlebarsCompiler, LessCompiler, StylusCompiler)
 from .exceptions import FileNotFound
 from .processors import DirectivesProcessor
 
@@ -62,18 +60,6 @@ class Compilers(dict):
     and compilers as values. Every registered extension can have only one
     compiler.
     """
-
-    def register_defaults(self):
-        """Register :class:`~gears.compilers.CoffeeScriptCompiler`,
-        :class:`~gears.compilers.HandlebarsCompiler`,
-        :class:`~gears.compilers.LessCompiler` and
-        :class:`~gears.compilers.StylusCompiler` for ``.coffee``,
-        ``.handlebars``, ``.less`` and ``.styl`` extensions, respectively.
-        """
-        self.register('.coffee', CoffeeScriptCompiler.as_handler())
-        self.register('.handlebars', HandlebarsCompiler.as_handler())
-        self.register('.less', LessCompiler.as_handler())
-        self.register('.styl', StylusCompiler.as_handler())
 
     def register(self, extension, compiler):
         """Register passed `compiler` with passed `extension`."""
@@ -293,7 +279,6 @@ class Environment(object):
         """Register default compilers, preprocessors, MIME types and public
         assets.
         """
-        self.compilers.register_defaults()
         self.mimetypes.register_defaults()
         self.public_assets.register_defaults()
         self.preprocessors.register_defaults()
