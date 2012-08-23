@@ -101,8 +101,6 @@ This example compiles public assets (``assets/js/script.js`` and
     ASSETS_DIR = os.path.join(ROOT_DIR, 'assets')
     STATIC_DIR = os.path.join(ROOT_DIR, 'static')
 
-    os.environ['NODE_PATH'] = os.path.join(ROOT_DIR, 'node_modules')
-
     env = Environment(STATIC_DIR)
     env.finders.register(FileSystemFinder([ASSETS_DIR]))
     env.register_defaults()
