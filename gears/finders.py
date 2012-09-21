@@ -1,6 +1,6 @@
 import os
 from .exceptions import ImproperlyConfigured, FileNotFound
-from .utils import safe_join
+from .utils import safe_join, listdir
 
 
 class BaseFinder(object):
@@ -37,12 +37,13 @@ class FileSystemFinder(BaseFinder):
         if os.path.exists(path):
             return path
 
-    def list(self, path):
+    def list(self, path, recursive=False):
         for root in self.locations:
             matched_path = self.find_location(root, path)
             if not matched_path or not os.path.isdir(matched_path):
                 continue
-            for filename in os.listdir(matched_path):
-                filepath = os.path.join(matched_path, filename)
-                if os.path.isfile(filepath):
-                    yield os.path.join(path, filename), filepath
+            for filepath in listdir(matched_path, recursive=recursive):
+                absolute_path = os.path.join(matched_path, filepath)
+                logical_path = os.path.join(path, filepath)
+                if os.path.isfile(absolute_path):
+                    yield logical_path, absolute_path

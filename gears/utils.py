@@ -39,3 +39,12 @@ def unique(iterable, key=lambda x: x):
         if keyitem not in yielded:
             yielded.add(keyitem)
             yield item
+
+
+def listdir(path, recursive=False):
+    for dirpath, dirnames, filenames in os.walk(path):
+        if not recursive:
+            dirnames[:] = []
+        dirpath = os.path.relpath(dirpath, path)
+        for filename in filenames:
+            yield os.path.normpath(os.path.join(dirpath, filename))
