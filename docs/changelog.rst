@@ -15,6 +15,8 @@ next release
 - SASS and SCSS compilers have been removed since they did nothing to really
   support SASS and SCSS compilation.
 
+- Support for Python 2.5 was dropped.
+
 0.3 (2012-06-24)
 ----------------
 
