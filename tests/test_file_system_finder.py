@@ -85,3 +85,11 @@ class FileSystemFinderTests(TestCase):
             ('js/templates/b.js.handlebars', os.path.join(ASSETS_DIR, 'js/templates/b.js.handlebars')),
             ('js/templates/c.js.handlebars', os.path.join(ASSETS_DIR, 'js/templates/c.js.handlebars')),
         ))
+
+    def test_list_empty_if_path_doesnt_exist(self):
+        finder = FileSystemFinder([ASSETS_DIR])
+        self.assertItemsEqual(finder.list('js/views'), ())
+
+    def test_list_empty_if_path_isnt_dir(self):
+        finder = FileSystemFinder([ASSETS_DIR])
+        self.assertItemsEqual(finder.list('js/templates/readme.txt'), ())
