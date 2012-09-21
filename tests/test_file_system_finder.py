@@ -77,7 +77,7 @@ class FileSystemFinderTests(TestCase):
             (('/second', 'js/script.js'), {}),
             (('/third', 'js/script.js'), {})])
 
-    def test_find(self):
+    def test_list(self):
         finder = FileSystemFinder([ASSETS_DIR])
         self.assertItemsEqual(finder.list('js/templates'), (
             ('js/templates/readme.txt', os.path.join(ASSETS_DIR, 'js/templates/readme.txt')),
