@@ -80,6 +80,8 @@ class AssetAttributesTests(TestCase):
         check('js/script.coffee', 'js/script.js')
         check('js/script.min.js', 'js/script.min.js')
         check('js/script.min.js.coffee', 'js/script.min.js')
+        check('images/logo.png', 'images/logo.png')
+        check('file', 'file')
 
     def test_search_paths(self):
         self.environment.mimetypes.register('.js', 'application/javascript')
