@@ -9,6 +9,12 @@ from .exceptions import FileNotFound
 from .processors import DirectivesProcessor
 
 
+DEFAULT_PUBLIC_ASSETS = (
+    'css/style.css',
+    'js/script.js',
+)
+
+
 class Finders(list):
     """The registry for file finders. This is just a list of finder objects.
     Each finder object must be an instance of any
@@ -137,29 +143,6 @@ class Compressors(dict):
             del self[mimetype]
 
 
-class PublicAssets(list):
-    """The registry for public assets. It acts like a list of logical paths of
-    assets.
-    """
-
-    def register_defaults(self):
-        """Register ``css/style.css`` and ``js/script.js`` as public assets."""
-        self.register('css/style.css')
-        self.register('js/script.js')
-
-    def register(self, path):
-        """Register passed `path` as public asset."""
-        if path not in self:
-            self.append(path)
-
-    def unregister(self, path):
-        """Remove passed `path` from registry. If `path` does not found in the
-        registry, nothing happens.
-        """
-        if path in self:
-            self.remove(path)
-
-
 class Suffixes(list):
     """The registry for asset suffixes. It acts like a list of dictionaries.
     Every dictionary has three keys: ``extensions``, ``result_mimetype`` and
@@ -219,17 +202,27 @@ class Environment(object):
     """This is the central object, that links all Gears parts. It is passed the
     absolute path to the directory where public assets will be saved.
     Environment contains registries for file finders, compilers, compressors,
-    processors, supported MIME types and public assets.
+    processors and supported MIME types.
 
     :param root: the absolute path to the directory where handled public assets
                  will be saved by :meth:`save` method.
+    :param public_assets: a list of public assets paths.
     :param cache: a cache object. It is used by assets and dependencies to
                   store compilation results.
     """
 
-    def __init__(self, root, cache=None):
+    def __init__(self, root, public_assets=None, cache=None):
         self.root = root
-        self.cache = cache if cache is not None else SimpleCache()
+
+        if public_assets is None:
+            self.public_assets = DEFAULT_PUBLIC_ASSETS
+        else:
+            self.public_assets = public_assets
+
+        if cache is None:
+            self.cache = SimpleCache()
+        else:
+            self.cache = cache
 
         #: The registry for file finders. See
         #: :class:`~gears.environment.Finders` for more information.
@@ -246,11 +239,6 @@ class Environment(object):
         #: The registry for asset compressors. See
         #: :class:`~gears.environment.Compressors` for more information.
         self.compressors = Compressors()
-
-        #: The registry for public assets. Only assets from this registry will
-        #: be saved to the :attr:`root` path. See
-        #: :class:`~gears.environment.PublicAsets` for more information.
-        self.public_assets = PublicAssets()
 
         #: The registry for asset preprocessors. See
         #: :class:`~gears.environment.Preprocessors` for more information.
@@ -276,11 +264,8 @@ class Environment(object):
         return self._suffixes
 
     def register_defaults(self):
-        """Register default compilers, preprocessors, MIME types and public
-        assets.
-        """
+        """Register default compilers, preprocessors and MIME types."""
         self.mimetypes.register_defaults()
-        self.public_assets.register_defaults()
         self.preprocessors.register_defaults()
 
     def find(self, item, logical=False):
