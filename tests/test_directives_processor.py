@@ -62,6 +62,9 @@ class DirectivesProcessorTests(TestCase):
             'js/libs/useful_lib.js',
             'js/models.js',
             'js/views.js',
+            'js/utils/a.js',
+            'js/utils/b/a.js',
+            'js/utils/b/b.js',
         ])
 
     def test_modifies_processed_source(self):

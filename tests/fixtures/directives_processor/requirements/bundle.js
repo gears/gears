@@ -20,3 +20,9 @@ console.log('useful_lib.js');
 (function () {
   console.log('application views');
 }).call(this);
+
+console.log('utils/a.js');
+
+console.log('utils/b/a.js');
+
+console.log('utils/b/b.js');

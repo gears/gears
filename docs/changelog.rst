@@ -4,6 +4,9 @@ Changelog
 next release
 ------------
 
+- Added ``require_tree`` directive. It works like ``require_directory``, but
+  also collects assets from subdirectories recursively.
+
 - Node.js-dependent compilers (CoffeeScript, Handlebars, Stylus and LESS) and
   compressors (UglifyJS and clean-css) have been moved into separate packages
   (gears-coffeescript_, gears-handlebars_, gears-stylus_, gears-less_,

@@ -26,10 +26,11 @@ Features
        *= require jquery
        *= require underscore
        *= require backbone
+       *= require_tree views
        *= require_directory templates
        */
 
-  Four directive types is supported for now:
+  Five directive types is supported for now:
 
   * ``require :path``: includes the contents of the asset ``path`` suffixed
     with the same extension as the current asset (e.g., if
@@ -39,6 +40,10 @@ Features
   * ``require_directory :path``: includes the contents of the every asset in
     the directory ``path`` with the same suffix as the current asset in
     alphabetical order.
+
+  * ``require_tree :path``: includes the contents of the every asset with the
+    same suffix as the current asset in the directory ``path`` and all its
+    subdirectories in alphabetical order.
 
   * ``require_self``: includes the contents of the current asset at the current
     place. If there is no ``require_self`` directive, the contents will be
