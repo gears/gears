@@ -326,13 +326,14 @@ class Environment(object):
                 return AssetAttributes(self, item), absolute_path
         raise FileNotFound(item)
 
-    def list(self, path, mimetype=None):
+    def list(self, path, mimetype=None, recursive=False):
         """Yield two-tuples for all files found in the directory given by
         ``path`` parameter. Result can be filtered by the second parameter,
         ``mimetype``, that must be a MIME type of assets compiled source code.
-        Each tuple has :class:`~gears.asset_attributes.AssetAttributes`
-        instance for found file path as first item, and absolute path to this
-        file as second item.
+        If ``recursive`` is ``True``, then ``path`` will be scanned
+        recursively. Each tuple has
+        :class:`~gears.asset_attributes.AssetAttributes` instance for found
+        file path as first item, and absolute path to this file as second item.
 
         Usage example::
 
@@ -345,7 +346,7 @@ class Environment(object):
         """
         found = set()
         for finder in self.finders:
-            for logical_path, absolute_path in finder.list(path):
+            for logical_path, absolute_path in finder.list(path, recursive=recursive):
                 asset_attributes = AssetAttributes(self, logical_path)
                 if mimetype is not None and asset_attributes.mimetype != mimetype:
                     continue

@@ -140,3 +140,17 @@ class EnvironmentListTests(TestCase):
             self.assertIsInstance(asset_attributes, AssetAttributes)
             self.assertEqual(asset_attributes.path, path)
             self.assertEqual(absolute_path, os.path.join(ASSETS_DIR, path))
+
+    def test_list_recursively(self):
+        items = list(self.environment.list(
+            'js/templates',
+            'application/javascript',
+            recursive=True,
+        ))
+        self.assertEqual(len(items), 4)
+        for i, item in enumerate(sorted(items, key=lambda x: x[1])):
+            path = 'js/templates/%s.js.handlebars' % ('a', 'b', 'c', 'd/e')[i]
+            asset_attributes, absolute_path = item
+            self.assertIsInstance(asset_attributes, AssetAttributes)
+            self.assertEqual(asset_attributes.path, path)
+            self.assertEqual(absolute_path, os.path.join(ASSETS_DIR, path))
