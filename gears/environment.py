@@ -7,11 +7,12 @@ from .assets import build_asset
 from .cache import SimpleCache
 from .exceptions import FileNotFound
 from .processors import DirectivesProcessor
+from .utils import get_condition_func
 
 
 DEFAULT_PUBLIC_ASSETS = (
-    'css/style.css',
-    'js/script.js',
+    r'^css/style\.css$',
+    r'^js/script\.js$',
 )
 
 
@@ -211,18 +212,10 @@ class Environment(object):
                   store compilation results.
     """
 
-    def __init__(self, root, public_assets=None, cache=None):
+    def __init__(self, root, public_assets=DEFAULT_PUBLIC_ASSETS, cache=None):
         self.root = root
-
-        if public_assets is None:
-            self.public_assets = DEFAULT_PUBLIC_ASSETS
-        else:
-            self.public_assets = public_assets
-
-        if cache is None:
-            self.cache = SimpleCache()
-        else:
-            self.cache = cache
+        self.public_assets = [get_condition_func(c) for c in public_assets]
+        self.cache = cache if cache is not None else SimpleCache()
 
         #: The registry for file finders. See
         #: :class:`~gears.environment.Finders` for more information.
@@ -344,11 +337,11 @@ class Environment(object):
 
     def save(self):
         """Save handled public assets to :attr:`root` directory."""
-        for path in self.public_assets:
-            try:
-                self.save_file(path, str(build_asset(self, path)))
-            except FileNotFound:
-                pass
+        for asset_attributes, absolute_path in self.list('.', recursive=True):
+            logical_path = os.path.normpath(asset_attributes.logical_path)
+            if self.is_public(logical_path):
+                asset = build_asset(self, logical_path)
+                self.save_file(logical_path, str(asset))
 
     def save_file(self, path, source):
         filename = os.path.join(self.root, path)
@@ -359,3 +352,6 @@ class Environment(object):
             raise OSError("%s exists and is not a directory." % path)
         with open(filename, 'w') as f:
             f.write(source)
+
+    def is_public(self, logical_path):
+        return any(condition(logical_path) for condition in self.public_assets)

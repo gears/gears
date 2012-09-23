@@ -1,4 +1,5 @@
 import os
+import re
 
 
 missing = object()
@@ -48,3 +49,11 @@ def listdir(path, recursive=False):
         dirpath = os.path.relpath(dirpath, path)
         for filename in filenames:
             yield os.path.normpath(os.path.join(dirpath, filename))
+
+
+def get_condition_func(condition):
+    if callable(condition):
+        return condition
+    if isinstance(condition, basestring):
+        condition = re.compile(condition)
+    return lambda path: condition.search(path)
