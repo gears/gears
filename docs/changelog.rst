@@ -1,6 +1,41 @@
 Changelog
 =========
 
+0.4 (2012-09-23)
+----------------
+
+- Public assets storage was simplified. There is no registry for them anymore.
+  They are set using ``public_assets`` param of
+  :class:`~gears.environment.Environment` now.
+
+  Also, public assets handling was slightly improved. ``public_assets`` must be
+  a list or tuple of callables or regexps now. Default value::
+
+      DEFAULT_PUBLIC_ASSETS = (
+          lambda path: not any(path.endswith(ext) for ext in ('.css', '.js')),
+          r'^css/style\.css$',
+          r'^js/script\.js$',
+      )
+
+  ``css/style.css``, ``js/script.js`` and all assets that aren't compiled to
+  .css or .js are public by default.
+
+- Added ``require_tree`` directive. It works like ``require_directory``, but
+  also collects assets from subdirectories recursively.
+
+- Node.js-dependent compilers (CoffeeScript, Handlebars, Stylus and LESS) and
+  compressors (UglifyJS and clean-css) have been moved into separate packages
+  (gears-coffeescript_, gears-handlebars_, gears-stylus_, gears-less_,
+  gears-uglifyjs_, gears-clean-css_), as they required some additional work to
+  make them work (install some node.js modules, point your app to them, etc.).
+  Now all these packages already include all required node.js modules, so you
+  don't need to worry about installing them yourself.
+
+- SASS and SCSS compilers have been removed since they did nothing to really
+  support SASS and SCSS compilation.
+
+- Support for Python 2.5 was dropped.
+
 0.3 (2012-06-24)
 ----------------
 
@@ -58,6 +93,14 @@ Changelog
 
 First public release.
 
+
+.. _gears-less: https://github.com/gears/gears-less
+.. _gears-stylus: https://github.com/gears/gears-stylus
+.. _gears-handlebars: https://github.com/gears/gears-handlebars
+.. _gears-coffeescript: https://github.com/gears/gears-coffeescript
+
+.. _gears-uglifyjs: https://github.com/gears/gears-uglifyjs
+.. _gears-clean-css: https://github.com/gears/gears-clean-css
 
 .. _SlimIt: http://slimit.org/
 .. _cssmin: https://github.com/zacharyvoase/cssmin

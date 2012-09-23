@@ -25,7 +25,12 @@ class FakeCompiler(object):
 
 class FakeFinder(object):
 
-    paths = ('js/script.js', 'js/app/index.js', 'js/models.js.coffee')
+    paths = (
+        'js/script.js',
+        'js/app/index.js',
+        'js/models.js.coffee',
+        'images/logo.png',
+    )
 
     def find(self, path):
         if path in self.paths:
@@ -56,14 +61,10 @@ class EnvironmentTests(TestCase):
         ])
 
     def test_register_defaults(self):
-        self.environment.compilers = Mock()
         self.environment.mimetypes = Mock()
-        self.environment.public_assets = Mock()
         self.environment.preprocessors = Mock()
         self.environment.register_defaults()
-        self.environment.compilers.register_defaults.assert_called_once_with()
         self.environment.mimetypes.register_defaults.assert_called_once_with()
-        self.environment.public_assets.register_defaults.assert_called_once_with()
         self.environment.preprocessors.register_defaults.assert_called_once_with()
 
 
@@ -115,6 +116,11 @@ class EnvironmentFindTests(TestCase):
         self.check_asset_attributes(attrs, 'js/models.js.coffee')
         self.assertEqual(path, '/assets/js/models.js.coffee')
 
+    def test_find_by_logical_path_with_unrecognized_extension(self):
+        attrs, path = self.environment.find('images/logo.png', logical=True)
+        self.check_asset_attributes(attrs, 'images/logo.png')
+        self.assertEqual(path, '/assets/images/logo.png')
+
     def test_find_nothing_by_logical_path(self):
         with self.assertRaises(FileNotFound):
             self.environment.find('js/views.js', logical=True)
@@ -138,6 +144,20 @@ class EnvironmentListTests(TestCase):
         self.assertEqual(len(items), 3)
         for i, item in enumerate(sorted(items, key=lambda x: x[1])):
             path = 'js/templates/%s.js.handlebars' % 'abc'[i]
+            asset_attributes, absolute_path = item
+            self.assertIsInstance(asset_attributes, AssetAttributes)
+            self.assertEqual(asset_attributes.path, path)
+            self.assertEqual(absolute_path, os.path.join(ASSETS_DIR, path))
+
+    def test_list_recursively(self):
+        items = list(self.environment.list(
+            'js/templates',
+            'application/javascript',
+            recursive=True,
+        ))
+        self.assertEqual(len(items), 4)
+        for i, item in enumerate(sorted(items, key=lambda x: x[1])):
+            path = 'js/templates/%s.js.handlebars' % ('a', 'b', 'c', 'd/e')[i]
             asset_attributes, absolute_path = item
             self.assertIsInstance(asset_attributes, AssetAttributes)
             self.assertEqual(asset_attributes.path, path)

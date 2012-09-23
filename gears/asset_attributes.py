@@ -79,6 +79,8 @@ class AssetAttributes(object):
             'js/models.js'
         """
         format_extension = self.format_extension or self.compiler_format_extension
+        if format_extension is None:
+            return self.path
         return self.path_without_suffix + format_extension
 
     @cached_property
