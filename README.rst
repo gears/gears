@@ -104,8 +104,9 @@ installed on your system.
 Usage
 -----
 
-This example compiles public assets (``assets/js/script.js`` and
-``assets/css/style.css`` by default) from ``assets`` directory to ``static``::
+This example compiles public assets (default: ``assets/js/script.js``,
+``assets/css/style.css`` and all assets that aren't compiled to .css or .js)
+from ``assets`` directory to ``static``::
 
     import os
 
