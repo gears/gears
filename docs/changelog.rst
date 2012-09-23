@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next release
-------------
+0.4 (2012-09-23)
+----------------
 
 - Public assets storage was simplified. There is no registry for them anymore.
   They are set using ``public_assets`` param of
