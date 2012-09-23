@@ -4,6 +4,22 @@ Changelog
 next release
 ------------
 
+- Public assets storage was simplified. There is no registry for them anymore.
+  They are set using ``public_assets`` param of
+  :class:`~gears.environment.Environment` now.
+
+  Also, public assets handling was slightly improved. ``public_assets`` must be
+  a list or tuple of callables or regexps now. Default value::
+
+      DEFAULT_PUBLIC_ASSETS = (
+          lambda path: not any(path.endswith(ext) for ext in ('.css', '.js')),
+          r'^css/style\.css$',
+          r'^js/script\.js$',
+      )
+
+  ``css/style.css``, ``js/script.js`` and all assets that aren't compiled to
+  .css or .js are public by default.
+
 - Added ``require_tree`` directive. It works like ``require_directory``, but
   also collects assets from subdirectories recursively.
 

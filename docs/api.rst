@@ -47,12 +47,6 @@ Compressors Registry
 .. autoclass:: Compressors
    :members:
 
-Public Assets Registry
-^^^^^^^^^^^^^^^^^^^^^^
-
-.. autoclass:: PublicAssets
-   :members:
-
 Suffixes Registry
 ^^^^^^^^^^^^^^^^^
 

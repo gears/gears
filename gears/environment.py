@@ -7,6 +7,14 @@ from .assets import build_asset
 from .cache import SimpleCache
 from .exceptions import FileNotFound
 from .processors import DirectivesProcessor
+from .utils import get_condition_func
+
+
+DEFAULT_PUBLIC_ASSETS = (
+    lambda path: not any(path.endswith(ext) for ext in ('.css', '.js')),
+    r'^css/style\.css$',
+    r'^js/script\.js$',
+)
 
 
 class Finders(list):
@@ -137,29 +145,6 @@ class Compressors(dict):
             del self[mimetype]
 
 
-class PublicAssets(list):
-    """The registry for public assets. It acts like a list of logical paths of
-    assets.
-    """
-
-    def register_defaults(self):
-        """Register ``css/style.css`` and ``js/script.js`` as public assets."""
-        self.register('css/style.css')
-        self.register('js/script.js')
-
-    def register(self, path):
-        """Register passed `path` as public asset."""
-        if path not in self:
-            self.append(path)
-
-    def unregister(self, path):
-        """Remove passed `path` from registry. If `path` does not found in the
-        registry, nothing happens.
-        """
-        if path in self:
-            self.remove(path)
-
-
 class Suffixes(list):
     """The registry for asset suffixes. It acts like a list of dictionaries.
     Every dictionary has three keys: ``extensions``, ``result_mimetype`` and
@@ -219,16 +204,18 @@ class Environment(object):
     """This is the central object, that links all Gears parts. It is passed the
     absolute path to the directory where public assets will be saved.
     Environment contains registries for file finders, compilers, compressors,
-    processors, supported MIME types and public assets.
+    processors and supported MIME types.
 
     :param root: the absolute path to the directory where handled public assets
                  will be saved by :meth:`save` method.
+    :param public_assets: a list of public assets paths.
     :param cache: a cache object. It is used by assets and dependencies to
                   store compilation results.
     """
 
-    def __init__(self, root, cache=None):
+    def __init__(self, root, public_assets=DEFAULT_PUBLIC_ASSETS, cache=None):
         self.root = root
+        self.public_assets = [get_condition_func(c) for c in public_assets]
         self.cache = cache if cache is not None else SimpleCache()
 
         #: The registry for file finders. See
@@ -246,11 +233,6 @@ class Environment(object):
         #: The registry for asset compressors. See
         #: :class:`~gears.environment.Compressors` for more information.
         self.compressors = Compressors()
-
-        #: The registry for public assets. Only assets from this registry will
-        #: be saved to the :attr:`root` path. See
-        #: :class:`~gears.environment.PublicAsets` for more information.
-        self.public_assets = PublicAssets()
 
         #: The registry for asset preprocessors. See
         #: :class:`~gears.environment.Preprocessors` for more information.
@@ -276,11 +258,8 @@ class Environment(object):
         return self._suffixes
 
     def register_defaults(self):
-        """Register default compilers, preprocessors, MIME types and public
-        assets.
-        """
+        """Register default compilers, preprocessors and MIME types."""
         self.mimetypes.register_defaults()
-        self.public_assets.register_defaults()
         self.preprocessors.register_defaults()
 
     def find(self, item, logical=False):
@@ -359,11 +338,11 @@ class Environment(object):
 
     def save(self):
         """Save handled public assets to :attr:`root` directory."""
-        for path in self.public_assets:
-            try:
-                self.save_file(path, str(build_asset(self, path)))
-            except FileNotFound:
-                pass
+        for asset_attributes, absolute_path in self.list('.', recursive=True):
+            logical_path = os.path.normpath(asset_attributes.logical_path)
+            if self.is_public(logical_path):
+                asset = build_asset(self, logical_path)
+                self.save_file(logical_path, str(asset))
 
     def save_file(self, path, source):
         filename = os.path.join(self.root, path)
@@ -374,3 +353,6 @@ class Environment(object):
             raise OSError("%s exists and is not a directory." % path)
         with open(filename, 'w') as f:
             f.write(source)
+
+    def is_public(self, logical_path):
+        return any(condition(logical_path) for condition in self.public_assets)
