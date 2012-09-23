@@ -11,6 +11,7 @@ from .utils import get_condition_func
 
 
 DEFAULT_PUBLIC_ASSETS = (
+    lambda path: not any(path.endswith(ext) for ext in ('.css', '.js')),
     r'^css/style\.css$',
     r'^js/script\.js$',
 )
