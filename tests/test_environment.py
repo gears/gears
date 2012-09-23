@@ -25,7 +25,12 @@ class FakeCompiler(object):
 
 class FakeFinder(object):
 
-    paths = ('js/script.js', 'js/app/index.js', 'js/models.js.coffee')
+    paths = (
+        'js/script.js',
+        'js/app/index.js',
+        'js/models.js.coffee',
+        'images/logo.png',
+    )
 
     def find(self, path):
         if path in self.paths:
@@ -112,6 +117,11 @@ class EnvironmentFindTests(TestCase):
         attrs, path = self.environment.find('js/models.js', logical=True)
         self.check_asset_attributes(attrs, 'js/models.js.coffee')
         self.assertEqual(path, '/assets/js/models.js.coffee')
+
+    def test_find_by_logical_path_with_unrecognized_extension(self):
+        attrs, path = self.environment.find('images/logo.png', logical=True)
+        self.check_asset_attributes(attrs, 'images/logo.png')
+        self.assertEqual(path, '/assets/images/logo.png')
 
     def test_find_nothing_by_logical_path(self):
         with self.assertRaises(FileNotFound):

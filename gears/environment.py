@@ -311,8 +311,11 @@ class Environment(object):
                     continue
         elif logical:
             asset_attributes = AssetAttributes(self, item)
+            suffixes = self.suffixes.find(asset_attributes.mimetype)
+            if not suffixes:
+                return self.find(item)
             path = asset_attributes.path_without_suffix
-            for suffix in self.suffixes.find(asset_attributes.mimetype):
+            for suffix in suffixes:
                 try:
                     return self.find(path + suffix)
                 except FileNotFound:
