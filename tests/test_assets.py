@@ -34,6 +34,13 @@ class StaticAssetTests(GearsTestCase):
         asset = self.get_static_asset('static_source')
         asset.source
 
+    def test_hexdigest(self):
+        asset = get_static_asset('static_source')
+        self.assertEqual(
+            asset.hexdigest,
+            'c8a756475599e6e3c904b24077b4b0a31983752c',
+        )
+
     def test_is_iterable(self):
         asset = self.get_static_asset('static_source')
         tuple(asset)

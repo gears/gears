@@ -274,6 +274,10 @@ class StaticAsset(BaseAsset):
         with open(self.absolute_path, 'rb') as f:
             return f.read()
 
+    @cached_property
+    def hexdigest(self):
+        return hashlib.sha1(self.source).hexdigest()
+
     def __iter__(self):
         return iter(self.source)
 
