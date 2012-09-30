@@ -1,10 +1,14 @@
 import codecs
 import hashlib
 import os
+import re
 
 from .asset_attributes import AssetAttributes
 from .compat import str, UnicodeMixin
 from .utils import cached_property, unique
+
+
+HEXDIGEST_RE = re.compile(r'(\.\w+)$')
 
 
 class CircularDependencyError(Exception):
@@ -163,6 +167,13 @@ class BaseAsset(object):
 
     def __repr__(self):
         return '<%s absolute_path=%s>' % (self.__class__.__name__, self.absolute_path)
+
+    @cached_property
+    def hexdigest_path(self):
+        return HEXDIGEST_RE.sub(
+            r'.{0}\1'.format(self.hexdigest),
+            self.attributes.logical_path,
+        )
 
 
 class Asset(UnicodeMixin, BaseAsset):
