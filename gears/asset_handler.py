@@ -58,7 +58,7 @@ class ExecMixin(object):
         output, errors = p.communicate(input=input.encode('utf-8'))
         if p.returncode != 0:
             raise AssetHandlerError(errors)
-        return output
+        return output.decode('utf-8')
 
     def get_process(self):
         """Returns :class:`subprocess.Popen` instance with args from

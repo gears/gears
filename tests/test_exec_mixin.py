@@ -13,7 +13,7 @@ class ExecMixinTests(TestCase):
     def test_returns_stdout_on_success(self, Popen):
         result = Mock()
         result.returncode = 0
-        result.communicate.return_value = ('output', '')
+        result.communicate.return_value = (b'output', b'')
         Popen.return_value = result
         self.assertEqual(Exec().run('input'), 'output')
 
@@ -21,7 +21,7 @@ class ExecMixinTests(TestCase):
     def test_raises_stderr_on_failure(self, Popen):
         result = Mock()
         result.returncode = 1
-        result.communicate.return_value = ('', 'error')
+        result.communicate.return_value = (b'', b'error')
         Popen.return_value = result
         with self.assertRaises(AssetHandlerError):
             Exec().run('input')
