@@ -1,5 +1,3 @@
-from __future__ import with_statement
-
 import os
 from gears.directives_parser import DirectivesParser
 from unittest2 import TestCase

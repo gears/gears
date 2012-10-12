@@ -1,8 +1,6 @@
-from __future__ import with_statement
-
 import os
 
-from gears.assets import Requirements, Asset
+from gears.assets import Asset
 from gears.compilers import BaseCompiler
 from gears.environment import Environment
 from gears.finders import FileSystemFinder
