@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 try:
     from cssmin import cssmin
     cssmin_available = True

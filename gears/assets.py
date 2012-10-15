@@ -1,11 +1,9 @@
-from __future__ import with_statement
-
 import codecs
 import hashlib
 import os
 
 from .asset_attributes import AssetAttributes
-from .utils import cached_property, unique
+from .utils import cached_property, unique, UnicodeMixin
 
 
 class CircularDependencyError(Exception):
@@ -169,7 +167,7 @@ class BaseAsset(object):
         return '<%s absolute_path=%s>' % (self.__class__.__name__, self.absolute_path)
 
 
-class Asset(BaseAsset):
+class Asset(UnicodeMixin, BaseAsset):
 
     def __init__(self, *args, **kwargs):
         super(Asset, self).__init__(*args, **kwargs)
@@ -186,9 +184,6 @@ class Asset(BaseAsset):
 
     def __unicode__(self):
         return self.compressed_source
-
-    def __str__(self):
-        return unicode(self).encode('utf-8')
 
     @property
     def cached_data(self):
@@ -213,7 +208,7 @@ class Asset(BaseAsset):
             bundled_source = self.cache.get(cache_key)
             if bundled_source is not None:
                 return bundled_source
-        bundled_source = u'\n'.join(r.processed_source for r in self.requirements)
+        bundled_source = '\n'.join(r.processed_source for r in self.requirements)
         self.cache.set(cache_key, bundled_source)
         return bundled_source
 

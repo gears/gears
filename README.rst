@@ -80,6 +80,8 @@ Features
 
   New compilers can be also easily added.
 
+* Supports Python 3.
+
 Installation
 ------------
 

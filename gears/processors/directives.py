@@ -1,5 +1,6 @@
 import os
 import shlex
+import sys
 
 from .base import BaseProcessor
 from ..asset_attributes import AssetAttributes
@@ -30,7 +31,10 @@ class DirectivesProcessor(BaseProcessor):
 
     def process_directives(self):
         for directive in self.directives:
-            args = shlex.split(directive.encode('utf-8'))
+            # shlex didn't support Unicode prior to 2.7.3
+            if sys.version_info < (2, 7, 3):
+                directive = directive.encode('utf-8')
+            args = shlex.split(directive)
             self.types[args[0]](*args[1:])
 
     def process_require_directive(self, path):

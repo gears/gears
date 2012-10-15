@@ -1,5 +1,8 @@
 import os
 import re
+import sys
+
+from collections import Callable
 
 
 missing = object()
@@ -21,6 +24,16 @@ class cached_property(object):
             value = self.func(obj)
             obj.__dict__[self.__name__] = value
         return value
+
+
+class UnicodeMixin(object):
+    """Python 3 compatible __str__/__unicode__ support"""
+
+    def __str__(self):
+        val = self.__unicode__()
+        if sys.version_info < (3, 0):
+            val = val.encode('utf-8')
+        return val
 
 
 def safe_join(base, *paths):
@@ -52,8 +65,8 @@ def listdir(path, recursive=False):
 
 
 def get_condition_func(condition):
-    if callable(condition):
+    if isinstance(condition, Callable):
         return condition
-    if isinstance(condition, basestring):
+    if isinstance(condition, str):
         condition = re.compile(condition)
     return lambda path: condition.search(path)
