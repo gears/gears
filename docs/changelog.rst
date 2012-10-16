@@ -1,6 +1,19 @@
 Changelog
 =========
 
+next release
+------------
+
+- Support for Python 3.2 was added (Thanks to `Artem Gluvchynsky`_).
+
+  .. note::
+
+     SlimIt and cssmin compressors don't support Python 3 yet. But you can
+     use compressors from gears-uglifyjs_ and gears-clean-css_ packages
+     instead.
+
+.. _Artem Gluvchynsky: https://github.com/excieve
+
 0.4 (2012-09-23)
 ----------------
 

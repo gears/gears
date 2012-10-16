@@ -73,8 +73,8 @@ Features
 
 * Compressing. Supported compressors:
 
-  * SlimIt_ (Python);
-  * cssmin_ (Python);
+  * SlimIt_ (Python, 2.X only);
+  * cssmin_ (Python, 2.X only);
   * UglifyJS_ (Node.js, using gears-uglifyjs_);
   * clean-css_ (Node.js, using gears-clean-css_).
 
