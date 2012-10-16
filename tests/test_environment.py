@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 from contextlib import contextmanager
 
 from gears.asset_attributes import AssetAttributes
@@ -124,10 +125,13 @@ class EnvironmentFindTests(TestCase):
             self.environment.find('js/views.js', logical=True)
 
     def test_save_file(self):
+        source = 'hello world'
+        if sys.version_info >= (3, 0):
+            source = bytes(source, 'utf-8')
         with remove_static_dir():
-            self.environment.save_file('js/script.js', 'hello world')
-            with open(os.path.join(STATIC_DIR, 'js', 'script.js')) as f:
-                self.assertEqual(f.read(), 'hello world')
+            self.environment.save_file('js/script.js', source)
+            with open(os.path.join(STATIC_DIR, 'js', 'script.js'), 'rb') as f:
+                self.assertEqual(f.read(), source)
 
 
 class EnvironmentListTests(TestCase):

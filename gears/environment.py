@@ -1,4 +1,5 @@
 import os
+import sys
 
 from .asset_attributes import AssetAttributes
 from .assets import build_asset
@@ -340,7 +341,11 @@ class Environment(object):
             logical_path = os.path.normpath(asset_attributes.logical_path)
             if self.is_public(logical_path):
                 asset = build_asset(self, logical_path)
-                self.save_file(logical_path, str(asset))
+                if sys.version_info < (3, 0):
+                    source = str(asset)
+                else:
+                    source = bytes(asset)
+                self.save_file(logical_path, source)
 
     def save_file(self, path, source):
         filename = os.path.join(self.root, path)
@@ -349,7 +354,7 @@ class Environment(object):
             os.makedirs(path)
         elif not os.path.isdir(path):
             raise OSError("%s exists and is not a directory." % path)
-        with open(filename, 'w') as f:
+        with open(filename, 'wb') as f:
             f.write(source)
 
     def is_public(self, logical_path):
