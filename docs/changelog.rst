@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next release
-------------
+0.5.1 (2012-10-16)
+------------------
 
 - Fix saving handled assets.
 
