@@ -1,6 +1,13 @@
 Changelog
 =========
 
+next release
+------------
+
+- Fix saving handled assets.
+
+- Python 3.3 is also supported.
+
 0.5 (2012-10-16)
 ----------------
 
