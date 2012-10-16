@@ -2,7 +2,9 @@ language: python
 python:
   - "2.6"
   - "2.7"
+  - "3.2"
 install:
-  - pip install unittest2 mock nose --use-mirrors
+  - pip install mock nose --use-mirrors
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install unittest2py3k --use-mirrors; else pip install unittest2 --use-mirrors; fi
   - pip install . --use-mirrors
 script: nosetests

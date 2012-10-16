@@ -1,5 +1,3 @@
-from __future__ import with_statement
-
 import hashlib
 import os
 try:
@@ -47,6 +45,6 @@ class FileBasedCache(object):
             return None
 
     def _get_filepath(self, key):
-        relpath = hashlib.sha1(key).hexdigest()
+        relpath = hashlib.sha1(key.encode('utf-8')).hexdigest()
         relpath = os.path.join(relpath[:2], relpath[2:4], relpath[4:])
         return os.path.join(self.root, relpath)

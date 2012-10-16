@@ -1,12 +1,10 @@
-from __future__ import with_statement
-
 import codecs
 import os
+import sys
 
 from gears.assets import CircularDependencyError, Asset
 from gears.environment import Environment
 from gears.finders import FileSystemFinder
-from gears.processors import DirectivesProcessor
 
 from unittest2 import TestCase
 
@@ -44,4 +42,9 @@ class AssetTests(TestCase):
 
     def test_unicode_support(self):
         output = read(os.path.join(FIXTURES_DIR, 'unicode_support', 'output.js'))
-        self.assertEqual(unicode(self.get_asset('unicode_support')), output)
+        asset = self.get_asset('unicode_support')
+        if sys.version_info < (3, 0):
+            asset_output = unicode(asset)
+        else:
+            asset_output = str(asset)
+        self.assertEqual(asset_output, output)
