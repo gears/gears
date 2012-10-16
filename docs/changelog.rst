@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next release
-------------
+0.5 (2012-10-16)
+----------------
 
 - Support for Python 3.2 was added (Thanks to `Artem Gluvchynsky`_).
 
