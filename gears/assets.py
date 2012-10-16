@@ -1,6 +1,7 @@
 import codecs
 import hashlib
 import os
+import sys
 
 from .asset_attributes import AssetAttributes
 from .utils import cached_property, unique, UnicodeMixin
@@ -185,6 +186,12 @@ class Asset(UnicodeMixin, BaseAsset):
     def __unicode__(self):
         return self.compressed_source
 
+    def __iter__(self):
+        value = str(self)
+        if sys.version_info >= (3, 0):
+            value = bytes(value, 'utf-8')
+        return iter(value)
+
     @property
     def cached_data(self):
         return self.cache.get(self._get_cache_key())
@@ -272,6 +279,9 @@ class StaticAsset(BaseAsset):
     def source(self):
         with open(self.absolute_path, 'rb') as f:
             return f.read()
+
+    def __iter__(self):
+        return iter(self.source)
 
 
 def build_asset(environment, path):
