@@ -2,7 +2,7 @@ import codecs
 import os
 import sys
 
-from gears.assets import CircularDependencyError, Asset
+from gears.assets import CircularDependencyError, Asset, StaticAsset
 from gears.environment import Environment
 from gears.finders import FileSystemFinder
 
@@ -55,3 +55,10 @@ class AssetTests(TestCase):
         else:
             asset_output = str(asset)
         self.assertEqual(asset_output, output)
+
+
+class StaticAssetTests(TestCase):
+
+    def test_source(self):
+        asset = get_static_asset('static_source')
+        asset.source
