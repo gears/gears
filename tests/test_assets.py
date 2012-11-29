@@ -56,9 +56,17 @@ class AssetTests(TestCase):
             asset_output = str(asset)
         self.assertEqual(asset_output, output)
 
+    def test_is_iterable(self):
+        asset = get_asset('unicode_support')
+        tuple(asset)
+
 
 class StaticAssetTests(TestCase):
 
     def test_source(self):
         asset = get_static_asset('static_source')
         asset.source
+
+    def test_is_iterable(self):
+        asset = get_static_asset('static_source')
+        tuple(asset)
