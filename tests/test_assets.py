@@ -2,7 +2,7 @@ import codecs
 import os
 import sys
 
-from gears.assets import CircularDependencyError, Asset, StaticAsset
+from gears.assets import CircularDependencyError, Asset, StaticAsset, build_asset
 from gears.environment import Environment
 from gears.finders import FileSystemFinder
 
@@ -70,3 +70,17 @@ class StaticAssetTests(TestCase):
     def test_is_iterable(self):
         asset = get_static_asset('static_source')
         tuple(asset)
+
+
+class BuildAssetTests(TestCase):
+
+    def setUp(self):
+        self.environment = get_environment('build_asset')
+
+    def test_has_processors(self):
+        asset = build_asset(self.environment, 'source.js')
+        self.assertIsInstance(asset, Asset)
+
+    def test_has_no_processors(self):
+        asset = build_asset(self.environment, 'source.md')
+        self.assertIsInstance(asset, StaticAsset)
