@@ -18,31 +18,38 @@ def read(file):
         return f.read()
 
 
+def get_fixture_path(fixture):
+    return os.path.join(FIXTURES_DIR, fixture)
+
+
+def get_finder(fixture):
+    return FileSystemFinder([get_fixture_path(fixture)])
+
+
+def get_environment(fixture):
+    environment = Environment(os.path.join(TESTS_DIR, 'static'))
+    environment.finders.register(get_finder(fixture))
+    environment.register_defaults()
+    return environment
+
+
+def get_asset(fixture):
+    return Asset(*get_environment(fixture).find('source.js'))
+
+
+def get_static_asset(fixture):
+    return StaticAsset(*get_environment(fixture).find('source'))
+
+
 class AssetTests(TestCase):
-
-    def get_fixture_path(self, fixture):
-        return os.path.join(FIXTURES_DIR, fixture)
-
-    def get_finder(self, fixture):
-        return FileSystemFinder([self.get_fixture_path(fixture)])
-
-    def get_environment(self, fixture):
-        environment = Environment(os.path.join(TESTS_DIR, 'static'))
-        environment.finders.register(self.get_finder(fixture))
-        environment.mimetypes.register_defaults()
-        environment.preprocessors.register_defaults()
-        return environment
-
-    def get_asset(self, fixture):
-        return Asset(*self.get_environment(fixture).find('source.js'))
 
     def test_circular_dependency(self):
         with self.assertRaises(CircularDependencyError):
-            asset = self.get_asset('circular_dependency')
+            asset = get_asset('circular_dependency')
 
     def test_unicode_support(self):
         output = read(os.path.join(FIXTURES_DIR, 'unicode_support', 'output.js'))
-        asset = self.get_asset('unicode_support')
+        asset = get_asset('unicode_support')
         if sys.version_info < (3, 0):
             asset_output = unicode(asset)
         else:
