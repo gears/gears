@@ -161,9 +161,6 @@ class BaseAsset(object):
             raise CircularDependencyError(self.absolute_path)
         self.calls.add(self.absolute_path)
 
-    def __str__(self):
-        return self.source
-
     def __repr__(self):
         return '<%s absolute_path=%s>' % (self.__class__.__name__, self.absolute_path)
 
