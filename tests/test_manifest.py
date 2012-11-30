@@ -1,11 +1,13 @@
 import errno
 import mock
-from StringIO import StringIO
+
+from gears.compat import StringIO
 from gears.manifest import Manifest
+
 from unittest2 import TestCase
 
 
-@mock.patch('__builtin__.open')
+@mock.patch('gears.compat.builtins.open')
 class ManifestTests(TestCase):
 
     def test_loads_data(self, open):
