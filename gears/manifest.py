@@ -17,7 +17,7 @@ class Manifest(object):
         try:
             with open(self.path) as f:
                 self.data = json.load(f)
-        except IOError, e:
+        except IOError as e:
             if e.errno != errno.ENOENT:
                 raise
 
