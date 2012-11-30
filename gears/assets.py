@@ -1,10 +1,10 @@
 import codecs
 import hashlib
 import os
-import sys
 
 from .asset_attributes import AssetAttributes
-from .utils import cached_property, unique, UnicodeMixin
+from .compat import str, UnicodeMixin
+from .utils import cached_property, unique
 
 
 class CircularDependencyError(Exception):
@@ -184,10 +184,7 @@ class Asset(UnicodeMixin, BaseAsset):
         return self.compressed_source
 
     def __iter__(self):
-        value = str(self)
-        if sys.version_info >= (3, 0):
-            value = bytes(value, 'utf-8')
-        return iter(value)
+        return iter(str(self).encode('utf-8'))
 
     @property
     def cached_data(self):

@@ -4,6 +4,7 @@ import sys
 from contextlib import contextmanager
 
 from gears.asset_attributes import AssetAttributes
+from gears.compat import str
 from gears.environment import Environment
 from gears.exceptions import FileNotFound
 from gears.finders import FileSystemFinder
@@ -125,9 +126,7 @@ class EnvironmentFindTests(TestCase):
             self.environment.find('js/views.js', logical=True)
 
     def test_save_file(self):
-        source = 'hello world'
-        if sys.version_info >= (3, 0):
-            source = bytes(source, 'utf-8')
+        source = str('hello world').encode('utf-8')
         with remove_static_dir():
             self.environment.save_file('js/script.js', source)
             with open(os.path.join(STATIC_DIR, 'js', 'script.js'), 'rb') as f:

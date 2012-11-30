@@ -1,9 +1,9 @@
 import os
-import sys
 
 from .asset_attributes import AssetAttributes
 from .assets import build_asset
 from .cache import SimpleCache
+from .compat import bytes
 from .exceptions import FileNotFound
 from .processors import DirectivesProcessor
 from .utils import get_condition_func
@@ -341,11 +341,7 @@ class Environment(object):
             logical_path = os.path.normpath(asset_attributes.logical_path)
             if self.is_public(logical_path):
                 asset = build_asset(self, logical_path)
-                if sys.version_info < (3, 0):
-                    source = str(asset)
-                else:
-                    source = bytes(asset)
-                self.save_file(logical_path, source)
+                self.save_file(logical_path, bytes(asset))
 
     def save_file(self, path, source):
         filename = os.path.join(self.root, path)
