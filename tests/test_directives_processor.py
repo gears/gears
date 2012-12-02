@@ -1,16 +1,9 @@
 import os
 
-from gears.assets import Asset
 from gears.compilers import BaseCompiler
-from gears.environment import Environment
-from gears.finders import FileSystemFinder
 from gears.processors import DirectivesProcessor
 
-from unittest2 import TestCase
-
-
-TESTS_DIR = os.path.dirname(__file__)
-FIXTURES_DIR = os.path.join(TESTS_DIR, 'fixtures', 'directives_processor')
+from .helpers import GearsTestCase
 
 
 class FakeLessCompiler(BaseCompiler):
@@ -21,35 +14,12 @@ class FakeLessCompiler(BaseCompiler):
         pass
 
 
-class DirectivesProcessorTests(TestCase):
+class DirectivesProcessorTests(GearsTestCase):
+
+    fixtures_root = 'directives_processor'
 
     def check_paths(self, assets, paths):
         self.assertEqual([asset.attributes.path for asset in assets], paths)
-
-    def get_fixture_path(self, fixture):
-        return os.path.join(FIXTURES_DIR, fixture)
-
-    def get_finder(self, fixture):
-        return FileSystemFinder([self.get_fixture_path(fixture)])
-
-    def get_environment(self, fixture):
-        environment = Environment(os.path.join(TESTS_DIR, 'static'))
-        environment.finders.register(self.get_finder(fixture))
-        environment.mimetypes.register_defaults()
-        environment.preprocessors.register_defaults()
-        return environment
-
-    def get_asset(self, fixture, source='source.js'):
-        if isinstance(fixture, Environment):
-            environment = fixture
-        else:
-            environment = self.get_environment(fixture)
-        return Asset(*environment.find(source))
-
-    def get_source(self, fixture, filename):
-        fixture_path = self.get_fixture_path(fixture)
-        with open(os.path.join(fixture_path, filename)) as f:
-            return f.read()
 
     def test_fills_asset_requirements(self):
         asset = self.get_asset('requirements')
@@ -70,7 +40,7 @@ class DirectivesProcessorTests(TestCase):
         DirectivesProcessor.as_handler()(asset)
         self.assertEqual(
             asset.processed_source,
-            self.get_source('requirements', 'output.js'),
+            self.get_output('requirements'),
         )
 
     def test_modifies_bundled_source(self):
@@ -78,7 +48,7 @@ class DirectivesProcessorTests(TestCase):
         DirectivesProcessor.as_handler()(asset)
         self.assertEqual(
             asset.bundled_source,
-            self.get_source('requirements', 'bundle.js'),
+            self.get_output('requirements', 'bundle'),
         )
 
     def test_requires_asset_only_once(self):
@@ -92,7 +62,7 @@ class DirectivesProcessorTests(TestCase):
     def test_depend_on_directive(self):
         environment = self.get_environment('depend_on')
         environment.compilers.register('.less', FakeLessCompiler.as_handler())
-        asset = self.get_asset(environment, 'source.less')
+        asset = self.get_asset('depend_on', environment)
         DirectivesProcessor.as_handler()(asset)
         self.assertItemsEqual(asset.dependencies.to_list(), [
             os.path.join(os.path.dirname(asset.absolute_path), 'mixins/colors.less'),

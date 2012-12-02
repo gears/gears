@@ -15,7 +15,7 @@ setup(
     url='https://github.com/gears/gears',
     author='Mike Yumatov',
     author_email='mike@yumatov.org',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests', 'tests.*']),
     include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',

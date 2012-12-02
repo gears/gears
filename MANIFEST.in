@@ -2,6 +2,6 @@ include AUTHORS
 include LICENSE
 include README.rst
 
-include tests/*.py
+recursive-include tests *.py
 recursive-include tests/fixtures *
 recursive-include tests/assets *
