@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 try:
     from slimit import minify
     slimit_available = True
