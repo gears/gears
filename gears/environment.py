@@ -6,7 +6,7 @@ from .cache import SimpleCache
 from .compat import bytes
 from .exceptions import FileNotFound
 from .manifest import Manifest
-from .processors import DirectivesProcessor
+from .processors import DirectivesProcessor, HexdigestPathsProcessor
 from .utils import get_condition_func
 
 
@@ -125,6 +125,9 @@ class Postprocessors(Processors):
     type can have many postprocessors. Postprocessors for the MIME type are
     used in the order they were added.
     """
+
+    def register_defaults(self):
+        self.register('text/css', HexdigestPathsProcessor.as_handler())
 
 
 class Compressors(dict):
@@ -272,6 +275,7 @@ class Environment(object):
         """Register default compilers, preprocessors and MIME types."""
         self.mimetypes.register_defaults()
         self.preprocessors.register_defaults()
+        self.postprocessors.register_defaults()
 
     def find(self, item, logical=False):
         """Find files using :attr:`finders` registry. The ``item`` parameter
