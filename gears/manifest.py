@@ -1,3 +1,4 @@
+import os
 import errno
 import json
 
@@ -22,5 +23,8 @@ class Manifest(object):
                 raise
 
     def dump(self):
+        dirpath = os.path.dirname(self.path)
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
         with open(self.path, 'w') as f:
             json.dump(self.data, f, indent=2)
