@@ -221,7 +221,7 @@ class Environment(object):
         if manifest_path is not None:
             self.manifest_path = manifest_path
         else:
-            self.manifest_path = os.path.join(self.root, 'manifest.json')
+            self.manifest_path = os.path.join(self.root, '.manifest.json')
         self.manifest = Manifest(self.manifest_path)
 
         if cache is not None:
