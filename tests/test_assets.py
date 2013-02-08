@@ -1,5 +1,6 @@
 from gears.assets import (
-    CircularDependencyError, BaseAsset, Asset, StaticAsset, build_asset
+    CircularDependencyError, BaseAsset, Asset, StaticAsset, build_asset,
+    strip_fingerprint
 )
 from gears.compat import str, bytes
 
@@ -85,3 +86,18 @@ class BuildAssetTests(GearsTestCase):
     def test_has_no_processors(self):
         asset = build_asset(self.environment, 'source.md')
         self.assertIsInstance(asset, StaticAsset)
+
+    def test_strips_fingerprint(self):
+        path = 'source.38976434f000bf447d2dc6980894986aaf4e82d0.js'
+        asset = build_asset(self.environment, path)
+        self.assertEqual(asset.attributes.logical_path, 'source.js')
+
+
+class StripFingerprintTests(TestCase):
+
+    def test_strips_fingerprint(self):
+        path = 'source.38976434f000bf447d2dc6980894986aaf4e82d0.js'
+        self.assertEqual(strip_fingerprint(path), 'source.js')
+
+    def test_skips_paths_without_fingerprint(self):
+        self.assertEqual(strip_fingerprint('source.js'), 'source.js')

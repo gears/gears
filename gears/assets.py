@@ -9,6 +9,7 @@ from .utils import cached_property, unique
 
 
 EXTENSION_RE = re.compile(r'(\.\w+)$')
+FINGERPRINT_RE = re.compile(r'(\.[0-9a-f]{40})\.\w+$')
 
 
 class CircularDependencyError(Exception):
@@ -294,8 +295,17 @@ class StaticAsset(BaseAsset):
 
 
 def build_asset(environment, path):
+    path = strip_fingerprint(path)
     asset_attributes = AssetAttributes(environment, path)
     asset_attributes, absolute_path = environment.find(asset_attributes, True)
     if not asset_attributes.processors:
         return StaticAsset(asset_attributes, absolute_path)
     return Asset(asset_attributes, absolute_path)
+
+
+def strip_fingerprint(path):
+    match = FINGERPRINT_RE.search(path)
+    if not match:
+        return path
+    fingerprint = match.group(1)
+    return path.replace(fingerprint, '')
