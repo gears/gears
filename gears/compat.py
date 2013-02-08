@@ -1,3 +1,4 @@
+import collections
 import sys
 
 
@@ -16,7 +17,10 @@ class UnicodeMixin(object):
 
 
 if is_py2:
-    bytes = str
+    def bytes(obj):
+        if isinstance(obj, collections.Iterable):
+            return ''.join(obj)
+        return str(obj)
     str = unicode
 elif is_py3:
     bytes = bytes
