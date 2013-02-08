@@ -157,6 +157,8 @@ class Dependencies(object):
 
 class BaseAsset(object):
 
+    gzippable = True
+
     def __init__(self, attributes, absolute_path, calls=None):
         self.attributes = attributes
         self.absolute_path = absolute_path
@@ -280,6 +282,8 @@ class Asset(UnicodeMixin, BaseAsset):
 
 
 class StaticAsset(BaseAsset):
+
+    gzippable = False
 
     @cached_property
     def source(self):

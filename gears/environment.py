@@ -1,3 +1,4 @@
+import gzip
 import os
 
 from .asset_attributes import AssetAttributes
@@ -217,7 +218,7 @@ class Environment(object):
     """
 
     def __init__(self, root, public_assets=DEFAULT_PUBLIC_ASSETS,
-                 manifest_path=None, cache=None):
+                 manifest_path=None, cache=None, gzip=False):
         self.root = root
         self.public_assets = [get_condition_func(c) for c in public_assets]
 
@@ -231,6 +232,8 @@ class Environment(object):
             self.cache = cache
         else:
             self.cache = SimpleCache()
+
+        self.gzip = gzip
 
         #: The registry for file finders. See
         #: :class:`~gears.environment.Finders` for more information.
@@ -358,12 +361,12 @@ class Environment(object):
             if self.is_public(logical_path):
                 asset = build_asset(self, logical_path)
                 source = bytes(asset)
-                self.save_file(logical_path, source)
-                self.save_file(asset.hexdigest_path, source)
+                self.save_file(logical_path, source, asset.gzippable)
+                self.save_file(asset.hexdigest_path, source, asset.gzippable)
                 self.manifest.files[logical_path] = asset.hexdigest_path
         self.manifest.dump()
 
-    def save_file(self, path, source):
+    def save_file(self, path, source, gzippable=False):
         filename = os.path.join(self.root, path)
         path = os.path.dirname(filename)
         if not os.path.exists(path):
@@ -372,6 +375,9 @@ class Environment(object):
             raise OSError("%s exists and is not a directory." % path)
         with open(filename, 'wb') as f:
             f.write(source)
+        if self.gzip and gzippable:
+            with gzip.open('{}.gz'.format(filename), 'wb') as f:
+                f.write(source)
 
     def is_public(self, logical_path):
         return any(condition(logical_path) for condition in self.public_assets)
