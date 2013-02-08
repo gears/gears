@@ -287,6 +287,10 @@ class StaticAsset(BaseAsset):
             return f.read()
 
     @cached_property
+    def mtime(self):
+        return os.stat(self.absolute_path).st_mtime
+
+    @cached_property
     def hexdigest(self):
         return hashlib.sha1(self.source).hexdigest()
 
