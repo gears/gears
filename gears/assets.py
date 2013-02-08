@@ -8,7 +8,7 @@ from .compat import str, UnicodeMixin
 from .utils import cached_property, unique
 
 
-HEXDIGEST_RE = re.compile(r'(\.\w+)$')
+EXTENSION_RE = re.compile(r'(\.\w+)$')
 
 
 class CircularDependencyError(Exception):
@@ -170,7 +170,7 @@ class BaseAsset(object):
 
     @cached_property
     def hexdigest_path(self):
-        return HEXDIGEST_RE.sub(
+        return EXTENSION_RE.sub(
             r'.{0}\1'.format(self.hexdigest),
             self.attributes.logical_path,
         )
