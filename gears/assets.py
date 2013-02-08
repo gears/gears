@@ -1,10 +1,15 @@
 import codecs
 import hashlib
 import os
+import re
 
 from .asset_attributes import AssetAttributes
 from .compat import str, UnicodeMixin
 from .utils import cached_property, unique
+
+
+EXTENSION_RE = re.compile(r'(\.\w+)$')
+FINGERPRINT_RE = re.compile(r'(\.[0-9a-f]{40})\.\w+$')
 
 
 class CircularDependencyError(Exception):
@@ -164,6 +169,13 @@ class BaseAsset(object):
     def __repr__(self):
         return '<%s absolute_path=%s>' % (self.__class__.__name__, self.absolute_path)
 
+    @cached_property
+    def hexdigest_path(self):
+        return EXTENSION_RE.sub(
+            r'.{0}\1'.format(self.hexdigest),
+            self.attributes.logical_path,
+        )
+
 
 class Asset(UnicodeMixin, BaseAsset):
 
@@ -274,13 +286,26 @@ class StaticAsset(BaseAsset):
         with open(self.absolute_path, 'rb') as f:
             return f.read()
 
+    @cached_property
+    def hexdigest(self):
+        return hashlib.sha1(self.source).hexdigest()
+
     def __iter__(self):
         return iter(self.source)
 
 
 def build_asset(environment, path):
+    path = strip_fingerprint(path)
     asset_attributes = AssetAttributes(environment, path)
     asset_attributes, absolute_path = environment.find(asset_attributes, True)
     if not asset_attributes.processors:
         return StaticAsset(asset_attributes, absolute_path)
     return Asset(asset_attributes, absolute_path)
+
+
+def strip_fingerprint(path):
+    match = FINGERPRINT_RE.search(path)
+    if not match:
+        return path
+    fingerprint = match.group(1)
+    return path.replace(fingerprint, '')

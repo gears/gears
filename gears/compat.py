@@ -17,11 +17,19 @@ class UnicodeMixin(object):
 
 
 if is_py2:
+    import __builtin__ as builtins
+    from StringIO import StringIO
+
     def bytes(obj):
         if isinstance(obj, collections.Iterable):
             return ''.join(obj)
         return str(obj)
+
     str = unicode
+
 elif is_py3:
+    import builtins
+    from io import StringIO
+
     bytes = bytes
     str = str

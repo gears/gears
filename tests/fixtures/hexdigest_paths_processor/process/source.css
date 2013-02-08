@@ -1,0 +1,11 @@
+body {
+  background: url('bg.png');
+}
+
+header {
+  background: url('images/header.png');
+}
+
+footer {
+  background: url("images/footer.png");
+}

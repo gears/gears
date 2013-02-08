@@ -5,7 +5,8 @@ from .assets import build_asset
 from .cache import SimpleCache
 from .compat import bytes
 from .exceptions import FileNotFound
-from .processors import DirectivesProcessor
+from .manifest import Manifest
+from .processors import DirectivesProcessor, HexdigestPathsProcessor
 from .utils import get_condition_func
 
 
@@ -125,6 +126,9 @@ class Postprocessors(Processors):
     used in the order they were added.
     """
 
+    def register_defaults(self):
+        self.register('text/css', HexdigestPathsProcessor.as_handler())
+
 
 class Compressors(dict):
     """The registry for asset compressors. It acts like a dictionary with
@@ -212,10 +216,21 @@ class Environment(object):
                   store compilation results.
     """
 
-    def __init__(self, root, public_assets=DEFAULT_PUBLIC_ASSETS, cache=None):
+    def __init__(self, root, public_assets=DEFAULT_PUBLIC_ASSETS,
+                 manifest_path=None, cache=None):
         self.root = root
         self.public_assets = [get_condition_func(c) for c in public_assets]
-        self.cache = cache if cache is not None else SimpleCache()
+
+        if manifest_path is not None:
+            self.manifest_path = manifest_path
+        else:
+            self.manifest_path = os.path.join(self.root, '.manifest.json')
+        self.manifest = Manifest(self.manifest_path)
+
+        if cache is not None:
+            self.cache = cache
+        else:
+            self.cache = SimpleCache()
 
         #: The registry for file finders. See
         #: :class:`~gears.environment.Finders` for more information.
@@ -260,6 +275,7 @@ class Environment(object):
         """Register default compilers, preprocessors and MIME types."""
         self.mimetypes.register_defaults()
         self.preprocessors.register_defaults()
+        self.postprocessors.register_defaults()
 
     def find(self, item, logical=False):
         """Find files using :attr:`finders` registry. The ``item`` parameter
@@ -341,7 +357,11 @@ class Environment(object):
             logical_path = os.path.normpath(asset_attributes.logical_path)
             if self.is_public(logical_path):
                 asset = build_asset(self, logical_path)
-                self.save_file(logical_path, bytes(asset))
+                source = bytes(asset)
+                self.save_file(logical_path, source)
+                self.save_file(asset.hexdigest_path, source)
+                self.manifest.files[logical_path] = asset.hexdigest_path
+        self.manifest.dump()
 
     def save_file(self, path, source):
         filename = os.path.join(self.root, path)
