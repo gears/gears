@@ -174,7 +174,7 @@ class BaseAsset(object):
     @cached_property
     def hexdigest_path(self):
         return EXTENSION_RE.sub(
-            r'.{0}\1'.format(self.hexdigest),
+            r'.{0}\1'.format(self.final_hexdigest),
             self.attributes.logical_path,
         )
 
@@ -250,6 +250,10 @@ class Asset(UnicodeMixin, BaseAsset):
         return hashlib.sha1(self.source.encode('utf-8')).hexdigest()
 
     @cached_property
+    def final_hexdigest(self):
+        return hashlib.sha1(self.compressed_source.encode('utf-8')).hexdigest()
+
+    @cached_property
     def expired(self):
         return (self.cached_data is None or
                 self.mtime > self.cached_data['mtime'] or
@@ -297,6 +301,10 @@ class StaticAsset(BaseAsset):
     @cached_property
     def hexdigest(self):
         return hashlib.sha1(self.source).hexdigest()
+
+    @cached_property
+    def final_hexdigest(self):
+        return self.hexdigest
 
     def __iter__(self):
         return iter(self.source)

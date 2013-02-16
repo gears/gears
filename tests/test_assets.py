@@ -60,7 +60,7 @@ class HexdigestPathTests(TestCase):
     def get_asset(self, logical_path):
         attributes = Mock(logical_path=logical_path)
         asset = BaseAsset(attributes, sentinel.absolute_path)
-        asset.hexdigest = '123456'
+        asset.final_hexdigest = '123456'
         return asset
 
     def test_hexdigest_path(self):
