@@ -7,7 +7,11 @@ from .cache import SimpleCache
 from .compat import bytes
 from .exceptions import FileNotFound
 from .manifest import Manifest
-from .processors import DirectivesProcessor, HexdigestPathsProcessor
+from .processors import (
+    DirectivesProcessor,
+    HexdigestPathsProcessor,
+    SemicolonsProcessor
+)
 from .utils import get_condition_func
 
 
@@ -128,6 +132,7 @@ class Postprocessors(Processors):
     """
 
     def register_defaults(self):
+        self.register('application/javascript', SemicolonsProcessor.as_handler())
         self.register('text/css', HexdigestPathsProcessor.as_handler())
 
 
