@@ -3,7 +3,7 @@ from .base import BaseProcessor
 
 
 BLANK_RE = re.compile(r'\A\s*\Z', re.M)
-SEMICOLON_RE =re.compile(r';\s*\Z', re.M)
+SEMICOLON_RE = re.compile(r';\s*\Z', re.M)
 
 
 def needs_semicolon(source):
