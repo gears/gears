@@ -38,4 +38,5 @@ class HexdigestPathsProcessor(BaseProcessor):
             asset = build_asset(self.environment, logical_path)
         except FileNotFound:
             return path
+        self.asset.dependencies.add(asset.absolute_path)
         return os.path.relpath(asset.hexdigest_path, self.current_dir)
