@@ -4,7 +4,7 @@ import os
 import re
 
 from .asset_attributes import AssetAttributes
-from .compat import str, UnicodeMixin
+from .compat import is_py3, str, UnicodeMixin
 from .utils import cached_property, unique
 
 
@@ -99,7 +99,8 @@ class Dependency(object):
     @cached_property
     def source(self):
         if os.path.isdir(self.absolute_path):
-            return ', '.join(sorted(os.listdir(self.absolute_path)))
+            source = ', '.join(sorted(os.listdir(self.absolute_path)))
+            return source if is_py3 else source.decode('utf-8')
         with codecs.open(self.absolute_path, encoding='utf-8') as f:
             return f.read()
 
