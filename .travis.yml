@@ -7,6 +7,6 @@ python:
   - "pypy"
 install:
   - pip install mock nose --use-mirrors
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install unittest2py3k --use-mirrors; else pip install unittest2 --use-mirrors; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.'* ]]; then pip install unittest2py3k --use-mirrors; else pip install unittest2 --use-mirrors; fi
   - pip install . --use-mirrors
 script: nosetests
