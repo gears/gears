@@ -145,6 +145,12 @@ class Dependencies(object):
     def expired(self):
         return any(d.expired for d in self._registry)
 
+    @cached_property
+    def mtime(self):
+        if not self._registry:
+            return None
+        return max(d.mtime for d in self._registry)
+
     def add(self, absolute_path):
         self._registry.add(Dependency(self.environment, absolute_path))
 
@@ -243,7 +249,10 @@ class Asset(UnicodeMixin, BaseAsset):
 
     @cached_property
     def mtime(self):
-        return os.stat(self.absolute_path).st_mtime
+        mtime = os.stat(self.absolute_path).st_mtime
+        if self.dependencies.mtime is not None:
+            return max(mtime, self.dependencies.mtime)
+        return mtime
 
     @cached_property
     def hexdigest(self):
