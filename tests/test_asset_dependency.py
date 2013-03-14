@@ -20,3 +20,9 @@ class AssetDependencyTests(GearsTestCase):
         fixture_path = self.get_fixture_path(fixture)
         environment = self.get_environment(fixture)
         Dependency(environment, os.path.join(fixture_path, 'libs'))
+
+    def test_handles_binary_files(self):
+        fixture = 'handles_binary_files'
+        fixture_path = self.get_fixture_path(fixture)
+        environment = self.get_environment(fixture)
+        Dependency(environment, os.path.join(fixture_path, 'image.png'))

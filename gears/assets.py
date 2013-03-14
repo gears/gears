@@ -100,8 +100,8 @@ class Dependency(object):
     def source(self):
         if os.path.isdir(self.absolute_path):
             source = ', '.join(sorted(os.listdir(self.absolute_path)))
-            return source if is_py3 else source.decode('utf-8')
-        with codecs.open(self.absolute_path, encoding='utf-8') as f:
+            return source.encode('utf-8') if is_py3 else source
+        with open(self.absolute_path, 'rb') as f:
             return f.read()
 
     @cached_property
@@ -110,7 +110,7 @@ class Dependency(object):
 
     @cached_property
     def hexdigest(self):
-        return hashlib.sha1(self.source.encode('utf-8')).hexdigest()
+        return hashlib.sha1(self.source).hexdigest()
 
     @cached_property
     def expired(self):
