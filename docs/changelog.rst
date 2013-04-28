@@ -1,6 +1,20 @@
 Changelog
 =========
 
+0.6 (2013-04-28)
+----------------
+
+- Add processor to add missing semicolons to the end of JavaScript sources.
+
+- Add gzip support.
+
+- Add support for cache busting. This is done through fingerprinting public
+  assets.
+
+- Fix unknown extensions handling. Thanks @xobb1t for the report.
+
+- Fix cssmin and slimit compressors.
+
 0.5.1 (2012-10-16)
 ------------------
 

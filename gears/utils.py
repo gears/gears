@@ -1,7 +1,5 @@
 import os
 import re
-import sys
-
 from collections import Callable
 
 
@@ -24,16 +22,6 @@ class cached_property(object):
             value = self.func(obj)
             obj.__dict__[self.__name__] = value
         return value
-
-
-class UnicodeMixin(object):
-    """Python 3 compatible __str__/__unicode__ support"""
-
-    def __str__(self):
-        val = self.__unicode__()
-        if sys.version_info < (3, 0):
-            val = val.encode('utf-8')
-        return val
 
 
 def safe_join(base, *paths):

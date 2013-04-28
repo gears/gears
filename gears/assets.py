@@ -1,10 +1,15 @@
 import codecs
 import hashlib
 import os
-import sys
+import re
 
 from .asset_attributes import AssetAttributes
-from .utils import cached_property, unique, UnicodeMixin
+from .compat import is_py3, str, UnicodeMixin
+from .utils import cached_property, unique
+
+
+EXTENSION_RE = re.compile(r'(\.\w+)$')
+FINGERPRINT_RE = re.compile(r'(\.[0-9a-f]{40})\.\w+$')
 
 
 class CircularDependencyError(Exception):
@@ -94,8 +99,9 @@ class Dependency(object):
     @cached_property
     def source(self):
         if os.path.isdir(self.absolute_path):
-            return ', '.join(sorted(os.listdir(self.absolute_path)))
-        with codecs.open(self.absolute_path, encoding='utf-8') as f:
+            source = ', '.join(sorted(os.listdir(self.absolute_path)))
+            return source.encode('utf-8') if is_py3 else source
+        with open(self.absolute_path, 'rb') as f:
             return f.read()
 
     @cached_property
@@ -104,7 +110,7 @@ class Dependency(object):
 
     @cached_property
     def hexdigest(self):
-        return hashlib.sha1(self.source.encode('utf-8')).hexdigest()
+        return hashlib.sha1(self.source).hexdigest()
 
     @cached_property
     def expired(self):
@@ -140,6 +146,12 @@ class Dependencies(object):
     def expired(self):
         return any(d.expired for d in self._registry)
 
+    @cached_property
+    def mtime(self):
+        if not self._registry:
+            return None
+        return max(d.mtime for d in self._registry)
+
     def add(self, absolute_path):
         self._registry.add(Dependency(self.environment, absolute_path))
 
@@ -152,6 +164,8 @@ class Dependencies(object):
 
 class BaseAsset(object):
 
+    gzippable = True
+
     def __init__(self, attributes, absolute_path, calls=None):
         self.attributes = attributes
         self.absolute_path = absolute_path
@@ -161,11 +175,15 @@ class BaseAsset(object):
             raise CircularDependencyError(self.absolute_path)
         self.calls.add(self.absolute_path)
 
-    def __str__(self):
-        return self.source
-
     def __repr__(self):
         return '<%s absolute_path=%s>' % (self.__class__.__name__, self.absolute_path)
+
+    @cached_property
+    def hexdigest_path(self):
+        return EXTENSION_RE.sub(
+            r'.{0}\1'.format(self.final_hexdigest),
+            self.attributes.logical_path,
+        )
 
 
 class Asset(UnicodeMixin, BaseAsset):
@@ -187,10 +205,7 @@ class Asset(UnicodeMixin, BaseAsset):
         return self.compressed_source
 
     def __iter__(self):
-        value = str(self)
-        if sys.version_info >= (3, 0):
-            value = bytes(value, 'utf-8')
-        return iter(value)
+        return iter(str(self).encode('utf-8'))
 
     @property
     def cached_data(self):
@@ -235,11 +250,18 @@ class Asset(UnicodeMixin, BaseAsset):
 
     @cached_property
     def mtime(self):
-        return os.stat(self.absolute_path).st_mtime
+        mtime = os.stat(self.absolute_path).st_mtime
+        if self.dependencies.mtime is not None:
+            return max(mtime, self.dependencies.mtime)
+        return mtime
 
     @cached_property
     def hexdigest(self):
         return hashlib.sha1(self.source.encode('utf-8')).hexdigest()
+
+    @cached_property
+    def final_hexdigest(self):
+        return hashlib.sha1(self.compressed_source.encode('utf-8')).hexdigest()
 
     @cached_property
     def expired(self):
@@ -275,18 +297,41 @@ class Asset(UnicodeMixin, BaseAsset):
 
 class StaticAsset(BaseAsset):
 
+    gzippable = False
+
     @cached_property
     def source(self):
         with open(self.absolute_path, 'rb') as f:
             return f.read()
+
+    @cached_property
+    def mtime(self):
+        return os.stat(self.absolute_path).st_mtime
+
+    @cached_property
+    def hexdigest(self):
+        return hashlib.sha1(self.source).hexdigest()
+
+    @cached_property
+    def final_hexdigest(self):
+        return self.hexdigest
 
     def __iter__(self):
         return iter(self.source)
 
 
 def build_asset(environment, path):
+    path = strip_fingerprint(path)
     asset_attributes = AssetAttributes(environment, path)
     asset_attributes, absolute_path = environment.find(asset_attributes, True)
     if not asset_attributes.processors:
         return StaticAsset(asset_attributes, absolute_path)
     return Asset(asset_attributes, absolute_path)
+
+
+def strip_fingerprint(path):
+    match = FINGERPRINT_RE.search(path)
+    if not match:
+        return path
+    fingerprint = match.group(1)
+    return path.replace(fingerprint, '')

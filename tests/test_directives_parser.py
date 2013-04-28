@@ -1,31 +1,16 @@
 import os
 from gears.directives_parser import DirectivesParser
 from unittest2 import TestCase
+from .helpers import GearsTestCase
 
 
-TESTS_DIR = os.path.dirname(__file__)
-FIXTURES_DIR = os.path.join(TESTS_DIR, 'fixtures', 'directives_parser')
+class DirectivesParserTests(GearsTestCase):
 
-
-def read(file):
-    with open(file) as f:
-        return f.read()
-
-
-class DirectivesParserTests(TestCase):
-
-    def get_fixture_files(self, path):
-        files = {}
-        for filename in os.listdir(path):
-            files[filename.split('.')[0]] = os.path.join(path, filename)
-        return files['source'], files['output']
-
-    def get_fixture(self, fixture):
-        fixture_path = os.path.join(FIXTURES_DIR, fixture)
-        return map(read, self.get_fixture_files(fixture_path))
+    fixtures_root = 'directives_parser'
 
     def check_asset(self, fixture, directives):
-        source, output = self.get_fixture(fixture)
+        source = self.get_source(fixture)
+        output = self.get_output(fixture)
         result = DirectivesParser().parse(source)
         self.assertEqual(result[0], directives)
         self.assertEqual(result[1], output)
