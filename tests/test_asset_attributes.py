@@ -53,15 +53,17 @@ class AssetAttributesTests(TestCase):
         check('js/.htaccess', ['.htaccess'])
 
     def test_path_without_suffix(self):
+        self.environment.mimetypes.register('.js', 'application/javascript')
+        self.environment.compilers.register('.coffee', self.coffee_script_compiler)
 
         def check(path, expected_result):
             attributes = self.create_attributes(path)
             path_without_suffix = attributes.path_without_suffix
             self.assertEqual(path_without_suffix, expected_result)
 
-        check('js/.htaccess', 'js/')
+        check('js/.htaccess', 'js/.htaccess')
         check('js/readme', 'js/readme')
-        check('js/app.min.js.coffee', 'js/app')
+        check('js/app.min.js.coffee', 'js/app.min')
         check('js/script.coffee', 'js/script')
 
         self.environment.mimetypes.register('.js', 'application/javascript')
@@ -92,7 +94,7 @@ class AssetAttributesTests(TestCase):
 
         check('js/script.js', ['js/script.js', 'js/script/index.js'])
         check('js/app.min.js', ['js/app.min.js', 'js/app.min/index.js'])
-        check('js/.htaccess', ['js/.htaccess', 'js/index.htaccess'])
+        check('js/.htaccess', ['js/.htaccess', 'js/.htaccess/index'])
         check('js/index.js', ['js/index.js'])
 
     def test_format_extension(self):

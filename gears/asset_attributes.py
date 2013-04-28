@@ -118,18 +118,31 @@ class AssetAttributes(object):
 
     @cached_property
     def suffix(self):
-        """The list of asset extensions starting from the format extension.
+        """The list of asset extensions starting from the first known extension.
         Example::
 
             >>> attrs = AssetAttributes(environment, 'js/lib/external.min.js.coffee')
             >>> attrs.suffix
             ['.js', '.coffee']
         """
-        try:
-            index = self.extensions.index(self.format_extension)
-        except ValueError:
-            return self.extensions
-        return self.extensions[index:]
+        return self.extensions[len(self.unknown_extensions):]
+
+    @cached_property
+    def unknown_extensions(self):
+        """The list of unknown extensions, which are actually parts of asset
+        filename. Example::
+
+            >>> attrs = AssetAttributes(environment, 'js/lib-2.0.min.js')
+            >>> attrs.suffix
+            ['.0', '.min']
+        """
+        unknown_extensions = []
+        for extension in self.extensions:
+            compiler = self.environment.compilers.get(extension)
+            if compiler or self.environment.mimetypes.get(extension):
+                return unknown_extensions
+            unknown_extensions.append(extension)
+        return unknown_extensions
 
     @cached_property
     def compiler_extensions(self):
