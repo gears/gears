@@ -224,7 +224,7 @@ class Asset(UnicodeMixin, BaseAsset):
         try:
             with codecs.open(self.absolute_path, encoding='utf-8') as f:
                 return f.read()
-        except UnicodeDecodeError, e:
+        except UnicodeDecodeError as e:
             raise GearsUnicodeError(self.absolute_path, str(e))
 
     @cached_property
