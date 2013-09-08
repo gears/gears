@@ -1,6 +1,12 @@
 Changelog
 =========
 
+next release
+------------
+
+- Add ability to disable asset fingerprinting. This can be useful, if you want
+  to compile assets for humans.
+
 0.6 (2013-04-28)
 ----------------
 
