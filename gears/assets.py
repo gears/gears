@@ -5,6 +5,7 @@ import re
 
 from .asset_attributes import AssetAttributes
 from .compat import is_py3, str, UnicodeMixin
+from .exceptions import GearsUnicodeError
 from .utils import cached_property, unique
 
 
@@ -220,8 +221,11 @@ class Asset(UnicodeMixin, BaseAsset):
 
     @cached_property
     def source(self):
-        with codecs.open(self.absolute_path, encoding='utf-8') as f:
-            return f.read()
+        try:
+            with codecs.open(self.absolute_path, encoding='utf-8') as f:
+                return f.read()
+        except UnicodeDecodeError as e:
+            raise GearsUnicodeError(self.absolute_path, str(e))
 
     @cached_property
     def bundled_source(self):

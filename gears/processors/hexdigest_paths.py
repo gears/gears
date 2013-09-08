@@ -27,10 +27,11 @@ class HexdigestPathsProcessor(BaseProcessor):
         self.process()
 
     def process(self):
-        self.asset.processed_source = rewrite_paths(
-            self.asset.processed_source,
-            self.rewrite_path,
-        )
+        if self.environment.fingerprinting:
+            self.asset.processed_source = rewrite_paths(
+                self.asset.processed_source,
+                self.rewrite_path,
+            )
 
     def rewrite_path(self, path):
         logical_path = os.path.normpath(os.path.join(self.current_dir, path))

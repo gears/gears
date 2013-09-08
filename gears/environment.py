@@ -220,10 +220,13 @@ class Environment(object):
     :param public_assets: a list of public assets paths.
     :param cache: a cache object. It is used by assets and dependencies to
                   store compilation results.
+    :param fingerprinting: if set to `True`, fingerprinted versions of assets
+                           won't be created.
     """
 
     def __init__(self, root, public_assets=DEFAULT_PUBLIC_ASSETS,
-                 manifest_path=None, cache=None, gzip=False):
+                 manifest_path=None, cache=None, gzip=False,
+                 fingerprinting=True):
         self.root = root
         self.public_assets = [get_condition_func(c) for c in public_assets]
 
@@ -239,6 +242,7 @@ class Environment(object):
             self.cache = SimpleCache()
 
         self.gzip = gzip
+        self.fingerprinting = fingerprinting
 
         #: The registry for file finders. See
         #: :class:`~gears.environment.Finders` for more information.
@@ -367,8 +371,9 @@ class Environment(object):
                 asset = build_asset(self, logical_path)
                 source = bytes(asset)
                 self.save_file(logical_path, source, asset.gzippable)
-                self.save_file(asset.hexdigest_path, source, asset.gzippable)
-                self.manifest.files[logical_path] = asset.hexdigest_path
+                if self.fingerprinting:
+                    self.save_file(asset.hexdigest_path, source, asset.gzippable)
+                    self.manifest.files[logical_path] = asset.hexdigest_path
         self.manifest.dump()
 
     def save_file(self, path, source, gzippable=False):
