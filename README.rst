@@ -4,6 +4,9 @@ Gears
 .. image:: https://secure.travis-ci.org/gears/gears.png?branch=develop
     :target: https://travis-ci.org/gears/gears
 
+.. image:: https://d2weczhvl823v0.cloudfront.net/gears/flask-gears/trend.png
+    :target: https://bitdeli.com/free
+
 Gears is a library to compile and concatenate JavaScript and CSS assets, highly
 inspired by Ruby's Sprockets_. You can also write scripts, styles and client
 templates using CoffeeScript_, Handlebars_, Stylus_, Less_, and compile them
