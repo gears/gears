@@ -40,4 +40,5 @@ class HexdigestPathsProcessor(BaseProcessor):
         except FileNotFound:
             return path
         self.asset.dependencies.add(asset.absolute_path)
-        return os.path.relpath(asset.hexdigest_path, self.current_dir)
+        relpath = str(os.path.relpath(asset.hexdigest_path, self.current_dir))
+        return relpath.encode('string-escape')
