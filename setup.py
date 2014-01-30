@@ -17,6 +17,9 @@ setup(
     author_email='mike@yumatov.org',
     packages=find_packages(exclude=['tests', 'tests.*']),
     include_package_data=True,
+    install_requires=[
+        'glob2',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
