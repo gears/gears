@@ -132,7 +132,7 @@ class EnvironmentListTests(TestCase):
         self.environment.finders.register(FileSystemFinder([ASSETS_DIR]))
 
     def test_list(self):
-        items = list(self.environment.list('js/templates', 'application/javascript'))
+        items = list(self.environment.list('js/templates/*', 'application/javascript'))
         self.assertEqual(len(items), 3)
         for i, item in enumerate(sorted(items, key=lambda x: x[1])):
             path = 'js/templates/%s.js.handlebars' % 'abc'[i]
@@ -142,11 +142,7 @@ class EnvironmentListTests(TestCase):
             self.assertEqual(absolute_path, os.path.join(ASSETS_DIR, path))
 
     def test_list_recursively(self):
-        items = list(self.environment.list(
-            'js/templates',
-            'application/javascript',
-            recursive=True,
-        ))
+        items = list(self.environment.list('js/templates/**', 'application/javascript'))
         self.assertEqual(len(items), 4)
         for i, item in enumerate(sorted(items, key=lambda x: x[1])):
             path = 'js/templates/%s.js.handlebars' % ('a', 'b', 'c', 'd/e')[i]

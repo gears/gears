@@ -42,8 +42,7 @@ class FileSystemFinder(BaseFinder):
         if os.path.exists(path):
             return path
 
-    def list(self, path, recursive=False):
-        path = os.path.join(path, '**' if recursive else '*')
+    def list(self, path):
         for root in self.locations:
             for absolute_path in glob2.iglob(safe_join(root, path)):
                 if os.path.isfile(absolute_path):

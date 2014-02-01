@@ -373,27 +373,26 @@ class Environment(object):
                 return AssetAttributes(self, item), absolute_path
         raise FileNotFound(item)
 
-    def list(self, path, mimetype=None, recursive=False):
+    def list(self, path, mimetype=None):
         """Yield two-tuples for all files found in the directory given by
         ``path`` parameter. Result can be filtered by the second parameter,
         ``mimetype``, that must be a MIME type of assets compiled source code.
-        If ``recursive`` is ``True``, then ``path`` will be scanned
-        recursively. Each tuple has
-        :class:`~gears.asset_attributes.AssetAttributes` instance for found
-        file path as first item, and absolute path to this file as second item.
+        Each tuple has :class:`~gears.asset_attributes.AssetAttributes`
+        instance for found file path as first item, and absolute path to this
+        file as second item.
 
         Usage example::
 
             # Yield all files from 'js/templates' directory.
-            environment.list('js/templates')
+            environment.list('js/templates/*')
 
             # Yield only files that are in 'js/templates' directory and have
             # 'application/javascript' MIME type of compiled source code.
-            environment.list('js/templates', mimetype='application/javascript')
+            environment.list('js/templates/*', mimetype='application/javascript')
         """
         found = set()
         for finder in self.finders:
-            for logical_path, absolute_path in finder.list(path, recursive=recursive):
+            for logical_path, absolute_path in finder.list(path):
                 asset_attributes = AssetAttributes(self, logical_path)
                 if mimetype is not None and asset_attributes.mimetype != mimetype:
                     continue
@@ -403,7 +402,7 @@ class Environment(object):
 
     def save(self):
         """Save handled public assets to :attr:`root` directory."""
-        for asset_attributes, absolute_path in self.list('.', recursive=True):
+        for asset_attributes, absolute_path in self.list('**'):
             logical_path = os.path.normpath(asset_attributes.logical_path)
             asset = build_asset(self, logical_path)
             if asset.is_public:

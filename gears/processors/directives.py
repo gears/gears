@@ -53,7 +53,8 @@ class DirectivesProcessor(BaseProcessor):
 
     def process_require_directory_directive(self, path, recursive=False):
         path = self.get_relative_path(path, is_directory=True)
-        list = self.asset.attributes.environment.list(path, self.asset.attributes.mimetype, recursive=recursive)
+        path = os.path.join(path, '**' if recursive else '*')
+        list = self.asset.attributes.environment.list(path, self.asset.attributes.mimetype)
         for asset_attributes, absolute_path in sorted(list, key=lambda x: x[0].path.split('/')):
             self.asset.requirements.add(self.get_asset(asset_attributes, absolute_path))
             self.asset.dependencies.add(os.path.dirname(absolute_path))
