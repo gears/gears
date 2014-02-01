@@ -65,12 +65,10 @@ class DirectivesProcessor(BaseProcessor):
         self.asset.requirements.add(self.asset)
 
     def process_depend_on_directive(self, path):
-        self.asset.dependencies.add(self.find(path)[1])
-
-    def find(self, require_path):
-        require_path = self.get_relative_path(require_path)
-        asset_attributes = AssetAttributes(self.asset.attributes.environment, require_path)
-        return self.asset.attributes.environment.find(asset_attributes, True)
+        path = self.get_relative_path(path)
+        list = self.asset.attributes.environment.list(path, self.asset.attributes.mimetype)
+        for asset_attributes, absolute_path in list:
+            self.asset.dependencies.add(absolute_path)
 
     def get_relative_path(self, require_path, is_directory=False):
         require_path = os.path.join(self.asset.attributes.dirname, require_path)
