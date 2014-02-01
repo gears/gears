@@ -341,7 +341,7 @@ class Environment(object):
         Usage example::
 
             # Yield all files from 'js/templates' directory.
-            environment.list('js/libs')
+            environment.list('js/templates')
 
             # Yield only files that are in 'js/templates' directory and have
             # 'application/javascript' MIME type of compiled source code.
