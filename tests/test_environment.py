@@ -91,15 +91,6 @@ class EnvironmentFindTests(TestCase):
         with self.assertRaises(FileNotFound):
             self.environment.find('js/models.js')
 
-    def test_find_by_path_list(self):
-        attrs, path = self.environment.find(['js/app.js', 'js/app/index.js'])
-        self.check_asset_attributes(attrs, 'js/app/index.js')
-        self.assertEqual(path, '/assets/js/app/index.js')
-
-    def test_find_nothing_by_path_list(self):
-        with self.assertRaises(FileNotFound):
-            self.environment.find(['style.css', 'style/index.css'])
-
     def test_find_by_asset_attributes(self):
         attrs = AssetAttributes(self.environment, 'js/app.js')
         attrs, path = self.environment.find(attrs)

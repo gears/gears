@@ -309,13 +309,7 @@ class Environment(object):
                 except FileNotFound:
                     continue
             raise FileNotFound(item.path)
-        if isinstance(item, (list, tuple)):
-            for path in item:
-                try:
-                    return self.find(path, logical)
-                except FileNotFound:
-                    continue
-        elif logical:
+        if logical:
             asset_attributes = AssetAttributes(self, item)
             suffixes = self.suffixes.find(asset_attributes.mimetype)
             if not suffixes:
