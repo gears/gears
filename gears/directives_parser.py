@@ -12,7 +12,7 @@ class DirectivesParser(object):
     """, re.S | re.X)
 
     directive_re = re.compile(r"""
-        ^ \s* (?:\*|//|\#) \s* = \s* ( \w+ [=./'"\s\w-]* ) $
+        ^ \s* (?:\*|//|\#) \s* = \s* ( \w+ [=*?\[\]./'"\s\w-]* ) $
     """, re.X)
 
     def split_source(self, source):
