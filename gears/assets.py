@@ -193,6 +193,7 @@ class Asset(UnicodeMixin, BaseAsset):
         super(Asset, self).__init__(*args, **kwargs)
         self.cache = self.attributes.environment.cache
         if self.expired:
+            self.params.clear()
             self.dependencies.clear()
             self.requirements = Requirements(self)
             self.processed_source = self.source
@@ -211,6 +212,12 @@ class Asset(UnicodeMixin, BaseAsset):
     @property
     def cached_data(self):
         return self.cache.get(self._get_cache_key())
+
+    @cached_property
+    def params(self):
+        if self.cached_data:
+            return self.cached_data['params']
+        return {}
 
     @cached_property
     def dependencies(self):
@@ -282,6 +289,7 @@ class Asset(UnicodeMixin, BaseAsset):
         return {'processed_source': self.processed_source,
                 'requirements': self.requirements.to_dict(),
                 'dependencies': self.dependencies.to_list(),
+                'params': self.params,
                 'hexdigest': self.hexdigest,
                 'mtime': self.mtime}
 
