@@ -20,7 +20,7 @@ class BaseCompiler(BaseAssetHandler):
 
 class ExecCompiler(BaseCompiler, ExecMixin):
 
-    def __init__(self, executable=None):
+    def __init__(self, executable=None, **kwargs):
         if executable is not None:
             self.executable = executable
 
