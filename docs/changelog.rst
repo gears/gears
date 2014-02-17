@@ -1,6 +1,21 @@
 Changelog
 =========
 
+next release
+------------
+
+- Allow Gears plugins to inject themselves to the environment. See
+  :func:`~gears.environment.Environment.register_entry_points` docs.
+
+- Manifest file can be disabled by setting ``manifest_path`` parameter in
+  :class:`~gears.environment.Environment` to ``False`` (thanks to `Will
+  Bond`_).
+
+- Fix Python 3 compatibility (thanks to `Yaoda Liu`_).
+
+.. _Will Bond: https://github.com/wbond
+.. _Yaoda Liu: https://github.com/shonenada
+
 0.6.1 (2013-09-08)
 ------------------
 
