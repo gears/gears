@@ -1,7 +1,7 @@
 Changelog
 =========
 
-next release
+Next Release
 ------------
 
 - Allow Gears plugins to inject themselves to the environment. See
