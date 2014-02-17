@@ -4,6 +4,15 @@ Changelog
 Next Release
 ------------
 
+- Add ``params`` directive to set asset parameters. Asset parameters can be
+  used to change behavior of plugins for the current asset. For example, this
+  can be used to disable top-level function wrapper in `gears-coffeescript`_
+  compiler:
+
+  .. code-block:: javascript
+
+      //= params coffeescript=bare
+
 - Allow Gears plugins to inject themselves to the environment. See
   :func:`~gears.environment.Environment.register_entry_points` docs.
 
@@ -13,6 +22,7 @@ Next Release
 
 - Fix Python 3 compatibility (thanks to `Yaoda Liu`_).
 
+.. _gears-coffeescript: https://github.com/gears/gears-coffeescript
 .. _Will Bond: https://github.com/wbond
 .. _Yaoda Liu: https://github.com/shonenada
 
