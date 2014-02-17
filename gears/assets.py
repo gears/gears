@@ -294,6 +294,7 @@ class Asset(UnicodeMixin, BaseAsset):
                 'mtime': self.mtime}
 
     def _init_from_cache(self):
+        self.params = self.cached_data['params']
         self.dependencies = Dependencies.from_list(
             self.attributes.environment,
             self.cached_data['dependencies'])
