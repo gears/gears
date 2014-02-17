@@ -1,5 +1,6 @@
 import gzip
 import os
+from pkg_resources import iter_entry_points
 
 from .asset_attributes import AssetAttributes
 from .assets import build_asset
@@ -288,6 +289,35 @@ class Environment(object):
         self.mimetypes.register_defaults()
         self.preprocessors.register_defaults()
         self.postprocessors.register_defaults()
+
+    def register_entry_points(self, exclude=()):
+        """Allow Gears plugins to inject themselves to the environment. For
+        example, if your plugin's package contains such ``entry_points``
+        definition in ``setup.py``, ``gears_plugin.register`` function will be
+        called with current enviroment during ``register_entry_points`` call::
+
+            entry_points = {
+                'gears': [
+                    'register = gears_plugin:register',
+                ],
+            }
+
+        Here is an example of such function::
+
+            def register(environment):
+                assets_dir = os.path.join(os.path.dirname(__file__), 'assets')
+                assets_dir = os.path.absolute_path(assets_dir)
+                environment.register(FileSystemFinder([assets_dir]))
+
+        If you want to disable this behavior for some plugins, list their
+        packages using ``exclude`` argument::
+
+            environment.register_entry_points(exclude=['plugin'])
+        """
+        for entry_point in iter_entry_points('gears', 'register'):
+            if entry_point.module_name not in exclude:
+                register = entry_point.load()
+                register(self)
 
     def find(self, item, logical=False):
         """Find files using :attr:`finders` registry. The ``item`` parameter
