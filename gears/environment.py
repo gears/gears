@@ -284,6 +284,20 @@ class Environment(object):
             self._suffixes = suffixes
         return self._suffixes
 
+    @property
+    def paths(self):
+        """The list of search paths. It is built from registered finders, which
+        has ``paths`` property. Can be useful for compilers to resolve internal
+        dependencies.
+        """
+        if not hasattr(self, '_paths'):
+            paths = []
+            for finder in self.finders:
+                if hasattr(finder, 'paths'):
+                    paths.extend(finder.paths)
+            self._paths = paths
+        return self._paths
+
     def register_defaults(self):
         """Register default compilers, preprocessors and MIME types."""
         self.mimetypes.register_defaults()

@@ -21,6 +21,10 @@ class FileSystemFinder(BaseFinder):
             if directory not in self.locations:
                 self.locations.append(directory)
 
+    @property
+    def paths(self):
+        return self.locations
+
     def find(self, path):
         for matched_path in self.find_all(path):
             return matched_path

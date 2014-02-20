@@ -4,6 +4,11 @@ Changelog
 Next Release
 ------------
 
+- The information about available search paths is available through the
+  :attr:`~gears.environment.Environment.paths` property of the
+  :class:`~gears.environment.Environment` class. Search paths can be useful for
+  compilers to resolve internal dependencies.
+
 - Add ``params`` directive to set asset parameters. Asset parameters can be
   used to change behavior of plugins for the current asset. For example, this
   can be used to disable top-level function wrapper in `gears-coffeescript`_
