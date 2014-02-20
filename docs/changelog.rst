@@ -4,7 +4,7 @@ Changelog
 Next Release
 ------------
 
-- The information about available search paths is available through the
+- The information about registered search paths is available through the
   :attr:`~gears.environment.Environment.paths` property of the
   :class:`~gears.environment.Environment` class. Search paths can be useful for
   compilers to resolve internal dependencies.
