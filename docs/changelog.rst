@@ -4,6 +4,12 @@ Changelog
 Next Release
 ------------
 
+- Add ``public`` directive to mark the asset as public:
+
+  .. code-block:: javascript
+
+        //= public
+
 - The information about registered search paths is available through the
   :attr:`~gears.environment.Environment.paths` property of the
   :class:`~gears.environment.Environment` class. Search paths can be useful for

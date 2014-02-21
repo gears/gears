@@ -12,6 +12,7 @@ class DirectivesProcessor(BaseProcessor):
 
     def __init__(self):
         self.types = {
+            'public': self.process_public_directive,
             'params': self.process_params_directive,
             'require': self.process_require_directive,
             'require_directory': self.process_require_directory_directive,
@@ -37,6 +38,9 @@ class DirectivesProcessor(BaseProcessor):
                 directive = directive.encode('utf-8')
             args = shlex.split(directive)
             self.types[args[0]](*args[1:])
+
+    def process_public_directive(self):
+        self.asset.params['public'] = True
 
     def process_params_directive(self, *params):
         for param in params:
