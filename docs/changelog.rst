@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Next Release
-------------
+0.7 (2014-04-23)
+----------------
 
 - `django-gears package has documentation now`_ (thanks to `Preston Timmons`_).
 
