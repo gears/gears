@@ -91,15 +91,6 @@ class EnvironmentFindTests(TestCase):
         with self.assertRaises(FileNotFound):
             self.environment.find('js/models.js')
 
-    def test_find_by_path_list(self):
-        attrs, path = self.environment.find(['js/app.js', 'js/app/index.js'])
-        self.check_asset_attributes(attrs, 'js/app/index.js')
-        self.assertEqual(path, '/assets/js/app/index.js')
-
-    def test_find_nothing_by_path_list(self):
-        with self.assertRaises(FileNotFound):
-            self.environment.find(['style.css', 'style/index.css'])
-
     def test_find_by_asset_attributes(self):
         attrs = AssetAttributes(self.environment, 'js/app.js')
         attrs, path = self.environment.find(attrs)
@@ -141,7 +132,7 @@ class EnvironmentListTests(TestCase):
         self.environment.finders.register(FileSystemFinder([ASSETS_DIR]))
 
     def test_list(self):
-        items = list(self.environment.list('js/templates', 'application/javascript'))
+        items = list(self.environment.list('js/templates/*', 'application/javascript'))
         self.assertEqual(len(items), 3)
         for i, item in enumerate(sorted(items, key=lambda x: x[1])):
             path = 'js/templates/%s.js.handlebars' % 'abc'[i]
@@ -151,11 +142,7 @@ class EnvironmentListTests(TestCase):
             self.assertEqual(absolute_path, os.path.join(ASSETS_DIR, path))
 
     def test_list_recursively(self):
-        items = list(self.environment.list(
-            'js/templates',
-            'application/javascript',
-            recursive=True,
-        ))
+        items = list(self.environment.list('js/templates/**', 'application/javascript'))
         self.assertEqual(len(items), 4)
         for i, item in enumerate(sorted(items, key=lambda x: x[1])):
             path = 'js/templates/%s.js.handlebars' % ('a', 'b', 'c', 'd/e')[i]

@@ -43,15 +43,6 @@ def unique(iterable, key=lambda x: x):
             yield item
 
 
-def listdir(path, recursive=False):
-    for dirpath, dirnames, filenames in os.walk(path):
-        if not recursive:
-            dirnames[:] = []
-        dirpath = os.path.relpath(dirpath, path)
-        for filename in filenames:
-            yield os.path.normpath(os.path.join(dirpath, filename))
-
-
 def get_condition_func(condition):
     if isinstance(condition, Callable):
         return condition

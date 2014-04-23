@@ -77,7 +77,7 @@ class FileSystemFinderTests(TestCase):
 
     def test_list(self):
         finder = FileSystemFinder([ASSETS_DIR])
-        self.assertItemsEqual(finder.list('js/templates'), (
+        self.assertItemsEqual(finder.list('js/templates/*'), (
             ('js/templates/readme.txt', os.path.join(ASSETS_DIR, 'js/templates/readme.txt')),
             ('js/templates/a.js.handlebars', os.path.join(ASSETS_DIR, 'js/templates/a.js.handlebars')),
             ('js/templates/b.js.handlebars', os.path.join(ASSETS_DIR, 'js/templates/b.js.handlebars')),
@@ -86,15 +86,11 @@ class FileSystemFinderTests(TestCase):
 
     def test_list_empty_if_path_doesnt_exist(self):
         finder = FileSystemFinder([ASSETS_DIR])
-        self.assertItemsEqual(finder.list('js/views'), ())
-
-    def test_list_empty_if_path_isnt_dir(self):
-        finder = FileSystemFinder([ASSETS_DIR])
-        self.assertItemsEqual(finder.list('js/templates/readme.txt'), ())
+        self.assertItemsEqual(finder.list('js/views/*'), ())
 
     def test_list_recursively(self):
         finder = FileSystemFinder([ASSETS_DIR])
-        self.assertItemsEqual(finder.list('js/templates', recursive=True), (
+        self.assertItemsEqual(finder.list('js/templates/**'), (
             ('js/templates/readme.txt', os.path.join(ASSETS_DIR, 'js/templates/readme.txt')),
             ('js/templates/a.js.handlebars', os.path.join(ASSETS_DIR, 'js/templates/a.js.handlebars')),
             ('js/templates/b.js.handlebars', os.path.join(ASSETS_DIR, 'js/templates/b.js.handlebars')),

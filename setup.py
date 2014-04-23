@@ -8,7 +8,7 @@ def read(filename):
 
 setup(
     name='Gears',
-    version='0.6.1',
+    version='0.7',
     license='ISC',
     description='Compiles and concatenates JavaScript and CSS assets.',
     long_description=read('README.rst'),
@@ -17,6 +17,9 @@ setup(
     author_email='mike@yumatov.org',
     packages=find_packages(exclude=['tests', 'tests.*']),
     include_package_data=True,
+    install_requires=[
+        'glob2',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -25,7 +28,6 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
     ],
 )

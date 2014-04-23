@@ -44,6 +44,6 @@ Contents
 .. _gears-handlebars: https://github.com/gears/gears-handlebars
 .. _gears-coffeescript: https://github.com/gears/gears-coffeescript
 
-.. _django-gears: https://github.com/gears/django-gears
+.. _django-gears: http://django-gears.readthedocs.org
 .. _flask-gears: https://github.com/gears/flask-gears
 .. _gears-cli: https://github.com/gears/gears-cli

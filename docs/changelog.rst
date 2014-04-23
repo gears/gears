@@ -1,6 +1,49 @@
 Changelog
 =========
 
+0.7 (2014-04-23)
+----------------
+
+- `django-gears package has documentation now`_ (thanks to `Preston Timmons`_).
+
+- ``require`` directive supports globbing now. If several assets are found, all
+  are required in alphabetical order. If nothing found matching pattern,
+  ``FileNotFound`` exception is raised.
+
+  Thus, ``require_directory app`` and ``require_tree app`` can be replaced with
+  ``require app/*`` and ``require app/**`` respectively.
+
+  ``depend_on`` directive alsow supports globbing.
+
+- The information about registered search paths is available through the
+  :attr:`~gears.environment.Environment.paths` property of the
+  :class:`~gears.environment.Environment` class. Search paths can be useful for
+  compilers to resolve internal dependencies.
+
+- Add ``params`` directive to set asset parameters. Asset parameters can be
+  used to change behavior of plugins for the current asset. For example, this
+  can be used to disable top-level function wrapper in `gears-coffeescript`_
+  compiler:
+
+  .. code-block:: javascript
+
+      //= params coffeescript=bare
+
+- Allow Gears plugins to inject themselves to the environment. See
+  :func:`~gears.environment.Environment.register_entry_points` docs.
+
+- Manifest file can be disabled by setting ``manifest_path`` parameter in
+  :class:`~gears.environment.Environment` to ``False`` (thanks to `Will
+  Bond`_).
+
+- Fix Python 3 compatibility (thanks to `Yaoda Liu`_).
+
+.. _django-gears package has documentation now: http://django-gears.readthedocs.org
+.. _Preston Timmons: https://github.com/prestontimmons
+.. _gears-coffeescript: https://github.com/gears/gears-coffeescript
+.. _Will Bond: https://github.com/wbond
+.. _Yaoda Liu: https://github.com/shonenada
+
 0.6.1 (2013-09-08)
 ------------------
 

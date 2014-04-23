@@ -3,6 +3,7 @@ import re
 from ..assets import build_asset
 from ..exceptions import FileNotFound
 from .base import BaseProcessor
+from ..compat import is_py3, is_py2
 
 
 URL_RE = re.compile(r"""url\((['"]?)\s*(.*?)\s*\1\)""")
@@ -40,4 +41,8 @@ class HexdigestPathsProcessor(BaseProcessor):
         except FileNotFound:
             return path
         self.asset.dependencies.add(asset.absolute_path)
-        return os.path.relpath(asset.hexdigest_path, self.current_dir)
+        relpath = str(os.path.relpath(asset.hexdigest_path, self.current_dir))
+        if is_py2:
+            return relpath.encode('string-escape')
+        elif is_py3:
+            return relpath.encode('unicode-escape').decode()

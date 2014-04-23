@@ -36,7 +36,8 @@ Features
   * ``require :path``: includes the contents of the asset ``path`` suffixed
     with the same extension as the current asset (e.g., if
     ``js/app.js.coffee`` has directive ``require views``,
-    ``js/views.js.coffee`` will be included).
+    ``js/views.js.coffee`` will be included). Supports globbing: ``require
+    models/*``.
 
   * ``require_directory :path``: includes the contents of the every asset in
     the directory ``path`` with the same suffix as the current asset in
@@ -53,7 +54,8 @@ Features
   * ``depend_on :path``: it is useful when you need to specify files that
     affect an asset, but not to include them into bundled asset or to include
     them using compilers. E.g., if you use ``@import`` functionality in some
-    CSS pre-processors (Less or Stylus).
+    CSS pre-processors (Less or Stylus). Supports globbing: ``depend_on
+    app/*``.
 
 * Scripting and styling in modern languages like CoffeeScript, Stylus, Less
   (support for new languages can be easily added).
@@ -155,6 +157,6 @@ Feel free to fork, send pull requests or report bugs and issues on github.
 .. _gears-uglifyjs: https://github.com/gears/gears-uglifyjs
 .. _gears-clean-css: https://github.com/gears/gears-clean-css
 
-.. _django-gears: https://github.com/gears/django-gears
+.. _django-gears: http://django-gears.readthedocs.org
 .. _flask-gears: https://github.com/gears/flask-gears
 .. _gears-cli: https://github.com/gears/gears-cli

@@ -1,5 +1,7 @@
 import gzip
 import os
+from pkg_resources import iter_entry_points
+from glob2.fnmatch import fnmatch
 
 from .asset_attributes import AssetAttributes
 from .assets import build_asset
@@ -12,7 +14,7 @@ from .processors import (
     HexdigestPathsProcessor,
     SemicolonsProcessor
 )
-from .utils import get_condition_func
+from .utils import get_condition_func, unique
 
 
 DEFAULT_PUBLIC_ASSETS = (
@@ -41,6 +43,11 @@ class Finders(list):
         """
         if finder in self:
             self.remove(finder)
+
+    def list(self, path):
+        for finder in self:
+            for item in finder.list(path):
+                yield item
 
 
 class MIMETypes(dict):
@@ -283,11 +290,54 @@ class Environment(object):
             self._suffixes = suffixes
         return self._suffixes
 
+    @property
+    def paths(self):
+        """The list of search paths. It is built from registered finders, which
+        has ``paths`` property. Can be useful for compilers to resolve internal
+        dependencies.
+        """
+        if not hasattr(self, '_paths'):
+            paths = []
+            for finder in self.finders:
+                if hasattr(finder, 'paths'):
+                    paths.extend(finder.paths)
+            self._paths = paths
+        return self._paths
+
     def register_defaults(self):
         """Register default compilers, preprocessors and MIME types."""
         self.mimetypes.register_defaults()
         self.preprocessors.register_defaults()
         self.postprocessors.register_defaults()
+
+    def register_entry_points(self, exclude=()):
+        """Allow Gears plugins to inject themselves to the environment. For
+        example, if your plugin's package contains such ``entry_points``
+        definition in ``setup.py``, ``gears_plugin.register`` function will be
+        called with current enviroment during ``register_entry_points`` call::
+
+            entry_points = {
+                'gears': [
+                    'register = gears_plugin:register',
+                ],
+            }
+
+        Here is an example of such function::
+
+            def register(environment):
+                assets_dir = os.path.join(os.path.dirname(__file__), 'assets')
+                assets_dir = os.path.absolute_path(assets_dir)
+                environment.register(FileSystemFinder([assets_dir]))
+
+        If you want to disable this behavior for some plugins, list their
+        packages using ``exclude`` argument::
+
+            environment.register_entry_points(exclude=['plugin'])
+        """
+        for entry_point in iter_entry_points('gears', 'register'):
+            if entry_point.module_name not in exclude:
+                register = entry_point.load()
+                register(self)
 
     def find(self, item, logical=False):
         """Find files using :attr:`finders` registry. The ``item`` parameter
@@ -309,13 +359,7 @@ class Environment(object):
                 except FileNotFound:
                     continue
             raise FileNotFound(item.path)
-        if isinstance(item, (list, tuple)):
-            for path in item:
-                try:
-                    return self.find(path, logical)
-                except FileNotFound:
-                    continue
-        elif logical:
+        if logical:
             asset_attributes = AssetAttributes(self, item)
             suffixes = self.suffixes.find(asset_attributes.mimetype)
             if not suffixes:
@@ -335,37 +379,51 @@ class Environment(object):
                 return AssetAttributes(self, item), absolute_path
         raise FileNotFound(item)
 
-    def list(self, path, mimetype=None, recursive=False):
+    def list(self, path, mimetype=None):
         """Yield two-tuples for all files found in the directory given by
         ``path`` parameter. Result can be filtered by the second parameter,
         ``mimetype``, that must be a MIME type of assets compiled source code.
-        If ``recursive`` is ``True``, then ``path`` will be scanned
-        recursively. Each tuple has
-        :class:`~gears.asset_attributes.AssetAttributes` instance for found
-        file path as first item, and absolute path to this file as second item.
+        Each tuple has :class:`~gears.asset_attributes.AssetAttributes`
+        instance for found file path as first item, and absolute path to this
+        file as second item.
 
         Usage example::
 
             # Yield all files from 'js/templates' directory.
-            environment.list('js/libs')
+            environment.list('js/templates/*')
 
             # Yield only files that are in 'js/templates' directory and have
             # 'application/javascript' MIME type of compiled source code.
-            environment.list('js/templates', mimetype='application/javascript')
+            environment.list('js/templates/*', mimetype='application/javascript')
         """
-        found = set()
-        for finder in self.finders:
-            for logical_path, absolute_path in finder.list(path, recursive=recursive):
-                asset_attributes = AssetAttributes(self, logical_path)
-                if mimetype is not None and asset_attributes.mimetype != mimetype:
-                    continue
-                if logical_path not in found:
-                    yield asset_attributes, absolute_path
-                    found.add(logical_path)
+        basename_pattern = os.path.basename(path)
+
+        if path.endswith('**'):
+            paths = [path]
+        else:
+            paths = AssetAttributes(self, path).search_paths
+        paths = map(lambda p: p if p.endswith('*') else p + '*', paths)
+
+        results = unique(self._list_paths(paths), lambda x: x[0])
+        for logical_path, absolute_path in results:
+            asset_attributes = AssetAttributes(self, logical_path)
+            if mimetype is not None and asset_attributes.mimetype != mimetype:
+                continue
+
+            basename = os.path.basename(asset_attributes.path_without_suffix)
+            if not fnmatch(basename, basename_pattern) and basename != 'index':
+                continue
+
+            yield asset_attributes, absolute_path
+
+    def _list_paths(self, paths):
+        for path in paths:
+            for result in self.finders.list(path):
+                yield result
 
     def save(self):
         """Save handled public assets to :attr:`root` directory."""
-        for asset_attributes, absolute_path in self.list('.', recursive=True):
+        for asset_attributes, absolute_path in self.list('**'):
             logical_path = os.path.normpath(asset_attributes.logical_path)
             if self.is_public(logical_path):
                 asset = build_asset(self, logical_path)

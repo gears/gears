@@ -8,7 +8,8 @@ class Manifest(object):
     def __init__(self, path):
         self.path = path
         self.data = {}
-        self.load()
+        if self.path:
+            self.load()
 
     @property
     def files(self):
@@ -23,6 +24,8 @@ class Manifest(object):
                 raise
 
     def dump(self):
+        if not self.path:
+            return
         dirpath = os.path.dirname(self.path)
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
