@@ -180,12 +180,6 @@ class BaseAsset(object):
         return '<%s absolute_path=%s>' % (self.__class__.__name__, self.absolute_path)
 
     @cached_property
-    def is_public(self):
-        public_assets = self.attributes.environment.public_assets
-        logical_path = os.path.normpath(self.attributes.logical_path)
-        return any(condition(logical_path) for condition in public_assets)
-
-    @cached_property
     def hexdigest_path(self):
         return EXTENSION_RE.sub(
             r'.{0}\1'.format(self.final_hexdigest),
@@ -218,10 +212,6 @@ class Asset(UnicodeMixin, BaseAsset):
     @property
     def cached_data(self):
         return self.cache.get(self._get_cache_key())
-
-    @cached_property
-    def is_public(self):
-        return super(Asset, self).is_public or self.params.get('public')
 
     @cached_property
     def params(self):
