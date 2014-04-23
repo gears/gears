@@ -37,6 +37,6 @@ public repository (Git_ is required)::
 .. _virtualenv: http://virtualenv.org/
 .. _Git: http://git-scm.com/
 
-.. _django-gears: https://github.com/gears/django-gears
+.. _django-gears: http://django-gears.readthedocs.org
 .. _flask-gears: https://github.com/gears/flask-gears
 .. _gears-cli: https://github.com/gears/gears-cli

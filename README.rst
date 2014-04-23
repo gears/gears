@@ -157,6 +157,6 @@ Feel free to fork, send pull requests or report bugs and issues on github.
 .. _gears-uglifyjs: https://github.com/gears/gears-uglifyjs
 .. _gears-clean-css: https://github.com/gears/gears-clean-css
 
-.. _django-gears: https://github.com/gears/django-gears
+.. _django-gears: http://django-gears.readthedocs.org
 .. _flask-gears: https://github.com/gears/flask-gears
 .. _gears-cli: https://github.com/gears/gears-cli

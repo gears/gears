@@ -4,6 +4,8 @@ Changelog
 Next Release
 ------------
 
+- `django-gears package has documentation now`_ (thanks to `Preston Timmons`_).
+
 - ``require`` directive supports globbing now. If several assets are found, all
   are required in alphabetical order. If nothing found matching pattern,
   ``FileNotFound`` exception is raised.
@@ -36,6 +38,8 @@ Next Release
 
 - Fix Python 3 compatibility (thanks to `Yaoda Liu`_).
 
+.. _django-gears package has documentation now: http://django-gears.readthedocs.org
+.. _Preston Timmons: https://github.com/prestontimmons
 .. _gears-coffeescript: https://github.com/gears/gears-coffeescript
 .. _Will Bond: https://github.com/wbond
 .. _Yaoda Liu: https://github.com/shonenada
