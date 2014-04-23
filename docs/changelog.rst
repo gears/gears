@@ -4,6 +4,15 @@ Changelog
 Next Release
 ------------
 
+- ``require`` directive supports globbing now. If several assets are found, all
+  are required in alphabetical order. If nothing found matching pattern,
+  ``FileNotFound`` exception is raised.
+
+  Thus, ``require_directory app`` and ``require_tree app`` can be replaced with
+  ``require app/*`` and ``require app/**`` respectively.
+
+  ``depend_on`` directive alsow supports globbing.
+
 - The information about registered search paths is available through the
   :attr:`~gears.environment.Environment.paths` property of the
   :class:`~gears.environment.Environment` class. Search paths can be useful for
