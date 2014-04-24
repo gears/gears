@@ -425,7 +425,8 @@ class Environment(object):
         """Save handled public assets to :attr:`root` directory."""
         for asset_attributes, absolute_path in self.list('**'):
             logical_path = os.path.normpath(asset_attributes.logical_path)
-            if self.is_public(logical_path):
+            check_asset = build_asset(self, logical_path, check=True)
+            if check_asset.is_public:
                 asset = build_asset(self, logical_path)
                 source = bytes(asset)
                 self.save_file(logical_path, source, asset.gzippable)
