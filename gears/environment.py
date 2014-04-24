@@ -314,7 +314,7 @@ class Environment(object):
         """Allow Gears plugins to inject themselves to the environment. For
         example, if your plugin's package contains such ``entry_points``
         definition in ``setup.py``, ``gears_plugin.register`` function will be
-        called with current enviroment during ``register_entry_points`` call::
+        called with current environment during ``register_entry_points`` call::
 
             entry_points = {
                 'gears': [

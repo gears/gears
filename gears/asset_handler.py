@@ -27,7 +27,7 @@ class BaseAssetHandler(object):
     def as_handler(cls, **initkwargs):
         """Converts the class into an actual handler function that can be used
         when registering different types of processors in
-        :class:`~gears.enviroment.Environment` class instance.
+        :class:`~gears.environment.Environment` class instance.
 
         The arguments passed to :meth:`as_handler` are forwarded to the
         constructor of the class.
