@@ -31,7 +31,7 @@ Features
        *= require_directory templates
        */
 
-  Five directive types is supported for now:
+  Six directive types is supported for now:
 
   * ``require :path``: includes the contents of the asset ``path`` suffixed
     with the same extension as the current asset (e.g., if
@@ -56,6 +56,8 @@ Features
     them using compilers. E.g., if you use ``@import`` functionality in some
     CSS pre-processors (Less or Stylus). Supports globbing: ``depend_on
     app/*``.
+
+  * ``public``: mark the asset as public.
 
 * Scripting and styling in modern languages like CoffeeScript, Stylus, Less
   (support for new languages can be easily added).
@@ -110,8 +112,9 @@ Usage
 -----
 
 This example compiles public assets (default: ``assets/js/script.js``,
-``assets/css/style.css`` and all assets that aren't compiled to .css or .js)
-from ``assets`` directory to ``static``::
+``assets/css/style.css``, all assets that aren't compiled to .css or .js and
+assets marked as public using ``public`` directive) from ``assets`` directory
+to ``static``::
 
     import os
 
