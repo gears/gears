@@ -1,6 +1,11 @@
 Changelog
 =========
 
+next release
+------------
+
+- Fix UnicodeDecodeError during installation using pip 1.5.*.
+
 0.7.1 (2014-04-28)
 ------------------
 
