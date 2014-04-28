@@ -14,6 +14,8 @@ class BaseAssetHandler(object):
     with asset as argument.
     """
 
+    supports_check_mode = False
+
     def __call__(self, asset):
         """Subclasses have to override this method to implement the actual
         handler function code. This method is called with asset as argument.
@@ -27,15 +29,16 @@ class BaseAssetHandler(object):
     def as_handler(cls, **initkwargs):
         """Converts the class into an actual handler function that can be used
         when registering different types of processors in
-        :class:`~gears.enviroment.Environment` class instance.
+        :class:`~gears.environment.Environment` class instance.
 
         The arguments passed to :meth:`as_handler` are forwarded to the
         constructor of the class.
         """
         @wraps(cls, updated=())
-        def handler(asset):
-            return handler.handler_class(**initkwargs)(asset)
+        def handler(asset, *args, **kwargs):
+            return handler.handler_class(**initkwargs)(asset, *args, **kwargs)
         handler.handler_class = cls
+        handler.supports_check_mode = cls.supports_check_mode
         return handler
 
 

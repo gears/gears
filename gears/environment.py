@@ -314,7 +314,7 @@ class Environment(object):
         """Allow Gears plugins to inject themselves to the environment. For
         example, if your plugin's package contains such ``entry_points``
         definition in ``setup.py``, ``gears_plugin.register`` function will be
-        called with current enviroment during ``register_entry_points`` call::
+        called with current environment during ``register_entry_points`` call::
 
             entry_points = {
                 'gears': [
@@ -425,7 +425,8 @@ class Environment(object):
         """Save handled public assets to :attr:`root` directory."""
         for asset_attributes, absolute_path in self.list('**'):
             logical_path = os.path.normpath(asset_attributes.logical_path)
-            if self.is_public(logical_path):
+            check_asset = build_asset(self, logical_path, check=True)
+            if check_asset.is_public:
                 asset = build_asset(self, logical_path)
                 source = bytes(asset)
                 self.save_file(logical_path, source, asset.gzippable)

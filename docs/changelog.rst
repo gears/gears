@@ -1,6 +1,18 @@
 Changelog
 =========
 
+Next Release
+------------
+
+- Add ``public`` directive to mark the asset as public:
+
+  .. code-block:: javascript
+
+      //= public
+
+  It can be used as an alternative to :class:`~gears.environment.Environment`'s
+  ``public_assets`` param.
+
 0.7 (2014-04-23)
 ----------------
 

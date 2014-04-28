@@ -11,8 +11,11 @@ from ..exceptions import FileNotFound
 
 class DirectivesProcessor(BaseProcessor):
 
+    supports_check_mode = True
+
     def __init__(self):
         self.types = {
+            'public': self.process_public_directive,
             'params': self.process_params_directive,
             'require': self.process_require_directive,
             'require_directory': self.process_require_directory_directive,
@@ -21,8 +24,9 @@ class DirectivesProcessor(BaseProcessor):
             'depend_on': self.process_depend_on_directive,
         }
 
-    def __call__(self, asset):
+    def __call__(self, asset, check=False):
         self.asset = asset
+        self.check = check
         self.parse()
         self.process_directives()
 
@@ -39,6 +43,9 @@ class DirectivesProcessor(BaseProcessor):
             args = shlex.split(directive)
             self.types[args[0]](*args[1:])
 
+    def process_public_directive(self):
+        self.asset.params['public'] = True
+
     def process_params_directive(self, *params):
         for param in params:
             if '=' in param:
@@ -46,6 +53,9 @@ class DirectivesProcessor(BaseProcessor):
                 self.asset.params[key] = value
 
     def process_require_directive(self, path):
+        if self.check:
+            return
+
         found = False
         path = self.get_relative_path(path)
         list = self.asset.attributes.environment.list(path, self.asset.attributes.mimetype)
@@ -57,15 +67,24 @@ class DirectivesProcessor(BaseProcessor):
             raise FileNotFound(path)
 
     def process_require_directory_directive(self, path):
+        if self.check:
+            return
         self.process_require_directive(os.path.join(path, '*'))
 
     def process_require_tree_directive(self, path):
+        if self.check:
+            return
         self.process_require_directive(os.path.join(path, '**'))
 
     def process_require_self_directive(self):
+        if self.check:
+            return
         self.asset.requirements.add(self.asset)
 
     def process_depend_on_directive(self, path):
+        if self.check:
+            return
+
         found = False
         path = self.get_relative_path(path)
         list = self.asset.attributes.environment.list(path, self.asset.attributes.mimetype)
