@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Next Release
-------------
+0.7.1 (2014-04-28)
+------------------
 
 - Add ``public`` directive to mark the asset as public:
 
