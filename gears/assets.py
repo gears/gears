@@ -180,6 +180,16 @@ class BaseAsset(object):
         return '<%s absolute_path=%s>' % (self.__class__.__name__, self.absolute_path)
 
     @cached_property
+    def is_public(self):
+        environment = self.attributes.environment
+        logical_path = os.path.normpath(self.attributes.logical_path)
+        return environment.is_public(logical_path) or self.params.get('public')
+
+    @cached_property
+    def params(self):
+        return {}
+
+    @cached_property
     def hexdigest_path(self):
         return EXTENSION_RE.sub(
             r'.{0}\1'.format(self.final_hexdigest),
@@ -333,12 +343,32 @@ class StaticAsset(BaseAsset):
         return iter(self.source)
 
 
-def build_asset(environment, path):
+class CheckAsset(BaseAsset):
+
+    def __init__(self, *args, **kwargs):
+        super(CheckAsset, self).__init__(*args, **kwargs)
+        self.processed_source = self.source
+        for process in self.attributes.processors:
+            if getattr(process, 'supports_check_mode', False):
+                process(self, check=True)
+
+    @cached_property
+    def source(self):
+        try:
+            with codecs.open(self.absolute_path, encoding='utf-8') as f:
+                return f.read()
+        except UnicodeDecodeError as e:
+            raise GearsUnicodeError(self.absolute_path, str(e))
+
+
+def build_asset(environment, path, check=False):
     path = strip_fingerprint(path)
     asset_attributes = AssetAttributes(environment, path)
     asset_attributes, absolute_path = environment.find(asset_attributes, True)
     if not asset_attributes.processors:
         return StaticAsset(asset_attributes, absolute_path)
+    if check:
+        return CheckAsset(asset_attributes, absolute_path)
     return Asset(asset_attributes, absolute_path)
 
 

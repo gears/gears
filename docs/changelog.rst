@@ -1,6 +1,18 @@
 Changelog
 =========
 
+0.7.1 (2014-04-28)
+------------------
+
+- Add ``public`` directive to mark the asset as public:
+
+  .. code-block:: javascript
+
+      //= public
+
+  It can be used as an alternative to :class:`~gears.environment.Environment`'s
+  ``public_assets`` param.
+
 0.7 (2014-04-23)
 ----------------
 
@@ -13,7 +25,7 @@ Changelog
   Thus, ``require_directory app`` and ``require_tree app`` can be replaced with
   ``require app/*`` and ``require app/**`` respectively.
 
-  ``depend_on`` directive alsow supports globbing.
+  ``depend_on`` directive also supports globbing.
 
 - The information about registered search paths is available through the
   :attr:`~gears.environment.Environment.paths` property of the
