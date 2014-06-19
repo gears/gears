@@ -60,6 +60,19 @@ class ExecMixin(object):
         p = self.get_process()
         output, errors = p.communicate(input=input.encode('utf-8'))
         if p.returncode != 0:
+            import re
+            match = re.search(r'on line (\d+):', errors)
+            if match:
+                errors += "\n"
+
+                line = int(match.group(1))
+                lines = input.split('\n')
+
+                for i in range(max(0, line-5), min(line+5, len(lines))):
+                    errors += "{}: {}\n".format(i, lines[i])
+
+                errors += "\n"
+
             raise AssetHandlerError(errors)
         return output.decode('utf-8')
 
