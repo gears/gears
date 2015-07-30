@@ -8,7 +8,7 @@ def read(filename):
 
 setup(
     name='Gears',
-    version='0.7.2',
+    version='0.7.3',
     license='ISC',
     description='Compiles and concatenates JavaScript and CSS assets.',
     long_description=read('README.rst'),
