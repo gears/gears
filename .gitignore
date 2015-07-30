@@ -5,3 +5,4 @@
 dist/
 docs/_build/
 __pycache__
+.idea

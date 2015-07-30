@@ -60,6 +60,9 @@ class DirectivesProcessor(BaseProcessor):
         path = self.get_relative_path(path)
         list = self.asset.attributes.environment.list(path, self.asset.attributes.mimetype)
         for asset_attributes, absolute_path in sorted(list, key=lambda x: x[0].path.split('/')):
+            if absolute_path == self.asset.absolute_path:
+                found = True
+                continue
             self.asset.requirements.add(self.get_asset(asset_attributes, absolute_path))
             self.asset.dependencies.add(os.path.dirname(absolute_path))
             found = True

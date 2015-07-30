@@ -67,3 +67,10 @@ class DirectivesProcessorTests(GearsTestCase):
         self.assertItemsEqual(asset.dependencies.to_list(), [
             os.path.join(os.path.dirname(asset.absolute_path), 'mixins/colors.less'),
         ])
+
+    def test_require_tree_dot_does_not_raise_circular_dependency_error(self):
+        asset = self.get_asset('requirements_empty_tree')
+        DirectivesProcessor.as_handler()(asset)
+        self.assertEqual(1, len(list(asset.requirements)))
+        self.assertEqual([], asset.requirements.before)
+        self.assertEqual([], asset.requirements.after)
