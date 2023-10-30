@@ -1,6 +1,11 @@
 import os
 import re
-from collections import Callable
+
+try:
+    # python 3.10+
+    from collections.abc import Callable
+except AttributeError:
+    from collections import Callable
 
 
 missing = object()
